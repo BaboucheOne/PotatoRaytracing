@@ -32,5 +32,11 @@ namespace PotatoRaytracing
         {
             return Vector3.Add(pos, Vector3.Multiply(Direction, time));
         }
+
+        public void Set(Vector3 position, Vector3 direction)
+        {
+            Position = position;
+            Direction = direction;
+        }
     }
 }

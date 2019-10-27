@@ -6,27 +6,29 @@ namespace PotatoRaytracing
     public class Program
     {
         public static Process CurrentProcess = Process.GetCurrentProcess();
-        public static PotatoRender Renderer = new PotatoRender();
+        public static PotatoRenderContext RenderContext;
 
         static void Main(string[] args)
         {
             CurrentProcess = Process.GetCurrentProcess();
 
-            PotatoLoadStruct st = new PotatoLoadStruct();
+            Option option = OptionFactory.CreateOption();
+            RenderContext = new PotatoRenderContext(option);
 
             Console.WriteLine("--- Potato Raytracing ---");
             Console.WriteLine("Configurations:");
-            Renderer.Init();
-            Console.WriteLine(Renderer.GetOptions().ToString());
-            
-            string val;
-            Console.Write("Press to continue any key to beggin.");
-            val = Console.ReadLine();
+            Console.WriteLine(RenderContext.GetScene().GetOptions().ToString());
 
-            Renderer.RenderScene();
+            Console.Write("Press to continue any key to beggin.");
+            Console.ReadLine();
+
+            double timeStart = CurrentProcess.UserProcessorTime.TotalMilliseconds;
+            RenderContext.Start();
+
+            Console.WriteLine("Render time: {0} s", (CurrentProcess.UserProcessorTime.TotalMilliseconds - timeStart) % 60000 / 1000);
 
             Console.Write("Press to continue any key to exit.");
-            val = Console.ReadLine();
+            Console.ReadLine();
         }
     }
 }
