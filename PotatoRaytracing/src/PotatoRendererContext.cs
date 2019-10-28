@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
-using System.Threading.Tasks;
 
 namespace PotatoRaytracing
 {
@@ -9,14 +8,14 @@ namespace PotatoRaytracing
         private Option option;
         private PotatoScene scene;
         private ImageBlender imageBlender;
-        private PotatoRenderer renderer;
+        private PotatoTasksSceneRenderer tasksSceneRenderer;
 
         public PotatoRenderContext(Option option)
         {
             this.option = option;
 
             scene = new PotatoScene(option);
-            renderer = new PotatoRenderer(scene);
+            tasksSceneRenderer = new PotatoTasksSceneRenderer(scene);
             imageBlender = new ImageBlender();
         }
 
@@ -25,21 +24,19 @@ namespace PotatoRaytracing
 
         public void Start()
         {
-            renderer.RenderScene();
-
-            BlendAllRenderedImageContainInTasksResult(renderer.GetRenderTasks());
+            Bitmap[] imgs = tasksSceneRenderer.Run();
+            BlendAllRenderedImageContainInTasksResult(imgs);
 
             SaveResultImage("resultTasks");
 
             OpenResultPicture();
         }
 
-        private void BlendAllRenderedImageContainInTasksResult(Task<Bitmap>[] tasks)
+        private void BlendAllRenderedImageContainInTasksResult(Bitmap[] images)
         {
-            for (int i = 0; i < tasks.Length; i++)
+            for (int i = 0; i < images.Length; i++)
             {
-                tasks[i].Result.Save(string.Format("image render {0}.bmp", i));
-                imageBlender.AddImage(tasks[i].Result);
+                imageBlender.AddImage(images[i]);
             }
         }
 

@@ -38,7 +38,7 @@ namespace PotatoRaytracing
         {
             for (int i = 1; i < imagesRendered.Count; i++)
             {
-                //resultImage = BlendImage(resultImage, imagesRendered[i]);
+                resultImage = BlendImage(resultImage, imagesRendered[i]);
             }
 
             return resultImage;

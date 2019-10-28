@@ -69,6 +69,7 @@
     <Compile Include="src\PotatoRendererContext.cs" />
     <Compile Include="src\PotatoScene.cs" />
     <Compile Include="src\PotatoSphere.cs" />
+    <Compile Include="src\PotatoTasksSceneRenderer.cs" />
     <Compile Include="src\PotatoTracer.cs" />
     <Compile Include="src\Ray.cs" />
   </ItemGroup>

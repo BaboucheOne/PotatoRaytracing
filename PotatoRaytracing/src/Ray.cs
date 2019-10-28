@@ -28,7 +28,7 @@ namespace PotatoRaytracing
             Direction = direction;
         }
         
-        public Vector3 Shoot(Vector3 pos, float time)
+        public Vector3 Cast(Vector3 pos, float time)
         {
             return Vector3.Add(pos, Vector3.Multiply(Direction, time));
         }

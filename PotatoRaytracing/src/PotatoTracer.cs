@@ -68,7 +68,7 @@ namespace PotatoRaytracing
 
         private Vector3 CalculateHitPosition(float discr, Ray ray)
         {
-            return ray.Shoot(ray.Position, discr);
+            return ray.Cast(ray.Position, discr);
         }
 
 

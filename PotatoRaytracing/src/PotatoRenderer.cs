@@ -1,52 +1,24 @@
 ﻿using System;
 using System.Drawing;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace PotatoRaytracing
 {
     public class PotatoRenderer
     {
-        private int totalTaskTodo = 0;
         private PotatoScene scene;
         private PotatoTracer tracer;
+        private int lightIndex;
 
-        Task<Bitmap>[] renderTasks;
-
-        public PotatoRenderer(PotatoScene scene)
+        public PotatoRenderer(PotatoScene scene, int lightIndex)
         {
             this.scene = scene;
             tracer = new PotatoTracer(scene);
 
-            totalTaskTodo = scene.GetLightCount();
-            renderTasks = new Task<Bitmap>[totalTaskTodo];
+            this.lightIndex = lightIndex;
         }
 
-        public Task<Bitmap>[] GetRenderTasks() => renderTasks;
-
-        public void RenderScene()
-        {
-            RunRenderTasks(renderTasks);
-            Task.WaitAll(renderTasks);
-        }
-
-        private void RunRenderTasks(Task<Bitmap>[] tasks)
-        {
-            for (int i = 0; i < totalTaskTodo; i++)
-            {
-                tasks[i] = RunRenderTask(i);
-            }
-        }
-
-        private Task<Bitmap> RunRenderTask(int lightIndex)
-        {
-            return Task.Run(() =>
-            {
-                return RenderImage(lightIndex);
-            });
-        }
-
-        private Bitmap RenderImage(int lightIndex)
+        public Bitmap RenderImage()
         {
             Console.WriteLine("light index to render {0}", lightIndex);
 
