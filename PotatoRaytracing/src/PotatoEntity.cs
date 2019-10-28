@@ -7,6 +7,10 @@ namespace PotatoRaytracing
         public Vector3 Position = new Vector3();
         public Quaternion Rotation = new Quaternion();
 
+        public PotatoEntity()
+        {
+        }
+
         public PotatoEntity(Vector3 position)
         {
             Position = position;

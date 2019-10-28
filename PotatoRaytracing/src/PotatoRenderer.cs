@@ -1,114 +1,61 @@
-﻿using PotatoRaytracing.WorldCoordinate;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.Numerics;
 
 namespace PotatoRaytracing
 {
-    public class PotatoRender
+    public class PotatoRenderer
     {
-        public static Camera camera = new Camera(new Vector3(0, 0, 0));
-        private Ray rendererRay = new Ray();
-        private Option option;
+        private PotatoScene scene;
+        private PotatoTracer tracer;
+        private int lightIndex;
 
-        public List<PotatoObject> SceneObjectsToRender = new List<PotatoObject>();
-
-        public PotatoRender()
+        public PotatoRenderer(PotatoScene scene, int lightIndex)
         {
+            this.scene = scene;
+            tracer = new PotatoTracer(scene);
+
+            this.lightIndex = lightIndex;
         }
 
-        public void Init()
+        public Bitmap RenderImage()
         {
-            CreateRandomScene();
+            Console.WriteLine("light index to render {0}", lightIndex);
 
-            camera.SetPointOfInterest(PotatoCoordinate.VECTOR_FORWARD);
+            Bitmap image = new Bitmap(scene.GetOptions().Width, scene.GetOptions().Height);
+            Ray ray = new Ray();
+            Color pixelColor = Color.Black;
 
-            option = new Option(1000, 1000, 60, camera);
+            CreateRenderedImage(lightIndex, image, ref ray, ref pixelColor);
+
+            return image;
         }
 
-        private void CreateRandomScene()
+        private void CreateRenderedImage(int lightIndex, Bitmap image, ref Ray ray, ref Color pixelColor)
         {
-            Random r = new Random();
-            for (int i = 0; i < 20; i++)
+            for (int x = 0; x < image.Width; x++)
             {
-                Vector3 pos = new Vector3(r.Next(0, 300), r.Next(-00, 100), r.Next(-100, 100));
-                float rad = (float)r.NextDouble() * 20;
-                SceneObjectsToRender.Add(new PotatoSphere(pos, rad));
-            }
-        }
-
-        public void RenderScene()
-        {
-            Bitmap image = new Bitmap(option.Width, option.Heigth);
-            Color finalColor = new Color();
-
-            double startRenderTime = Program.CurrentProcess.UserProcessorTime.TotalMilliseconds;
-
-            for (int i = 0; i < option.Width; i++)
-            {
-                for (int j = 0; j < option.Heigth; j++)
+                for (int y = 0; y < image.Height; y++)
                 {
-                    rendererRay.Direction = GetDirectionFromPixel(i, j);
-                    
-                    PotatoObject objectToRender = GetClosestObject();
-                    if (objectToRender == null) continue;
-
-                    IntersectObjectToRender(objectToRender);
-
-                    image.SetPixel(i, j, finalColor);
+                    SetRayDirectionByPixelPosition(ref ray, x, y);
+                    pixelColor = tracer.Trace(ray, lightIndex, 1);
+                    image.SetPixel(x, y, pixelColor);
                 }
             }
-
-            Console.WriteLine("Render tine: {0} s", (Program.CurrentProcess.UserProcessorTime.TotalMilliseconds - startRenderTime) % 60000 / 1000);
-            image.Save("output.bmp");
         }
 
-        private bool IsIntersect(PotatoObject objectToRender)
+        private void SetRayDirectionByPixelPosition(ref Ray ray, int pixelPositionX, int pixelPositionY)
         {
-            return objectToRender.Intersect(camera.Position, rendererRay.Direction).Intersect;
+            ray.Set(scene.GetCamera().Position, GetDirectionFromPixel(pixelPositionX, pixelPositionY));
         }
 
-        private float GetIntersectionDistance(PotatoObject objectToRender)
+        private Vector3 GetDirectionFromPixel(int pixelPositionX, int pixelPositionY)
         {
-            return objectToRender.Intersect(camera.Position, rendererRay.Direction).Discriminent;
-        }
+            Vector3 V1 = Vector3.Multiply(scene.GetCamera().Right(), pixelPositionX);
+            Vector3 V2 = Vector3.Multiply(scene.GetCamera().Up(), pixelPositionY);
+            Vector3 pixelPos = Vector3.Add(Vector3.Add(scene.GetOptions().ScreenLeft, V1), V2);
 
-        private void IntersectObjectToRender(PotatoObject objectToRender)
-        {
-            if (IsIntersect(objectToRender))
-            {
-                float dist = GetIntersectionDistance(objectToRender);
-
-                Vector3 hitPoint = rendererRay.Shoot(camera.Position, dist);
-                Vector3 normal = objectToRender.GetNormal(hitPoint);
-            }
-        }
-
-        public Vector3 GetDirectionFromPixel(int i, int j)
-        {
-            Vector3 V1 = Vector3.Multiply(camera.Right(), i);
-            Vector3 V2 = Vector3.Multiply(camera.Up(), j);
-            Vector3 pixelPos = Vector3.Add(Vector3.Add(option.ScreenLeft, V1), V2);
-            return Vector3.Normalize(Vector3.Add(camera.Forward(), pixelPos));
-        }
-
-        private PotatoObject GetClosestObject()
-        {
-            IntersectResult r = new IntersectResult();
-            PotatoObject obj = null;
-            float minD = float.PositiveInfinity;
-            for (int i = 0; i < SceneObjectsToRender.Count; i++)
-            {
-                r = SceneObjectsToRender[i].Intersect(rendererRay.Position, rendererRay.Direction);
-                if (r.Intersect && r.Discriminent < minD)
-                {
-                    minD = r.Discriminent;
-                    obj = SceneObjectsToRender[i];
-                }
-            }
-
-            return obj;
+            return Vector3.Normalize(Vector3.Add(scene.GetCamera().Forward(), pixelPos));
         }
     }
 }

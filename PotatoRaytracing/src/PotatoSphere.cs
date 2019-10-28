@@ -17,25 +17,30 @@ namespace PotatoRaytracing
             return Vector3.Normalize(Vector3.Subtract((Vector3)arguments[0], Position));
         }
 
+        public override IntersectResult Intersect(Ray ray)
+        {
+            return Intersect(ray.Position, ray.Direction);
+        }
+
         public override IntersectResult Intersect(Vector3 origin, Vector3 direction)
         {
             bool hit = false;
-            float a, b, delta, distance = 0;
+            float a, b, delta, discriminent = 0;
 
             CalculatePolynomial(origin, direction, out a, out b, out delta);
-            CalculateIntersection(ref hit, ref distance, a, b, delta);
+            CalculateIntersection(ref hit, ref discriminent, a, b, delta);
 
-            return new IntersectResult(hit, distance);
+            return new IntersectResult(hit, discriminent);
         }
 
-        private static void CalculateIntersection(ref bool hit, ref float distance, float a, float b, float delta)
+        private static void CalculateIntersection(ref bool hit, ref float discriminent, float a, float b, float delta)
         {
             if (delta < 0) return;
 
             float polynomialResult1, polynomialResult2;
             PolynomialResult(a, b, delta, out polynomialResult1, out polynomialResult2);
 
-            distance = IntersectionDistance(polynomialResult1, polynomialResult2);
+            discriminent = IntersectionDiscriminent(polynomialResult1, polynomialResult2);
 
             hit = true;
         }
@@ -55,7 +60,7 @@ namespace PotatoRaytracing
             polynomialResult2 = (-b + (float)Math.Sqrt(delta)) / (2 * a);
         }
 
-        private static float IntersectionDistance(float polynomialResult1, float polynomialResult2)
+        private static float IntersectionDiscriminent(float polynomialResult1, float polynomialResult2)
         {
             if (Math.Min(polynomialResult1, polynomialResult2) > 0) return Math.Min(polynomialResult1, polynomialResult2);
 

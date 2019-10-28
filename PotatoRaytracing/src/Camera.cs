@@ -15,6 +15,10 @@ namespace PotatoRaytracing
         {
         }
 
+        public Camera() : base()
+        {
+        }
+
         public void SetPointOfInterest(Vector3 pointOfInterest)
         {
             PointOfInterest = pointOfInterest;

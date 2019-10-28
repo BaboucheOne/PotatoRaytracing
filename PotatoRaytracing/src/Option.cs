@@ -6,7 +6,7 @@ namespace PotatoRaytracing
     public class Option
     {
         public int Width;
-        public int Heigth;
+        public int Height;
         public int HalfWidth;
         public int HalfHeight;
         public double Fov;
@@ -14,6 +14,11 @@ namespace PotatoRaytracing
         public Vector3 ScreenCenter;
 
         public Camera camera;
+
+        public Option(int width, int heigth, double fov)
+        {
+            InitializeParameters(width, heigth, fov, null);
+        }
 
         public Option(int width, int heigth, double fov, Camera cam)
         {
@@ -25,9 +30,16 @@ namespace PotatoRaytracing
         private void InitializeParameters(int width, int heigth, double fov, Camera cam)
         {
             Width = width;
-            Heigth = heigth;
+            Height = heigth;
             Fov = fov;
             camera = cam;
+        }
+
+        public void SetCamera(Camera camera)
+        {
+            this.camera = camera;
+
+            SetScreenSettings();
         }
 
         private void SetScreenSettings()
@@ -53,7 +65,7 @@ namespace PotatoRaytracing
         private void SetHalfResolution()
         {
             HalfWidth = (int)Math.Round(Width * 0.5f);
-            HalfHeight = (int)Math.Round(Heigth * 0.5f);
+            HalfHeight = (int)Math.Round(Height * 0.5f);
         }
 
         public override string ToString()
@@ -64,7 +76,7 @@ namespace PotatoRaytracing
                 "Camera Position: {3} \n" +
                 "Camera Rotation: {4} \n" +
                 "Screen Center {5} \n" +
-                "Screen Left {6}", Width, Heigth, Fov, camera.Position, camera.Rotation, ScreenCenter, ScreenLeft);
+                "Screen Left {6}", Width, Height, Fov, camera.Position, camera.Rotation, ScreenCenter, ScreenLeft);
         }
     }
 }
