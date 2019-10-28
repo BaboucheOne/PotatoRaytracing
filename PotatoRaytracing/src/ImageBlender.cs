@@ -65,33 +65,6 @@ namespace PotatoRaytracing
             }
 
             return bmpC;
-            //Bitmap bmpC = bmpA;
-
-            //BitmapData bmpDataA = bmpA.LockBits(new Rectangle(0, 0, bmpA.Width, bmpA.Height), ImageLockMode.ReadOnly, bmpA.PixelFormat);
-            //BitmapData bmpDataB = bmpB.LockBits(new Rectangle(0, 0, bmpA.Width, bmpA.Height), ImageLockMode.ReadOnly, bmpA.PixelFormat);
-            //BitmapData bmpDataC = bmpC.LockBits(new Rectangle(0, 0, bmpA.Width, bmpA.Height), ImageLockMode.WriteOnly, bmpA.PixelFormat);
-            //void* pBmpA = bmpDataA.Scan0.ToPointer();
-            //void* pBmpB = bmpDataB.Scan0.ToPointer();
-            //void* pBmpC = bmpDataC.Scan0.ToPointer();
-            //int bytesPerPix = bmpDataA.Stride / bmpA.Width;
-            //for (int y = 0; y < bmpC.Height; y++)
-            //{
-            //    for (int x = 0; x < bmpC.Width; x++)
-            //    {
-            //        pBmpA += bytesPerPix;
-            //        pBmpB += bytesPerPix;
-            //        pBmpC += bytesPerPix;
-
-            //        * (byte*)pBmpC = *(byte*)pBmpA + *(byte*)pBmpB; // R
-            //        *(byte*)(pBmpC + 1) = *(byte*)(pBmpA + 1) + *(byte*)(pBmpB + 1); // G
-            //        *(byte*)(pBmpC + 2) = *(byte*)(pBmpA + 2) + *(byte*)(pBmpB + 2); // B
-            //    }
-            //}
-            //bmpA.UnlockBits(bmpDataA);
-            //bmpB.UnlockBits(bmpDataB);
-            //bmpC.UnlockBits(bmpDataC);
-
-            //return new Bitmap();
         }
     }
 }
