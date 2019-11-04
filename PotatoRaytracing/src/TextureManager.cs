@@ -8,6 +8,20 @@ namespace PotatoRaytracing
     {
         private Dictionary<string, Bitmap> textures = new Dictionary<string, Bitmap>();
 
+        public void Clear()
+        {
+            DisposeTextures();
+            textures.Clear();
+        }
+
+        private void DisposeTextures()
+        {
+            foreach (Bitmap img in textures.Values)
+            {
+                img.Dispose();
+            }
+        }
+
         public void AddTextures(string[] texturePaths)
         {
             for(int i = 0; i < texturePaths.Length; i++)
