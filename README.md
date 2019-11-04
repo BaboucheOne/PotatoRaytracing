@@ -8,11 +8,11 @@ A simple ray tracing developed on C# engine.
 - Option file
 
 ##Rendered images
-![](https://github.com/BaboucheOne/PotatoRaytracing/tree/Texture/renderedImages.bmp)
+![](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/27_10_19_image2.bmp)
 
 > Multiple lights rendering.
 
-![](https://github.com/BaboucheOne/PotatoRaytracing/tree/Texture/renderedImages.bmp)
+![](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/04_11_19_image1.bmp)
 
 > Multiple lights & textures rendering.
 
