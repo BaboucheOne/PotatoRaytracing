@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
 
 namespace PotatoRaytracing
@@ -13,6 +14,7 @@ namespace PotatoRaytracing
         private Camera camera = new Camera();
         private List<PotatoObject> potatoObjects = new List<PotatoObject>();
         private List<PotatoPointLight> lights = new List<PotatoPointLight>();
+        private HashSet<string> textures = new HashSet<string>();
 
         public PotatoScene()
         {
@@ -60,6 +62,8 @@ namespace PotatoRaytracing
         public List<PotatoPointLight> GetPointLights() => lights;
         public PotatoPointLight GetPointLight(int index) => lights[index];
 
+        public string[] GetTexturesPath() => textures.ToArray();
+
         private void CreateRandomScene()
         {
             List<Color> colors = new List<Color>()
@@ -82,11 +86,13 @@ namespace PotatoRaytracing
                 Vector3 pos = new Vector3(r.Next(10, 300), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;
                 potatoObjects.Add(new PotatoSphere(pos, rad));
+                textures.Add(potatoObjects[i].GetTexturePath());
             }
             
             lights.Add(new PotatoPointLight(new Vector3(100, 0, 0), 250, 1, Color.Red));
             lights.Add(new PotatoPointLight(new Vector3(100, 100, 0), 250, 1, Color.Green));
             lights.Add(new PotatoPointLight(new Vector3(100, 0, 100), 250, 1, Color.Blue));
+            lights.Add(new PotatoPointLight(new Vector3(100, 0, 100), 250, 1, Color.White));
         }
     }
 }

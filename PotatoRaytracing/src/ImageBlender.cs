@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace PotatoRaytracing
 {
@@ -49,7 +48,7 @@ namespace PotatoRaytracing
             return imagesRendered.Count > minimunImageCountToBlend;
         }
 
-        private unsafe Bitmap BlendImage(Bitmap bmpA, Bitmap bmpB)
+        private Bitmap BlendImage(Bitmap bmpA, Bitmap bmpB)
         {
             Bitmap bmpC = bmpA;
 
@@ -59,7 +58,9 @@ namespace PotatoRaytracing
                 {
                     Color cA = bmpA.GetPixel(x, y);
                     Color cB = bmpB.GetPixel(x, y);
-                    Color cC = Color.FromArgb(cA.A, cA.R + cB.R, cA.G + cB.G, cA.B + cB.B);
+                    Color cC = Color.FromArgb(cA.A, (int)((cA.R + cB.R) * 0.5f),
+                                                    (int)((cA.G + cB.G) * 0.5f),
+                                                    (int)((cA.B + cB.B) * 0.5f));
                     bmpC.SetPixel(x, y, cC);
                 }
             }

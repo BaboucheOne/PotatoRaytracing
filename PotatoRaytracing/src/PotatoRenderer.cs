@@ -8,12 +8,15 @@ namespace PotatoRaytracing
     {
         private PotatoScene scene;
         private PotatoTracer tracer;
+        private TextureManager textureManager;
         private int lightIndex;
 
         public PotatoRenderer(PotatoScene scene, int lightIndex)
         {
             this.scene = scene;
-            tracer = new PotatoTracer(scene);
+            textureManager = new TextureManager();
+            textureManager.AddTextures(scene.GetTexturesPath());
+            tracer = new PotatoTracer(scene, textureManager);
 
             this.lightIndex = lightIndex;
         }
