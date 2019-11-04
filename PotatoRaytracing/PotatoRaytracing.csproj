@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Camera.cs" />
+    <Compile Include="src\Constants.cs" />
     <Compile Include="src\ImageBlender.cs" />
     <Compile Include="src\IntersectResult.cs" />
     <Compile Include="Program.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="src\PotatoTasksSceneRenderer.cs" />
     <Compile Include="src\PotatoTracer.cs" />
     <Compile Include="src\Ray.cs" />
+    <Compile Include="src\TextureManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

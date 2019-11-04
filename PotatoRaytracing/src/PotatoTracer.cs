@@ -9,12 +9,17 @@ namespace PotatoRaytracing
         private Vector3 hitPosition;
         private Vector3 hitNormal;
         private PotatoScene scene;
+        private TextureManager textureManager;
         private PotatoObject objectRender;
         private Color pixelColor = Color.Black;
 
-        public PotatoTracer(PotatoScene scene)
+        private string objectRenderTexturePath = string.Empty;
+        private Bitmap objectRenderTexture = null;
+
+        public PotatoTracer(PotatoScene scene, TextureManager textureManager)
         {
             this.scene = scene;
+            this.textureManager = textureManager;
         }
 
         public Color Trace(Ray renderRay, int lightIndex, int depth)
@@ -24,9 +29,24 @@ namespace PotatoRaytracing
             objectRender = GetIntersectionObject(renderRay, out hitPosition, out hitNormal);
             if (objectRender == null) return pixelColor;
 
+            SetObjectRenderUVProperties();
+            ProcessUVTexture();
+
             pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, objectRender, scene.GetPointLight(lightIndex));
 
             return pixelColor;
+        }
+
+        private void SetObjectRenderUVProperties()
+        {
+            objectRenderTexturePath = objectRender.GetTexturePath();
+            objectRenderTexture = textureManager.GetTexture(objectRenderTexturePath);
+        }
+
+        private void ProcessUVTexture()
+        {
+            Vector2 UV = objectRender.GetUV(hitNormal, objectRenderTexture);
+            pixelColor = textureManager.GetTextureColor((int)UV.X, (int)UV.Y, objectRenderTexturePath);
         }
 
         private Vector3 ReflectRay(Ray renderRay, Vector3 hitNormal)
@@ -45,7 +65,9 @@ namespace PotatoRaytracing
 
                 if (normalAng > 0)
                 {
-                    finalColor = Color.FromArgb((int)Math.Round(light.Color.R * normalAng * light.Intensity), (int)Math.Round(light.Color.G * normalAng * light.Intensity), (int)Math.Round(light.Color.B * normalAng * light.Intensity));
+                    finalColor = Color.FromArgb((int)Math.Round((light.Color.R + finalColor.R) * 0.5f * normalAng * light.Intensity),
+                                (int)Math.Round((light.Color.G + finalColor.G) * 0.5f * normalAng * light.Intensity),
+                                (int)Math.Round((light.Color.B + finalColor.B) * 0.5f * normalAng * light.Intensity));
                 }
                 else
                 {
