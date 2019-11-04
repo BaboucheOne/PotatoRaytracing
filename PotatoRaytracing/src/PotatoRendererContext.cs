@@ -21,7 +21,6 @@ namespace PotatoRaytracing
 
         public PotatoScene GetScene() => scene;
 
-
         public void Start()
         {
             Bitmap[] imgs = tasksSceneRenderer.Run();

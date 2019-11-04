@@ -21,20 +21,35 @@ namespace PotatoRaytracing
 
         public Bitmap[] Run()
         {
+            ProcessRendererTasks();
+
+            return imagesRendered;
+        }
+
+        private void ProcessRendererTasks()
+        {
+            RunRendererTasks();
+
+            Task.WaitAll(tasks);
+
+            TransfertTasksResultToImageRendererd();
+        }
+
+        private void TransfertTasksResultToImageRendererd()
+        {
+            for (int i = 0; i < tasksCountToDo; i++)
+            {
+                imagesRendered[i] = tasks[i].Result;
+            }
+        }
+
+        private void RunRendererTasks()
+        {
             for (int i = 0; i < tasksCountToDo; i++)
             {
                 PotatoRenderer r = new PotatoRenderer(scene, i);
                 tasks[i] = Task.Run(() => r.RenderImage());
             }
-
-            Task.WaitAll(tasks);
-
-            for (int i = 0; i < tasksCountToDo; i++)
-            {
-                imagesRendered[i] = tasks[i].Result;
-            }
-
-            return imagesRendered;
         }
     }
 }
