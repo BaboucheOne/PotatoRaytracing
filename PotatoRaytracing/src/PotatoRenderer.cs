@@ -31,6 +31,8 @@ namespace PotatoRaytracing
 
             CreateRenderedImage(lightIndex, image, ref ray, ref pixelColor);
 
+            textureManager.Clear();
+
             return image;
         }
 

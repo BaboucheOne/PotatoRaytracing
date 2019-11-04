@@ -13,7 +13,17 @@ namespace PotatoRaytracing
 
         public void Clear()
         {
+            DisposeRenderedImages();
+
             imagesRendered.Clear();
+        }
+
+        private void DisposeRenderedImages()
+        {
+            for (int i = 0; i < imagesRendered.Count; i++)
+            {
+                imagesRendered[i].Dispose();
+            }
         }
 
         public void AddImage(Bitmap image)

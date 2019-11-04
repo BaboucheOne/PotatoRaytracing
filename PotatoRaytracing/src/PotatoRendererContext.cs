@@ -28,6 +28,14 @@ namespace PotatoRaytracing
             BlendAllRenderedImageContainInTasksResult(imgs);
 
             SaveAndOpenImage(imageName);
+
+            ClearRenderContext();
+        }
+
+        private void ClearRenderContext()
+        {
+            tasksSceneRenderer.Clear();
+            System.GC.Collect();
         }
 
         private void SaveAndOpenImage(string imageName)

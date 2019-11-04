@@ -19,6 +19,14 @@ namespace PotatoRaytracing
             tasks = new Task<Bitmap>[tasksCountToDo];
         }
 
+        public void Clear()
+        {
+            for(int i = 0; i < imagesRendered.Length; i++)
+            {
+                imagesRendered[i].Dispose();
+            }
+        }
+
         public Bitmap[] Run()
         {
             ProcessRendererTasks();
