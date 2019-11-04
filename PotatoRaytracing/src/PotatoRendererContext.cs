@@ -21,14 +21,19 @@ namespace PotatoRaytracing
 
         public PotatoScene GetScene() => scene;
 
-        public void Start()
+        public void Start(string imageName)
         {
             Bitmap[] imgs = tasksSceneRenderer.Run();
+
             BlendAllRenderedImageContainInTasksResult(imgs);
 
-            SaveResultImage("resultTasks");
+            SaveAndOpenImage(imageName);
+        }
 
-            OpenResultPicture();
+        private void SaveAndOpenImage(string imageName)
+        {
+            SaveImage(imageName);
+            OpenImage(imageName);
         }
 
         private void BlendAllRenderedImageContainInTasksResult(Bitmap[] images)
@@ -39,16 +44,16 @@ namespace PotatoRaytracing
             }
         }
 
-        private void SaveResultImage(string imgName)
+        private void SaveImage(string imgageName)
         {
             Bitmap finalImage = imageBlender.GetFinalImageRender();
-            finalImage.Save(imgName + ".bmp");
+            finalImage.Save(imgageName);
         }
 
-        private static void OpenResultPicture()
+        private static void OpenImage(string imageName)
         {
             Process photoViewer = new Process();
-            photoViewer.StartInfo.FileName = "resultTasks.bmp";
+            photoViewer.StartInfo.FileName = imageName;
             photoViewer.Start();
         }
     }

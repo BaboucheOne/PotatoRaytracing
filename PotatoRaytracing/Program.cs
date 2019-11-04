@@ -24,11 +24,9 @@ namespace PotatoRaytracing
 
             double timeStart = CurrentProcess.UserProcessorTime.TotalMilliseconds;
 
-            RenderContext.Start();
+            RenderContext.Start("potatoImage.bmp");
 
             Console.WriteLine("Render time: {0} s", (CurrentProcess.UserProcessorTime.TotalMilliseconds - timeStart) % 60000 / 1000);
-
-            GC.Collect();
 
             Console.Write("Press to continue any key to exit.");
             Console.ReadLine();
