@@ -24,14 +24,32 @@ namespace PotatoRaytracing
 
         public Color Trace(Ray renderRay, int lightIndex, int depth)
         {
-            pixelColor = Color.Black;
+            depth -= 1;
 
             objectRender = GetIntersectionObject(renderRay, out hitPosition, out hitNormal);
-            if (objectRender == null) return pixelColor;
+            if (objectRender == null)
+            {
+                pixelColor = Color.Black;
+                return pixelColor;
+            }
 
+            //if (depth > 0)
+            //{
+            //    Vector3 reflectDirection = ReflectRay(renderRay.Direction, hitNormal);
+            //    renderRay.Set(hitPosition, reflectDirection);
+            //    Trace(renderRay, lightIndex, depth);
+            //}
+
+            //objectRender = GetIntersectionObject(renderRay, out hitPosition, out hitNormal);
+            //if (objectRender == null)
+            //{
+            //    pixelColor = Color.Black;
+            //    return pixelColor;
+            //}
+
+            pixelColor = objectRender.Color;
             SetObjectRenderUVProperties();
             ProcessUVTexture();
-
             pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, objectRender, scene.GetPointLight(lightIndex));
 
             return pixelColor;
@@ -49,9 +67,9 @@ namespace PotatoRaytracing
             pixelColor = textureManager.GetTextureColor((int)UV.X, (int)UV.Y, objectRenderTexturePath);
         }
 
-        private Vector3 ReflectRay(Ray renderRay, Vector3 hitNormal)
+        private Vector3 ReflectRay(Vector3 originDirection, Vector3 hitNormal)
         {
-            return 2 * hitNormal * Vector3.Dot(hitNormal, renderRay.Direction) - hitNormal;
+            return originDirection - 2 * Vector3.Dot(originDirection, hitNormal) * hitNormal;
         }
 
         private Color ComputeLight(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoObject objectRender, PotatoPointLight light)
@@ -80,7 +98,7 @@ namespace PotatoRaytracing
 
         private float GetIntersectionDiscriminent(PotatoObject objectToRender, Ray ray)
         {
-            return objectToRender.Intersect(ray.Position, ray.Direction).Discriminent;
+            return objectToRender.Intersect(ray.Origin, ray.Direction).Discriminent;
         }
 
         private Vector3 CalculateHitNormal(PotatoObject objectToRender, Vector3 hitPosition)
@@ -90,7 +108,7 @@ namespace PotatoRaytracing
 
         private Vector3 CalculateHitPosition(float discr, Ray ray)
         {
-            return ray.Cast(ray.Position, discr);
+            return ray.Cast(ray.Origin, discr);
         }
 
 
@@ -160,5 +178,8 @@ namespace PotatoRaytracing
             Vector3 dir = Vector3.Normalize(Vector3.Subtract(light.Position, hitPoint));
             return Vector3.Dot(dir, normal);
         }
+
+        public Vector3 GetHitPosition() => hitPosition;
+        public Vector3 GetHitNormal() => hitNormal;
     }
 }

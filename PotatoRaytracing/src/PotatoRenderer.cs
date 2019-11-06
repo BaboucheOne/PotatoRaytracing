@@ -6,19 +6,25 @@ namespace PotatoRaytracing
 {
     public class PotatoRenderer
     {
+        private Option option;
         private PotatoScene scene;
         private PotatoTracer tracer;
         private TextureManager textureManager;
+        private SuperSampling superSampling;
         private int lightIndex;
 
         public PotatoRenderer(PotatoScene scene, int lightIndex)
         {
             this.scene = scene;
+            option = scene.GetOptions();
+
             textureManager = new TextureManager();
             textureManager.AddTextures(scene.GetTexturesPath());
             tracer = new PotatoTracer(scene, textureManager);
 
             this.lightIndex = lightIndex;
+
+            if (option.SuperSampling) superSampling = new SuperSampling(option.Height, option.SuperSamplingDivision, scene, tracer);
         }
 
         public Bitmap RenderImage()
@@ -42,19 +48,27 @@ namespace PotatoRaytracing
             {
                 for (int y = 0; y < image.Height; y++)
                 {
-                    SetRayDirectionByPixelPosition(ref ray, x, y);
-                    pixelColor = tracer.Trace(ray, lightIndex, 1);
+                    if (option.SuperSampling)
+                    {
+                        pixelColor = superSampling.GetSampleColor(ray, lightIndex, x, y);
+                    }
+                    else
+                    {
+                        SetRayDirectionByPixelPosition(ref ray, scene, x, y);
+                        pixelColor = tracer.Trace(ray, lightIndex, 2);
+                    }
+
                     image.SetPixel(x, y, pixelColor);
                 }
             }
         }
 
-        private void SetRayDirectionByPixelPosition(ref Ray ray, int pixelPositionX, int pixelPositionY)
+        public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoScene scene, float pixelPositionX, float pixelPositionY)
         {
-            ray.Set(scene.GetCamera().Position, GetDirectionFromPixel(pixelPositionX, pixelPositionY));
+            ray.Set(scene.GetCamera().Position, GetDirectionFromPixel(scene, pixelPositionX, pixelPositionY));
         }
 
-        private Vector3 GetDirectionFromPixel(int pixelPositionX, int pixelPositionY)
+        public static Vector3 GetDirectionFromPixel(PotatoScene scene, float pixelPositionX, float pixelPositionY)
         {
             Vector3 V1 = Vector3.Multiply(scene.GetCamera().Right(), pixelPositionX);
             Vector3 V2 = Vector3.Multiply(scene.GetCamera().Up(), pixelPositionY);

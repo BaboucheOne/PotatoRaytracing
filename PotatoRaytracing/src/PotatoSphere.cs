@@ -25,7 +25,7 @@ namespace PotatoRaytracing
 
         public override IntersectResult Intersect(Ray ray)
         {
-            return Intersect(ray.Position, ray.Direction);
+            return Intersect(ray.Origin, ray.Direction);
         }
 
         public override IntersectResult Intersect(Vector3 origin, Vector3 direction)
