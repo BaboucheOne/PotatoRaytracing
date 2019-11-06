@@ -6,10 +6,8 @@ A simple ray tracing developed on C# engine.
 - Texture
 - Multi thread renderer
 - Option file
-- Super Sampling
 
 ##Rendered images
-
 ![](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/27_10_19_image3.bmp)
 
 > Multiple lights rendering.
