@@ -6,6 +6,7 @@ A simple ray tracing developed on C# engine.
 - Texture
 - Multi thread renderer
 - Option file
+- Super Sampling
 
 ##Rendered images
 
