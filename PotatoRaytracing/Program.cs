@@ -21,7 +21,7 @@ namespace PotatoRaytracing
 
             Console.Write("Press to continue any key to beggin.");
             Console.ReadLine();
-
+            
             double timeStart = CurrentProcess.UserProcessorTime.TotalMilliseconds;
 
             RenderContext.Start("potatoImage.bmp");

@@ -4,7 +4,7 @@ namespace PotatoRaytracing
 {
     public class Ray
     {
-        public Vector3 Position = new Vector3();
+        public Vector3 Origin = new Vector3();
         public Vector3 Direction = new Vector3();
 
         public Ray()
@@ -14,12 +14,12 @@ namespace PotatoRaytracing
 
         public Ray(Vector3 position)
         {
-            Position = position;
+            Origin = position;
         }
 
         public Ray(Vector3 position, Vector3 direction)
         {
-            Position = position;
+            Origin = position;
             Direction = direction;
         }
         
@@ -30,8 +30,13 @@ namespace PotatoRaytracing
 
         public void Set(Vector3 position, Vector3 direction)
         {
-            Position = position;
+            Origin = position;
             Direction = direction;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", Origin, Direction);
         }
     }
 }

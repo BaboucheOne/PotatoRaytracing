@@ -10,29 +10,33 @@ namespace PotatoRaytracing
         public int HalfWidth;
         public int HalfHeight;
         public double Fov;
+        public bool SuperSampling;
+        public int SuperSamplingDivision;
         public Vector3 ScreenLeft;
         public Vector3 ScreenCenter;
 
         public Camera camera;
 
-        public Option(int width, int heigth, double fov)
+        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision)
         {
-            InitializeParameters(width, heigth, fov, null);
+            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, null);
         }
 
-        public Option(int width, int heigth, double fov, Camera cam)
+        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, Camera cam)
         {
-            InitializeParameters(width, heigth, fov, cam);
+            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, double fov, Camera cam)
+        private void InitializeParameters(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, Camera cam)
         {
             Width = width;
             Height = heigth;
             Fov = fov;
             camera = cam;
+            SuperSampling = superSampling;
+            SuperSamplingDivision = superSamplingDivision;
         }
 
         public void SetCamera(Camera camera)
@@ -76,7 +80,9 @@ namespace PotatoRaytracing
                 "Camera Position: {3} \n" +
                 "Camera Rotation: {4} \n" +
                 "Screen Center {5} \n" +
-                "Screen Left {6}", Width, Height, Fov, camera.Position, camera.Rotation, ScreenCenter, ScreenLeft);
+                "Screen Left {6} \n" +
+                "Super sampling enable {7} \n" +
+                "Super sampling division {8}", Width, Height, Fov, camera.Position, camera.Rotation, ScreenCenter, ScreenLeft, SuperSampling, SuperSamplingDivision);
         }
     }
 }

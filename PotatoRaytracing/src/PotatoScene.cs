@@ -40,7 +40,7 @@ namespace PotatoRaytracing
         {
             if (option == null)
             {
-                option = new Option(256, 256, 60, camera);
+                option = new Option(256, 256, 60, true, 4, camera);
             }
             else
             {
@@ -81,18 +81,24 @@ namespace PotatoRaytracing
                 Color.Orange
             };
             Random r = new Random();
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 25; i++)
             {
-                Vector3 pos = new Vector3(r.Next(10, 300), r.Next(-100, 100), r.Next(-100, 100));
+                Vector3 pos = new Vector3(r.Next(0, 300), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;
-                potatoObjects.Add(new PotatoSphere(pos, rad));
+                potatoObjects.Add(new PotatoSphere(pos, rad, "Textures\\uvTexture.bmp"));
+                potatoObjects[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
                 textures.Add(potatoObjects[i].GetTexturePath());
             }
-            
+
             lights.Add(new PotatoPointLight(new Vector3(100, 0, 0), 250, 1, Color.Red));
             lights.Add(new PotatoPointLight(new Vector3(100, 100, 0), 250, 1, Color.Green));
             lights.Add(new PotatoPointLight(new Vector3(100, 0, 100), 250, 1, Color.Blue));
             lights.Add(new PotatoPointLight(new Vector3(100, 0, 100), 250, 1, Color.White));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("Scene parameters:\nObjects: {0} \nLights: {1} \nTexture loaded: {2}", potatoObjects.Count, lights.Count, textures.Count);
         }
     }
 }

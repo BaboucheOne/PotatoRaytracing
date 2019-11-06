@@ -17,6 +17,8 @@ namespace PotatoRaytracing
             scene = new PotatoScene(option);
             tasksSceneRenderer = new PotatoTasksSceneRenderer(scene);
             imageBlender = new ImageBlender();
+
+            System.Console.WriteLine(scene.ToString());
         }
 
         public PotatoScene GetScene() => scene;
