@@ -6,6 +6,7 @@ namespace PotatoRaytracing
     {
         public Vector3 Position = new Vector3();
         public Quaternion Rotation = new Quaternion();
+        public Vector3 Scale = new Vector3();
 
         public PotatoEntity()
         {
@@ -16,10 +17,14 @@ namespace PotatoRaytracing
             Position = position;
         }
 
-        public PotatoEntity(Vector3 position, Quaternion rotation)
+        public PotatoEntity(Vector3 position, Quaternion rotation) : this(position)
         {
-            Position = position;
             Rotation = rotation;
+        }
+
+        public PotatoEntity(Vector3 position, Quaternion rotation, Vector3 scale) : this(position, rotation)
+        {
+            Scale = scale;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace PotatoRaytracing
             CurrentProcess = Process.GetCurrentProcess();
 
             Option option = OptionFactory.CreateOption();
+            //option.SetCamera(new Camera(new System.Numerics.Vector3(0, 0, 0)));
             RenderContext = new PotatoRenderContext(option);
 
             Console.WriteLine("--- Potato Raytracing ---");

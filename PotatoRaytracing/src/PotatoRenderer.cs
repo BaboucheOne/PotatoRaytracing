@@ -42,11 +42,18 @@ namespace PotatoRaytracing
             return image;
         }
 
+        private double DegreeToRadian(double angle)
+        {
+            return Math.PI * angle / 180.0;
+        }
+
         private void CreateRenderedImage(int lightIndex, Bitmap image, ref Ray ray, ref Color pixelColor)
         {
-            for (int x = 0; x < image.Width; x++)
+            float scale = (float)Math.Tan(DegreeToRadian(option.Fov * 0.5));
+            float imageAspectRatio = option.Width / (float)option.Height;
+            for (int y = 0; y < image.Height; y++)
             {
-                for (int y = 0; y < image.Height; y++)
+                for (int x = 0; x < image.Width; x++)
                 {
                     if (option.SuperSampling)
                     {
@@ -54,8 +61,14 @@ namespace PotatoRaytracing
                     }
                     else
                     {
+                        //float ray_x = (2 * (x + 0.5f) / (float)option.Width - 1) * imageAspectRatio * scale;
+                        //float ray_y = (1 - 2 * (y + 0.5f) / (float)option.Height) * scale;
+
                         SetRayDirectionByPixelPosition(ref ray, scene, x, y);
-                        pixelColor = tracer.Trace(ray, lightIndex, 2);
+                        //pixelColor = tracer.Trace(ray, lightIndex, 2);
+                        //ray.Direction = new Vector3(x, y, -1);
+                        //ray.Direction = Vector3.Normalize(ray.Direction);
+                        pixelColor = tracer.Trace(ray, lightIndex);
                     }
 
                     image.SetPixel(x, y, pixelColor);

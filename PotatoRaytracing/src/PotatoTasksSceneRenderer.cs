@@ -14,7 +14,7 @@ namespace PotatoRaytracing
         {
             this.scene = scene;
 
-            tasksCountToDo = scene.GetLightCount();
+            tasksCountToDo = scene.LightCount;
             imagesRendered = new Bitmap[tasksCountToDo];
             tasks = new Task<Bitmap>[tasksCountToDo];
         }
