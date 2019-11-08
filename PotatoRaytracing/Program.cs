@@ -13,7 +13,6 @@ namespace PotatoRaytracing
             CurrentProcess = Process.GetCurrentProcess();
 
             Option option = OptionFactory.CreateOption();
-            //option.SetCamera(new Camera(new System.Numerics.Vector3(0, 0, 0)));
             RenderContext = new PotatoRenderContext(option);
 
             Console.WriteLine("--- Potato Raytracing ---");
@@ -25,6 +24,8 @@ namespace PotatoRaytracing
             
             double timeStart = CurrentProcess.UserProcessorTime.TotalMilliseconds;
 
+            //RenderContext.GetScene().LoadScene("scene.xml");
+            RenderContext.GetScene().LoadRandomScene();
             RenderContext.Start("potatoImage.bmp");
 
             Console.WriteLine("Render time: {0} s", (CurrentProcess.UserProcessorTime.TotalMilliseconds - timeStart) % 60000 / 1000);

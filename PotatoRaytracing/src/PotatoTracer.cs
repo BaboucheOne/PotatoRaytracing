@@ -99,7 +99,7 @@ namespace PotatoRaytracing
             //    return pixelColor;
             //}
 
-            pixelColor = objectRender.Color;
+            //pixelColor = objectRender.Color;
             SetObjectRenderUVProperties();
             ProcessUVTexture();
             pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, scene.GetPointLight(lightIndex));

@@ -22,28 +22,37 @@ namespace PotatoRaytracing
 
         private void BakeAllMeshes(List<PotatoMesh> meshes)
         {
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < meshes.Count; i++)
             {
                 PotatoMesh mesh = GetMesh(meshes[i].ObjectPath);
                 meshes[i].SetTriangles(mesh.GetTriangles());
+                meshes[i].BakeMesh();
             }
         }
 
         private PotatoMesh GetMesh(string path)
         {
             List<Triangle> triangles = new List<Triangle>();
+            ReadAndLoadObjectFile(path);
+            AttributeTrianglesVertexToMesh(triangles);
 
-            FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
-            loadResult = objLoader.Load(fileStream);
-            fileStream.Close();
+            return new PotatoMesh(triangles.ToArray());
+        }
 
+        private void AttributeTrianglesVertexToMesh(List<Triangle> triangles)
+        {
             for (int i = 0; i < loadResult.Vertices.Count - 3; i += 3)
             {
                 triangles.Add(new Triangle(VertexToVector3(loadResult.Vertices[i]), VertexToVector3(loadResult.Vertices[i + 1]), VertexToVector3(loadResult.Vertices[i + 2]),
                                                         NormalToVector3(loadResult.Normals[i]), NormalToVector3(loadResult.Normals[i + 1]), NormalToVector3(loadResult.Normals[i + 2])));
             }
+        }
 
-            return new PotatoMesh(triangles.ToArray());
+        private void ReadAndLoadObjectFile(string path)
+        {
+            FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
+            loadResult = objLoader.Load(fileStream);
+            fileStream.Close();
         }
 
         private Vector3 VertexToVector3(Vertex vertex)

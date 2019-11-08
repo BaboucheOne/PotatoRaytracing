@@ -11,7 +11,7 @@ namespace PotatoRaytracing
         private Option option;
         private SceneObjectsParser sceneObjectsParser = new SceneObjectsParser();
 
-        private Camera camera = new Camera(new Vector3(0, 0, 0), new Quaternion());
+        private Camera camera = new Camera(new Vector3(), new Quaternion());
 
         private List<PotatoObject> potatoObjects = new List<PotatoObject>();
         private List<PotatoMesh> meshs = new List<PotatoMesh>();
@@ -20,34 +20,32 @@ namespace PotatoRaytracing
 
         public PotatoScene()
         {
-            Init();
         }
 
         public PotatoScene(Option option)
         {
             this.option = option;
-
-            Init();
         }
 
-        private void Init()
+        public void LoadRandomScene()
         {
-            camera.SetPointOfInterest(PotatoCoordinate.VECTOR_FORWARD);
-
-            //SceneLoaderAndSaver.SaveScene("scene.xml", meshs.ToArray(), lights.ToArray());
-
-            //SceneFile sceneFile = SceneLoaderAndSaver.LoadScene("scene.xml");
-            //meshs = sceneFile.Meshes.ToList();
-            //lights = sceneFile.PointLights.ToList();
-            //sceneObjectsParser.Parse(meshs);
-
             InitOption();
             CreateRandomScene();
+        }
 
+        public void LoadScene(string filename)
+        {
+            InitOption();
+
+            SceneFile sceneFile = SceneLoaderAndSaver.LoadScene(filename);
+            lights = sceneFile.PointLights.ToList();
+            sceneObjectsParser.Parse(ref meshs);
         }
 
         private void InitOption()
         {
+            camera.SetPointOfInterest(PotatoCoordinate.VECTOR_FORWARD);
+
             if (option == null)
             {
                 option = new Option(256, 256, 60, true, 4, camera);
@@ -113,17 +111,9 @@ namespace PotatoRaytracing
                 ObjectPath = @"Objects\\teapot.obj"
             };
 
-            PotatoMesh mesh2 = new PotatoMesh
-            {
-                Position = new Vector3(0.5f, 0.25f, -0.25f),
-                ObjectPath = @"Objects\\teapot.obj"
-            };
-
             meshs.Add(mesh);
-            meshs.Add(mesh2);
             sceneObjectsParser.Parse(ref meshs);
             meshs[0].SetPosition();
-            meshs[1].SetPosition();
         }
 
         public override string ToString()
