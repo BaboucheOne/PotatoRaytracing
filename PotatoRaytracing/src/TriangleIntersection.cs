@@ -16,7 +16,6 @@ namespace PotatoRaytracing
             Vector3 vertex2 = inTriangle.GetVertex2();
             Vector3 edge1 = Vector3.Subtract(vertex1, vertex0);
             Vector3 edge2 = Vector3.Subtract(vertex2, vertex0);
-            outNormal = Vector3.Normalize(Vector3.Cross(edge1, edge2));
             Vector3 h = Vector3.Cross(rayVector, edge2);
             Vector3 s = new Vector3();
             Vector3 q = new Vector3();
@@ -45,9 +44,11 @@ namespace PotatoRaytracing
             }
             // On calcule t pour savoir ou le point d'intersection se situe sur la ligne.
             double t = f * Vector3.Dot(edge2, q);
-            if (t > Constants.EPSILON) // // Intersection avec le rayon
+            if (t > Constants.EPSILON) // Intersection avec le rayon
             {
                 distance = (float)t;
+
+                outNormal = inTriangle.GetNormal();
                 outIntersectionPoint = Vector3.Add(rayOrigin, Vector3.Multiply(rayVector, (float)t));
                 return true;
             }

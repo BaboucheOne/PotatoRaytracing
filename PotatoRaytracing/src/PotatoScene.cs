@@ -1,4 +1,5 @@
 ﻿using PotatoRaytracing.WorldCoordinate;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -18,28 +19,31 @@ namespace PotatoRaytracing
         private List<PotatoPointLight> lights = new List<PotatoPointLight>();
         private HashSet<string> textures = new HashSet<string>();
 
+        public string SceneName { get; private set; } = "Untiled.xml";
+
         public PotatoScene()
         {
+            InitOption();
         }
 
         public PotatoScene(Option option)
         {
             this.option = option;
+            InitOption();
         }
 
         public void LoadRandomScene()
         {
-            InitOption();
             CreateRandomScene();
         }
 
         public void LoadScene(string filename)
         {
-            InitOption();
-
             SceneFile sceneFile = SceneLoaderAndSaver.LoadScene(filename);
             lights = sceneFile.PointLights.ToList();
             sceneObjectsParser.Parse(ref meshs);
+
+            SceneName = filename;
         }
 
         private void InitOption()
@@ -48,7 +52,7 @@ namespace PotatoRaytracing
 
             if (option == null)
             {
-                option = new Option(256, 256, 60, true, 4, camera);
+                option = new Option(256, 256, 60, false, 4, camera);
             }
             else
             {
@@ -93,7 +97,7 @@ namespace PotatoRaytracing
                 Color.Orange
             };
 
-            //Random r = new Random();
+            Random r = new Random();
             //for (int i = 0; i < 25; i++)
             //{
             //    Vector3 pos = new Vector3(r.Next(0, 300), r.Next(-100, 100), r.Next(-100, 100));
@@ -103,22 +107,33 @@ namespace PotatoRaytracing
             //    textures.Add(potatoObjects[i].GetTexturePath());
             //}
 
-            lights.Add(new PotatoPointLight(new Vector3(100, 0, 0), 250, 1, Color.White));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
+            //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 250, 1, Color.Blue));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 250, 1, Color.White));
+            const int randomMeshCount = 20;
 
-            PotatoMesh mesh = new PotatoMesh
+            for (int i = 0; i < randomMeshCount; i++)
             {
-                Position = new Vector3(0.5f, 0, -0.25f),
-                ObjectPath = @"Objects\\teapot.obj"
+                PotatoMesh mesh = new PotatoMesh
+                {
+                    Position = new Vector3(r.Next(1, 3), r.Next(-3, 3), r.Next(-3, 3)),
+                    ObjectPath = @"Objects\\tetrahedron.obj",
+                    Color = colors[(int)(r.NextDouble() * colors.Count)]
             };
 
-            meshs.Add(mesh);
+                meshs.Add(mesh);
+            }
             sceneObjectsParser.Parse(ref meshs);
-            meshs[0].SetPosition();
+            for (int i = 0; i < randomMeshCount; i++)
+            {
+                meshs[i].SetPosition();
+            }
         }
 
         public override string ToString()
         {
-            return string.Format("Scene parameters:\nObjects: {0} \nLights: {1} \nTexture loaded: {2} \nmeshes count: {3}", potatoObjects.Count, lights.Count, textures.Count, meshs.Count);
+            return string.Format("Objects: {0} \nLights: {1} \nTexture loaded: {2} \nmeshes count: {3}", potatoObjects.Count, lights.Count, textures.Count, meshs.Count);
         }
     }
 }

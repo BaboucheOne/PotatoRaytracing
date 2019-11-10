@@ -10,6 +10,7 @@ namespace PotatoRaytracing
         private Vector3 hitNormal;
         private bool isIntersect;
         private Triangle triangleIntersect;
+        private PotatoMesh meshIntersect;
 
         private PotatoScene scene;
         private TextureManager textureManager;
@@ -31,12 +32,15 @@ namespace PotatoRaytracing
             isIntersect = false;
             triangleIntersect = null;
 
-            triangleIntersect = GetClosestTriangleIntersection(ref renderRay, ref isIntersect, ref hitPosition, ref hitNormal);
+            ClosestIntersectionResult result = GetClosestTriangleIntersection(ref renderRay, ref isIntersect, ref hitPosition, ref hitNormal);
 
-            if(isIntersect)
+            if (isIntersect)
             {
-                pixelColor = Color.White;
-                pixelColor = ComputeLight(pixelColor, hitNormal, hitPosition, scene.GetPointLight(lightIndex));
+                triangleIntersect = result.Triangle;
+                meshIntersect = result.Mesh;
+
+                pixelColor = meshIntersect.Color;
+                pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, scene.GetPointLight(lightIndex));
             } else
             {
                 pixelColor = Color.Black;
@@ -45,17 +49,17 @@ namespace PotatoRaytracing
             return pixelColor;
         }
 
-        private Triangle GetClosestTriangleIntersection(ref Ray ray, ref bool intersect, ref Vector3 outHitPosition, ref Vector3 outHitNormal)
+        private ClosestIntersectionResult GetClosestTriangleIntersection(ref Ray ray, ref bool intersect, ref Vector3 outHitPosition, ref Vector3 outHitNormal)
         {
-            Triangle triangle = null;
-            PotatoMesh mesh = null;
+            Triangle triangleInt = null;
+            PotatoMesh meshInt = null;
             float distance = float.PositiveInfinity;
             intersect = false;
             float t = 0;
 
             for (int i = 0; i < scene.MeshCout; i++)
             {
-                mesh = scene.GetPotatoMesh(i);
+                PotatoMesh mesh = scene.GetPotatoMesh(i);
 
                 for (int j = 0; j < mesh.GetTrianglesCount; j++)
                 {
@@ -64,7 +68,8 @@ namespace PotatoRaytracing
                         if (t < distance)
                         {
                             distance = t;
-                            triangle = mesh.GetTriangle(j);
+                            triangleInt = mesh.GetTriangle(j);
+                            meshInt = mesh;
                         }
 
                         intersect = true;
@@ -72,7 +77,7 @@ namespace PotatoRaytracing
                 }
             }
 
-            return triangle;
+            return new ClosestIntersectionResult(triangleInt, meshInt);
         }
 
         public Color Trace(Ray renderRay, int lightIndex, int depth)
@@ -127,7 +132,7 @@ namespace PotatoRaytracing
         private Color ComputeLight(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoPointLight light)
         {
             Vector3 directionToLight = light.GetDirection(hitPosition);
-            Ray shadowRay = new Ray(hitPosition, directionToLight);
+            //Ray shadowRay = new Ray(hitPosition, directionToLight);
 
             if (light.InRange(hitPosition))
             {
@@ -169,11 +174,23 @@ namespace PotatoRaytracing
 
         public static float DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoPointLight light)
         {
-            Vector3 dir = Vector3.Normalize(Vector3.Subtract(light.Position, hitPoint));
+            Vector3 dir = Vector3.Normalize(light.Position - hitPoint);
             return Vector3.Dot(dir, normal);
         }
 
         public Vector3 GetHitPosition() => hitPosition;
         public Vector3 GetHitNormal() => hitNormal;
+    }
+
+    internal struct ClosestIntersectionResult
+    {
+        public readonly Triangle Triangle;
+        public readonly PotatoMesh Mesh;
+
+        public ClosestIntersectionResult(Triangle triangle, PotatoMesh mesh)
+        {
+            Triangle = triangle;
+            Mesh = mesh;
+        }
     }
 }

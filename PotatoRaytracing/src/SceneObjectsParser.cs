@@ -1,4 +1,5 @@
-﻿using ObjLoader.Loader.Data.VertexData;
+﻿using ObjLoader.Loader.Data.Elements;
+using ObjLoader.Loader.Data.VertexData;
 using ObjLoader.Loader.Loaders;
 using System.Collections.Generic;
 using System.IO;
@@ -8,8 +9,9 @@ namespace PotatoRaytracing
 {
     public class SceneObjectsParser
     {
-        private IObjLoader objLoader = new ObjLoaderFactory().Create();
         private LoadResult loadResult = null;
+        private const int verticesCount = 3;
+        private const int verticesGap = 1;
 
         public SceneObjectsParser()
         {
@@ -41,17 +43,32 @@ namespace PotatoRaytracing
 
         private void AttributeTrianglesVertexToMesh(List<Triangle> triangles)
         {
-            for (int i = 0; i < loadResult.Vertices.Count - 3; i += 3)
+            for (int i = 0; i < loadResult.Groups.Count; i++)
             {
-                triangles.Add(new Triangle(VertexToVector3(loadResult.Vertices[i]), VertexToVector3(loadResult.Vertices[i + 1]), VertexToVector3(loadResult.Vertices[i + 2]),
-                                                        NormalToVector3(loadResult.Normals[i]), NormalToVector3(loadResult.Normals[i + 1]), NormalToVector3(loadResult.Normals[i + 2])));
+                Group group = loadResult.Groups[i];
+                int faces = group.Faces.Count;
+                for (int j = 0; j < faces; j++)
+                {
+                    Vector3[] triangleVertices = new Vector3[3];
+                    Vector3[] triangleNormals = new Vector3[3];
+                    for (int k = 0; k < verticesCount; k++)
+                    {
+                        int vertexIndex = group.Faces[j][k].VertexIndex - verticesGap;
+                        int normalIndex = group.Faces[j][k].NormalIndex - verticesGap;
+
+                        triangleVertices[k] = VertexToVector3(loadResult.Vertices[vertexIndex]);
+                        //triangleNormals[k] = VertexToVector3(loadResult.Vertices[normalIndex]);
+                    }
+
+                    triangles.Add(new Triangle(triangleVertices, triangleNormals));
+                }
             }
         }
 
         private void ReadAndLoadObjectFile(string path)
         {
             FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
-            loadResult = objLoader.Load(fileStream);
+            loadResult = new ObjLoaderFactory().Create().Load(fileStream);
             fileStream.Close();
         }
 

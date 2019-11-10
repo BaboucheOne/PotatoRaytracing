@@ -8,15 +8,20 @@ namespace PotatoRaytracing
         private PotatoScene scene;
         private Task<Bitmap>[] tasks;
         private Bitmap[] imagesRendered;
-        private int tasksCountToDo;
+        private int tasksToDo;
 
         public PotatoTasksSceneRenderer(PotatoScene scene)
         {
             this.scene = scene;
 
-            tasksCountToDo = scene.LightCount;
-            imagesRendered = new Bitmap[tasksCountToDo];
-            tasks = new Task<Bitmap>[tasksCountToDo];
+            InitTasks();
+        }
+
+        private void InitTasks()
+        {
+            tasksToDo = scene.LightCount;
+            imagesRendered = new Bitmap[tasksToDo];
+            tasks = new Task<Bitmap>[tasksToDo];
         }
 
         public void Clear()
@@ -29,6 +34,7 @@ namespace PotatoRaytracing
 
         public Bitmap[] Run()
         {
+            InitTasks();
             ProcessRendererTasks();
 
             return imagesRendered;
@@ -45,7 +51,7 @@ namespace PotatoRaytracing
 
         private void TransfertTasksResultToImageRendererd()
         {
-            for (int i = 0; i < tasksCountToDo; i++)
+            for (int i = 0; i < tasksToDo; i++)
             {
                 imagesRendered[i] = tasks[i].Result;
             }
@@ -53,7 +59,7 @@ namespace PotatoRaytracing
 
         private void RunRendererTasks()
         {
-            for (int i = 0; i < tasksCountToDo; i++)
+            for (int i = 0; i < tasksToDo; i++)
             {
                 PotatoRenderer r = new PotatoRenderer(scene, i);
                 tasks[i] = Task.Run(() => r.RenderImage());

@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Drawing;
+using System.Numerics;
 
 namespace PotatoRaytracing
 {
@@ -7,6 +8,7 @@ namespace PotatoRaytracing
         private Triangle[] triangles;
         public string TexturePath;
         public string ObjectPath;
+        public Color Color = Color.White;
 
         public PotatoMesh() { }
 

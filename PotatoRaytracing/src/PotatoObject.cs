@@ -6,7 +6,7 @@ namespace PotatoRaytracing
 {
     public abstract class PotatoObject : PotatoEntity
     {
-        private Color Color = new Color();
+        public Color Color = new Color();
         protected Bitmap texture;
         protected string texturePath;
 

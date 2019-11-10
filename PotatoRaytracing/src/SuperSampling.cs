@@ -56,7 +56,7 @@ namespace PotatoRaytracing
         private void TraceSubPixel(Ray ray, int lightIndex, int pixelPositionX, int pixelPositionY, float divisionPixelX, float divisionPixelY)
         {
             PotatoRenderer.SetRayDirectionByPixelPosition(ref ray, scene, pixelPositionX + (divisionPixelX - halfResolution) / halfResolution, pixelPositionY + (divisionPixelY - halfResolution) / halfResolution);
-            samplingColor = tracer.Trace(ray, lightIndex, 2);
+            samplingColor = tracer.Trace(ray, lightIndex);
             AddSamplingColorToColorChannels();
         }
 
