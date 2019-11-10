@@ -5,9 +5,9 @@ namespace PotatoRaytracing
 {
     public class PotatoPointLight : PotatoEntity
     {
-        public readonly Color Color;
-        public readonly float Radius;
-        public readonly float Intensity;
+        public Color Color;
+        public float Radius;
+        public float Intensity;
 
         public PotatoPointLight() : base(Vector3.Zero)
         {

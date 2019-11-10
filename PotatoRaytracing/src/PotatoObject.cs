@@ -21,9 +21,6 @@ namespace PotatoRaytracing
 
         public abstract Vector2 GetUV(float x, float y, float z, Bitmap texture);
         public abstract Vector2 GetUV(Vector3 position, Bitmap texture);
-        public abstract IntersectResult Intersect(Vector3 origin, Vector3 direction);
-        public abstract IntersectResult Intersect(Ray ray);
-        public abstract Vector3 GetNormal(params object[] arguments);
 
         private void LoadTexture(string texturePath)
         {

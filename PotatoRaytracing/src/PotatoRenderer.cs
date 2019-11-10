@@ -42,6 +42,11 @@ namespace PotatoRaytracing
             return image;
         }
 
+        private double DegreeToRadian(double angle)
+        {
+            return Math.PI * angle / 180.0;
+        }
+
         private void CreateRenderedImage(int lightIndex, Bitmap image, ref Ray ray, ref Color pixelColor)
         {
             for (int x = 0; x < image.Width; x++)
@@ -55,7 +60,7 @@ namespace PotatoRaytracing
                     else
                     {
                         SetRayDirectionByPixelPosition(ref ray, scene, x, y);
-                        pixelColor = tracer.Trace(ray, lightIndex, 2);
+                        pixelColor = tracer.Trace(ray, lightIndex);
                     }
 
                     image.SetPixel(x, y, pixelColor);
