@@ -116,6 +116,7 @@
     <Compile Include="src\IntersectResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\MeshsBuilder.cs" />
     <Compile Include="src\Option.cs" />
     <Compile Include="src\OptionFactory.cs" />
     <Compile Include="src\PotatoCoordinate.cs" />
@@ -131,7 +132,6 @@
     <Compile Include="src\PotatoTracer.cs" />
     <Compile Include="src\SceneFile.cs" />
     <Compile Include="src\SceneLoaderAndSaver.cs" />
-    <Compile Include="src\SceneObjectsParser.cs" />
     <Compile Include="src\SphereIntersection.cs" />
     <Compile Include="src\Triangle.cs" />
     <Compile Include="src\Ray.cs" />

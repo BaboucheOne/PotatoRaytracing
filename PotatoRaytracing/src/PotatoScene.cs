@@ -10,7 +10,7 @@ namespace PotatoRaytracing
     public class PotatoScene
     {
         private Option option;
-        private SceneObjectsParser sceneObjectsParser = new SceneObjectsParser();
+        private MeshsBuilder meshsBuilder = new MeshsBuilder();
 
         private Camera camera = new Camera(new Vector3(), new Quaternion());
 
@@ -41,7 +41,7 @@ namespace PotatoRaytracing
         {
             SceneFile sceneFile = SceneLoaderAndSaver.LoadScene(filename);
             lights = sceneFile.PointLights.ToList();
-            sceneObjectsParser.Parse(ref meshs);
+            meshsBuilder.Build(ref meshs);
 
             SceneName = filename;
         }
@@ -109,7 +109,7 @@ namespace PotatoRaytracing
 
             //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
             //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 250, 1, Color.Blue));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 250, 1, Color.Blue));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 250, 1, Color.White));
             const int randomMeshCount = 20;
 
@@ -124,7 +124,7 @@ namespace PotatoRaytracing
 
                 meshs.Add(mesh);
             }
-            sceneObjectsParser.Parse(ref meshs);
+            meshsBuilder.Build(ref meshs);
             for (int i = 0; i < randomMeshCount; i++)
             {
                 meshs[i].SetPosition();
