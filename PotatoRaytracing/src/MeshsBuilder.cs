@@ -7,46 +7,47 @@ using System.Numerics;
 
 namespace PotatoRaytracing
 {
-    public class SceneObjectsParser
+    public class MeshsBuilder
     {
+        private IObjLoader loadFactory = null;
         private LoadResult loadResult = null;
         private const int verticesCount = 3;
         private const int verticesGap = 1;
 
-        public SceneObjectsParser()
+        public MeshsBuilder()
         {
         }
 
-        public void Parse(ref List<PotatoMesh> meshes)
+        public void Build(ref List<PotatoMesh> meshes)
         {
+            loadFactory = new ObjLoaderFactory().Create();
             BakeAllMeshes(meshes);
         }
 
-        private void BakeAllMeshes(List<PotatoMesh> meshes)
+        private void BakeAllMeshes(List<PotatoMesh> meshs)
         {
-            for (int i = 0; i < meshes.Count; i++)
+            ReadAllObjFiles(meshs);
+            BuildMeshs(meshs);
+        }
+
+        private void ReadAllObjFiles(List<PotatoMesh> meshs)
+        {
+            for (int i = 0; i < meshs.Count; i++)
             {
-                PotatoMesh mesh = GetMesh(meshes[i].ObjectPath);
-                meshes[i].SetTriangles(mesh.GetTriangles());
-                meshes[i].BakeMesh();
+                ReadAndLoadObjFileInLoadFactory(meshs[i].ObjectPath);
             }
         }
 
-        private PotatoMesh GetMesh(string path)
+        private void BuildMeshs(List<PotatoMesh> meshs)
         {
             List<Triangle> triangles = new List<Triangle>();
-            ReadAndLoadObjectFile(path);
-            AttributeTrianglesVertexToMesh(triangles);
 
-            return new PotatoMesh(triangles.ToArray());
-        }
-
-        private void AttributeTrianglesVertexToMesh(List<Triangle> triangles)
-        {
             for (int i = 0; i < loadResult.Groups.Count; i++)
             {
                 Group group = loadResult.Groups[i];
                 int faces = group.Faces.Count;
+
+                triangles.Clear();
                 for (int j = 0; j < faces; j++)
                 {
                     Vector3[] triangleVertices = new Vector3[3];
@@ -62,13 +63,16 @@ namespace PotatoRaytracing
 
                     triangles.Add(new Triangle(triangleVertices, triangleNormals));
                 }
+
+                meshs[i].SetTriangles(triangles.ToArray());
+                meshs[i].BakeMesh();
             }
         }
 
-        private void ReadAndLoadObjectFile(string path)
+        private void ReadAndLoadObjFileInLoadFactory(string path)
         {
             FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
-            loadResult = new ObjLoaderFactory().Create().Load(fileStream);
+            loadResult = loadFactory.Load(fileStream);
             fileStream.Close();
         }
 
