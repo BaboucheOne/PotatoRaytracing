@@ -2,10 +2,13 @@
 A simple ray tracing developed on C# engine.
 ## Features
 - Sphere detection
+- Mesh rendering
 - Multiple lights
-- Texture
+- Sphere Texture
 - Multi thread renderer
 - Option file
+- Scene file reader
+- Double precision
 
 ##Rendered images
 ![](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/27_10_19_image3.bmp)

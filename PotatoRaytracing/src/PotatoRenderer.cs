@@ -42,11 +42,6 @@ namespace PotatoRaytracing
             return image;
         }
 
-        private double DegreeToRadian(double angle)
-        {
-            return Math.PI * angle / 180.0;
-        }
-
         private void CreateRenderedImage(int lightIndex, Bitmap image, ref Ray ray, ref Color pixelColor)
         {
             for (int x = 0; x < image.Width; x++)
