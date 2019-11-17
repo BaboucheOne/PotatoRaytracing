@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
@@ -23,7 +23,7 @@ namespace PotatoRaytracing
             Direction = direction;
         }
         
-        public Vector3 Cast(Vector3 pos, float time)
+        public Vector3 Cast(Vector3 pos, double time)
         {
             return Vector3.Add(pos, Vector3.Multiply(Direction, time));
         }

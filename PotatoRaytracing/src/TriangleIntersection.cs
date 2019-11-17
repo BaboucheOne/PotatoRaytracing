@@ -1,15 +1,15 @@
-﻿using System.Numerics;
+﻿using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
     public class TriangleIntersection
     {
-        public static bool rayIntersectsTriangle(Vector3 rayOrigin,
+        public static bool RayIntersectsTriangle(Vector3 rayOrigin,
                                                  Vector3 rayVector,
                                                  Triangle inTriangle,
                                                  ref Vector3 outIntersectionPoint,
                                                  ref Vector3 outNormal,
-                                                 ref float distance)
+                                                 ref double distance)
         {
             Vector3 vertex0 = inTriangle.GetVertex0();
             Vector3 vertex1 = inTriangle.GetVertex1();
@@ -46,10 +46,10 @@ namespace PotatoRaytracing
             double t = f * Vector3.Dot(edge2, q);
             if (t > Constants.EPSILON) // Intersection avec le rayon
             {
-                distance = (float)t;
+                distance = t;
 
                 outNormal = inTriangle.GetNormal();
-                outIntersectionPoint = Vector3.Add(rayOrigin, Vector3.Multiply(rayVector, (float)t));
+                outIntersectionPoint = Vector3.Add(rayOrigin, Vector3.Multiply(rayVector, t));
                 return true;
             }
 
