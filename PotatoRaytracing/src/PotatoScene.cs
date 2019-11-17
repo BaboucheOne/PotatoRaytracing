@@ -1,9 +1,9 @@
-﻿using PotatoRaytracing.WorldCoordinate;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System;
 using System.Linq;
-using System.Numerics;
+using System.Drawing;
+using System.DoubleNumerics;
+using System.Collections.Generic;
+using PotatoRaytracing.WorldCoordinate;
 
 namespace PotatoRaytracing
 {
@@ -111,7 +111,7 @@ namespace PotatoRaytracing
             //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 250, 1, Color.Blue));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 250, 1, Color.White));
-            const int randomMeshCount = 20;
+            const int randomMeshCount = 100;
 
             for (int i = 0; i < randomMeshCount; i++)
             {

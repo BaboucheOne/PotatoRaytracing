@@ -1,4 +1,4 @@
-﻿using System.Numerics;
+﻿using System.DoubleNumerics;
 using PotatoRaytracing.WorldCoordinate;
 
 namespace PotatoRaytracing

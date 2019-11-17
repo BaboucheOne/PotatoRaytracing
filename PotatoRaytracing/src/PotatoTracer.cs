@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using System.Numerics;
+using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
@@ -53,9 +53,9 @@ namespace PotatoRaytracing
         {
             Triangle triangleInt = null;
             PotatoMesh meshInt = null;
-            float distance = float.PositiveInfinity;
+            double distance = float.PositiveInfinity;
             intersect = false;
-            float t = 0;
+            double t = 0;
 
             for (int i = 0; i < scene.MeshCout; i++)
             {
@@ -63,7 +63,7 @@ namespace PotatoRaytracing
 
                 for (int j = 0; j < mesh.GetTrianglesCount; j++)
                 {
-                    if (TriangleIntersection.rayIntersectsTriangle(ray.Origin, ray.Direction, mesh.GetTriangle(j), ref outHitPosition, ref outHitNormal, ref t))
+                    if (TriangleIntersection.RayIntersectsTriangle(ray.Origin, ray.Direction, mesh.GetTriangle(j), ref outHitPosition, ref outHitNormal, ref t))
                     {
                         if (t < distance)
                         {
@@ -136,7 +136,7 @@ namespace PotatoRaytracing
 
             if (light.InRange(hitPosition))
             {
-                float normalAng = DiffuseAngle(hitPosition, hitNormal, light);
+                double normalAng = DiffuseAngle(hitPosition, hitNormal, light);
 
                 if (normalAng > 0)
                 {
@@ -172,7 +172,7 @@ namespace PotatoRaytracing
         //    return obj;
         //}
 
-        public static float DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoPointLight light)
+        public static double DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoPointLight light)
         {
             Vector3 dir = Vector3.Normalize(light.Position - hitPoint);
             return Vector3.Dot(dir, normal);

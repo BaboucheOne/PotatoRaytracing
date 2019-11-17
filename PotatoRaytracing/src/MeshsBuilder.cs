@@ -3,7 +3,7 @@ using ObjLoader.Loader.Data.VertexData;
 using ObjLoader.Loader.Loaders;
 using System.Collections.Generic;
 using System.IO;
-using System.Numerics;
+using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
