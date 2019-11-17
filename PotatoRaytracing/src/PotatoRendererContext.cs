@@ -5,26 +5,28 @@ namespace PotatoRaytracing
 {
     public class PotatoRenderContext
     {
-        private Option option;
-        private PotatoScene scene;
+        public Option Option { get; private set; }
+        public PotatoScene Scene { get; private set; }
         private ImageBlender imageBlender;
         private PotatoTasksSceneRenderer tasksSceneRenderer;
 
+        private Stopwatch watch = new Stopwatch();
+
+        public long GetRenderTime => watch.ElapsedMilliseconds;
+
         public PotatoRenderContext(Option option)
         {
-            this.option = option;
+            Option = option;
 
-            scene = new PotatoScene(option);
-            tasksSceneRenderer = new PotatoTasksSceneRenderer(scene);
+            Scene = new PotatoScene(option);
+            tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene);
             imageBlender = new ImageBlender();
-
-            System.Console.WriteLine(scene.ToString());
         }
-
-        public PotatoScene GetScene() => scene;
 
         public void Start(string imageName)
         {
+            watch.Start();
+
             Bitmap[] imgs = tasksSceneRenderer.Run();
 
             BlendAllRenderedImageContainInTasksResult(imgs);
@@ -32,6 +34,8 @@ namespace PotatoRaytracing
             SaveAndOpenImage(imageName);
 
             ClearRenderContext();
+
+            watch.Stop();
         }
 
         private void ClearRenderContext()

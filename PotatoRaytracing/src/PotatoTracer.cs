@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using System.Numerics;
+using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
@@ -8,6 +8,10 @@ namespace PotatoRaytracing
     {
         private Vector3 hitPosition;
         private Vector3 hitNormal;
+        private bool isIntersect;
+        private Triangle triangleIntersect;
+        private PotatoMesh meshIntersect;
+
         private PotatoScene scene;
         private TextureManager textureManager;
         private PotatoObject objectRender;
@@ -22,11 +26,64 @@ namespace PotatoRaytracing
             this.textureManager = textureManager;
         }
 
+        public Color Trace(Ray renderRay, int lightIndex)
+        {
+            pixelColor = Color.Black;
+            isIntersect = false;
+            triangleIntersect = null;
+
+            ClosestIntersectionResult result = GetClosestTriangleIntersection(ref renderRay, ref isIntersect, ref hitPosition, ref hitNormal);
+
+            if (isIntersect)
+            {
+                triangleIntersect = result.Triangle;
+                meshIntersect = result.Mesh;
+
+                pixelColor = meshIntersect.Color;
+                pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, scene.GetPointLight(lightIndex));
+            } else
+            {
+                pixelColor = Color.Black;
+            }
+
+            return pixelColor;
+        }
+
+        private ClosestIntersectionResult GetClosestTriangleIntersection(ref Ray ray, ref bool intersect, ref Vector3 outHitPosition, ref Vector3 outHitNormal)
+        {
+            Triangle triangleInt = null;
+            PotatoMesh meshInt = null;
+            double distance = float.PositiveInfinity;
+            intersect = false;
+            double t = 0;
+
+            for (int i = 0; i < scene.MeshCout; i++)
+            {
+                PotatoMesh mesh = scene.GetPotatoMesh(i);
+
+                for (int j = 0; j < mesh.GetTrianglesCount; j++)
+                {
+                    if (TriangleIntersection.RayIntersectsTriangle(ray.Origin, ray.Direction, mesh.GetTriangle(j), ref outHitPosition, ref outHitNormal, ref t))
+                    {
+                        if (t < distance)
+                        {
+                            distance = t;
+                            triangleInt = mesh.GetTriangle(j);
+                            meshInt = mesh;
+                        }
+
+                        intersect = true;
+                    }
+                }
+            }
+
+            return new ClosestIntersectionResult(triangleInt, meshInt);
+        }
+
         public Color Trace(Ray renderRay, int lightIndex, int depth)
         {
             depth -= 1;
-
-            objectRender = GetIntersectionObject(renderRay, out hitPosition, out hitNormal);
+            //TODO: Rework sphere tracer.
             if (objectRender == null)
             {
                 pixelColor = Color.Black;
@@ -47,10 +104,10 @@ namespace PotatoRaytracing
             //    return pixelColor;
             //}
 
-            pixelColor = objectRender.Color;
+            //pixelColor = objectRender.Color;
             SetObjectRenderUVProperties();
             ProcessUVTexture();
-            pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, objectRender, scene.GetPointLight(lightIndex));
+            pixelColor = ComputeLight(pixelColor, hitPosition, hitNormal, scene.GetPointLight(lightIndex));
 
             return pixelColor;
         }
@@ -72,14 +129,14 @@ namespace PotatoRaytracing
             return originDirection - 2 * Vector3.Dot(originDirection, hitNormal) * hitNormal;
         }
 
-        private Color ComputeLight(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoObject objectRender, PotatoPointLight light)
+        private Color ComputeLight(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoPointLight light)
         {
             Vector3 directionToLight = light.GetDirection(hitPosition);
-            Ray shadowRay = new Ray(hitPosition, directionToLight);
+            //Ray shadowRay = new Ray(hitPosition, directionToLight);
 
             if (light.InRange(hitPosition))
             {
-                float normalAng = DiffuseAngle(hitPosition, hitNormal, light);
+                double normalAng = DiffuseAngle(hitPosition, hitNormal, light);
 
                 if (normalAng > 0)
                 {
@@ -96,90 +153,44 @@ namespace PotatoRaytracing
             return finalColor;
         }
 
-        private float GetIntersectionDiscriminent(PotatoObject objectToRender, Ray ray)
+        //private PotatoObject GetClosestIntersectObject(Ray ray)
+        //{
+        //    IntersectResult intersectResult = new IntersectResult();
+        //    PotatoObject obj = null;
+        //    float minD = float.PositiveInfinity;
+
+        //    for (int i = 0; i < scene.PotatoObjectsCount; i++)
+        //    {
+        //        intersectResult = scene.GetPotatoObject(i).Intersect(ray);
+        //        if (intersectResult.Intersect && intersectResult.Discriminent < minD)
+        //        {
+        //            minD = intersectResult.Discriminent;
+        //            obj = scene.GetPotatoObject(i);
+        //        }
+        //    }
+
+        //    return obj;
+        //}
+
+        public static double DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoPointLight light)
         {
-            return objectToRender.Intersect(ray.Origin, ray.Direction).Discriminent;
-        }
-
-        private Vector3 CalculateHitNormal(PotatoObject objectToRender, Vector3 hitPosition)
-        {
-            return objectToRender.GetNormal(hitPosition);
-        }
-
-        private Vector3 CalculateHitPosition(float discr, Ray ray)
-        {
-            return ray.Cast(ray.Origin, discr);
-        }
-
-
-        private PotatoObject GetClosestIntersectObject(Ray ray)
-        {
-            IntersectResult intersectResult = new IntersectResult();
-            PotatoObject obj = null;
-            float minD = float.PositiveInfinity;
-
-            for (int i = 0; i < scene.GetPotatoObjectsCount(); i++)
-            {
-                intersectResult = scene.GetPotatoObject(i).Intersect(ray);
-                if (intersectResult.Intersect && intersectResult.Discriminent < minD)
-                {
-                    minD = intersectResult.Discriminent;
-                    obj = scene.GetPotatoObject(i);
-                }
-            }
-
-            return obj;
-        }
-
-        public bool IsIntersect(PotatoObject obj, Ray ray)
-        {
-            return obj.Intersect(ray).Intersect;
-        }
-
-        private PotatoObject GetIntersectionObject(Ray ray, out Vector3 hitPosition, out Vector3 hitNormal)
-        {
-            hitPosition = new Vector3();
-            hitNormal = new Vector3();
-
-            PotatoObject obj = GetClosestIntersectObject(ray);
-            if (obj == null) return obj;
-
-            CalcultateHitPositionHitNormal(ray, out hitPosition, out hitNormal, obj);
-            return obj;
-        }
-
-        private void CalcultateHitPositionHitNormal(Ray ray, out Vector3 hitPosition, out Vector3 hitNornal, PotatoObject obj)
-        {
-            float discr = GetIntersectionDiscriminent(obj, ray);
-            hitPosition = CalculateHitPosition(discr, ray);
-            hitNornal = CalculateHitNormal(obj, hitPosition);
-        }
-
-        public bool IsIntersectObjectInTheScene(Ray ray)
-        {
-            PotatoObject obj = GetClosestIntersectObject(ray);
-            return obj != null;
-        }
-
-        public bool IntersectObjectInTheSceneExcept(PotatoObject obj, Ray ray)
-        {
-            foreach (PotatoObject objs in scene.GetPotatoObjects())
-            {
-                if (objs == obj) continue;
-
-                if (objs.Intersect(ray).Intersect) return true;
-            }
-
-            return false;
-        }
-
-        public static float DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoPointLight light)
-        {
-            Vector3 dir = Vector3.Normalize(Vector3.Subtract(light.Position, hitPoint));
+            Vector3 dir = Vector3.Normalize(light.Position - hitPoint);
             return Vector3.Dot(dir, normal);
         }
 
         public Vector3 GetHitPosition() => hitPosition;
         public Vector3 GetHitNormal() => hitNormal;
+    }
+
+    internal struct ClosestIntersectionResult
+    {
+        public readonly Triangle Triangle;
+        public readonly PotatoMesh Mesh;
+
+        public ClosestIntersectionResult(Triangle triangle, PotatoMesh mesh)
+        {
+            Triangle = triangle;
+            Mesh = mesh;
+        }
     }
 }

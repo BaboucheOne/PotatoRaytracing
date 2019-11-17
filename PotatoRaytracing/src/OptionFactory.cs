@@ -12,7 +12,7 @@ namespace PotatoRaytracing
             <width>500</width>
             <height>500</height>
             <fov>60</fov>
-            <supersampling>true</supersampling>
+            <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
         </option>";
 

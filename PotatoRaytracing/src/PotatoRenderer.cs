@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Drawing;
-using System.Numerics;
+using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
@@ -55,7 +55,7 @@ namespace PotatoRaytracing
                     else
                     {
                         SetRayDirectionByPixelPosition(ref ray, scene, x, y);
-                        pixelColor = tracer.Trace(ray, lightIndex, 2);
+                        pixelColor = tracer.Trace(ray, lightIndex);
                     }
 
                     image.SetPixel(x, y, pixelColor);
@@ -63,12 +63,12 @@ namespace PotatoRaytracing
             }
         }
 
-        public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoScene scene, float pixelPositionX, float pixelPositionY)
+        public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoScene scene, double pixelPositionX, double pixelPositionY)
         {
             ray.Set(scene.GetCamera().Position, GetDirectionFromPixel(scene, pixelPositionX, pixelPositionY));
         }
 
-        public static Vector3 GetDirectionFromPixel(PotatoScene scene, float pixelPositionX, float pixelPositionY)
+        public static Vector3 GetDirectionFromPixel(PotatoScene scene, double pixelPositionX, double pixelPositionY)
         {
             Vector3 V1 = Vector3.Multiply(scene.GetCamera().Right(), pixelPositionX);
             Vector3 V2 = Vector3.Multiply(scene.GetCamera().Up(), pixelPositionY);

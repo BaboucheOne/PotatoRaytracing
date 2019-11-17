@@ -3,9 +3,9 @@
     public struct IntersectResult
     {
         public readonly bool Intersect;
-        public readonly float Discriminent;
+        public readonly double Discriminent;
 
-        public IntersectResult(bool intersect, float discriminent)
+        public IntersectResult(bool intersect, double discriminent)
         {
             Intersect = intersect;
             Discriminent = discriminent;
