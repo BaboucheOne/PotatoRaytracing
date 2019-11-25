@@ -109,37 +109,37 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\Camera.cs" />
-    <Compile Include="src\ClosestEntityIntersection.cs" />
-    <Compile Include="src\Constants.cs" />
-    <Compile Include="src\HSLColor.cs" />
-    <Compile Include="src\ImageBlender.cs" />
-    <Compile Include="src\IntersectionHandler.cs" />
-    <Compile Include="src\IntersectResult.cs" />
+    <Compile Include="src\Entities\Camera.cs" />
+    <Compile Include="src\EntityIntersection\ClosestEntityIntersection.cs" />
+    <Compile Include="src\General\Constants.cs" />
+    <Compile Include="src\General\HSLColor.cs" />
+    <Compile Include="src\Rendering\ImageBlender.cs" />
+    <Compile Include="src\EntityIntersection\IntersectionHandler.cs" />
+    <Compile Include="src\EntityIntersection\IntersectResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\MeshsBuilder.cs" />
-    <Compile Include="src\Option.cs" />
-    <Compile Include="src\OptionFactory.cs" />
-    <Compile Include="src\PotatoCoordinate.cs" />
-    <Compile Include="src\PotatoEntity.cs" />
-    <Compile Include="src\PotatoMesh.cs" />
-    <Compile Include="src\PotatoObject.cs" />
-    <Compile Include="src\PotatoPointLight.cs" />
-    <Compile Include="src\PotatoRenderer.cs" />
-    <Compile Include="src\PotatoRendererContext.cs" />
-    <Compile Include="src\PotatoScene.cs" />
-    <Compile Include="src\PotatoSphere.cs" />
-    <Compile Include="src\PotatoTasksSceneRenderer.cs" />
-    <Compile Include="src\PotatoTracer.cs" />
-    <Compile Include="src\SceneFile.cs" />
-    <Compile Include="src\SceneLoaderAndSaver.cs" />
-    <Compile Include="src\SphereIntersection.cs" />
-    <Compile Include="src\Triangle.cs" />
-    <Compile Include="src\Ray.cs" />
-    <Compile Include="src\SuperSampling.cs" />
-    <Compile Include="src\TextureManager.cs" />
-    <Compile Include="src\TriangleIntersection.cs" />
+    <Compile Include="src\Scene\MeshsBuilder.cs" />
+    <Compile Include="src\General\Option.cs" />
+    <Compile Include="src\General\OptionFactory.cs" />
+    <Compile Include="src\General\PotatoCoordinate.cs" />
+    <Compile Include="src\Entities\PotatoEntity.cs" />
+    <Compile Include="src\Entities\PotatoMesh.cs" />
+    <Compile Include="src\Entities\PotatoObject.cs" />
+    <Compile Include="src\Entities\PotatoPointLight.cs" />
+    <Compile Include="src\Rendering\PotatoRenderer.cs" />
+    <Compile Include="src\Rendering\PotatoRendererContext.cs" />
+    <Compile Include="src\Scene\PotatoScene.cs" />
+    <Compile Include="src\Entities\PotatoSphere.cs" />
+    <Compile Include="src\Rendering\PotatoTasksSceneRenderer.cs" />
+    <Compile Include="src\Rendering\PotatoTracer.cs" />
+    <Compile Include="src\Scene\SceneFile.cs" />
+    <Compile Include="src\Scene\SceneLoaderAndSaver.cs" />
+    <Compile Include="src\EntityIntersection\SphereIntersection.cs" />
+    <Compile Include="src\Scene\Triangle.cs" />
+    <Compile Include="src\General\Ray.cs" />
+    <Compile Include="src\Rendering\SuperSampling.cs" />
+    <Compile Include="src\Scene\TextureManager.cs" />
+    <Compile Include="src\EntityIntersection\TriangleIntersection.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
