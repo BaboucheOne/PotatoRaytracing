@@ -9,7 +9,6 @@ namespace PotatoRaytracing
 
         public Ray()
         {
-
         }
 
         public Ray(Vector3 position)

@@ -32,10 +32,10 @@ namespace PotatoRaytracing
             return sceneFile;
         }
 
-        public static void SaveScene(string sceneName, PotatoMesh[] meshes, PotatoPointLight[] pointLights)
+        public static void SaveScene(string sceneName, PotatoSphere[] spheres, PotatoMesh[] meshes, PotatoPointLight[] pointLights)
         {
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(SceneFile));
-            SceneFile sceneFile = new SceneFile(meshes, pointLights);
+            SceneFile sceneFile = new SceneFile(spheres, meshes, pointLights);
             string xml = string.Empty;
 
             using (var sw = new StringWriter())
@@ -52,7 +52,7 @@ namespace PotatoRaytracing
                 }
             }
 
-            File.WriteAllText("scene.xml", xml);
+            File.WriteAllText(sceneName, xml);
         }
     }
 }

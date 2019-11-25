@@ -1,23 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.DoubleNumerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PotatoRaytracing
 {
     public static class SphereIntersection
     {
-        public static bool Intersect(ref Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
+        public static bool Intersect(Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
         {
+            //bool hit = false;
+            //double a, b, delta = 0;
+
+            //CalculatePolynomial(sphere, ray.Origin, ray.Direction, out a, out b, out delta);
+            //CalculateIntersection(ref hit, distance, a, b, delta);
+
+            //hitPosition = ray.Cast(ray.Origin, distance);
+            //hitNormal = Vector3.Normalize(Vector3.Subtract(hitPosition, sphere.Position));
+
+            ////if (hit) Console.WriteLine("{0} {1}", hit, distance);
+
+            //return hit;
+
             bool hit = false;
-            double a, b, delta = 0;
+            double d = 0;
 
-            CalculatePolynomial(sphere, ray.Origin, ray.Direction, out a, out b, out delta);
-            CalculateIntersection(ref hit, distance, a, b, delta);
+            Vector3 co = Vector3.Subtract(ray.Origin, sphere.Position);
+            double a = 1;
+            double b = 2 * Vector3.Dot(ray.Direction, co);
+            double c = co.Length() * co.Length() - sphere.Radius * sphere.Radius;
+            double delta = b * b - 4 * (a * c);
 
-            hitPosition = ray.Cast(ray.Origin, distance);
+            if (delta >= 0)
+            {
+                double d1 = (-b - Math.Sqrt(delta)) / (2 * a);
+                double d2 = (-b + Math.Sqrt(delta)) / (2 * a);
+
+                if (Math.Min(d1, d2) > 0)
+                {
+                    d = Math.Min(d1, d2);
+                }
+                else
+                {
+                    d = Math.Max(d1, d2);
+                }
+
+                hit = true;
+            }
+
+            distance = d;
+            hitPosition = ray.Cast(ray.Origin, d);
             hitNormal = Vector3.Normalize(Vector3.Subtract(hitPosition, sphere.Position));
 
             return hit;
@@ -27,7 +57,7 @@ namespace PotatoRaytracing
         {
             if (delta < 0) return;
 
-            double polynomialResult1, polynomialResult2;
+            double polynomialResult1, polynomialResult2 = 0.0;
             PolynomialResult(a, b, delta, out polynomialResult1, out polynomialResult2);
 
             discriminent = IntersectionDiscriminent(polynomialResult1, polynomialResult2);

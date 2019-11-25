@@ -6,7 +6,11 @@ namespace PotatoRaytracing
 {
     public class PotatoSphere : PotatoObject
     {
-        public readonly double Radius;
+        public readonly double Radius = 1.0;
+
+        public PotatoSphere() : this(new Vector3(), 1.0)
+        {
+        }
 
         public PotatoSphere(Vector3 pos, double radius) : base(pos)
         {

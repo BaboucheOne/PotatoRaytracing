@@ -110,9 +110,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Camera.cs" />
+    <Compile Include="src\ClosestEntityIntersection.cs" />
     <Compile Include="src\Constants.cs" />
     <Compile Include="src\HSLColor.cs" />
     <Compile Include="src\ImageBlender.cs" />
+    <Compile Include="src\IntersectionHandler.cs" />
     <Compile Include="src\IntersectResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
