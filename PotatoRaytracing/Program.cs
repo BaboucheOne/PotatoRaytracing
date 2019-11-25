@@ -16,6 +16,7 @@ namespace PotatoRaytracing
             RenderContext = new PotatoRenderContext(option);
 
             RenderContext.Scene.LoadRandomScene();
+            //RenderContext.Scene.LoadScene("scene.xml");
 
             Console.WriteLine("--- Potato Raytracing ---");
             Console.WriteLine("Scene parameters:");

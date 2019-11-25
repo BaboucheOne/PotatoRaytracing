@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.DoubleNumerics;
 using System.Drawing;
 using System.IO;
 
@@ -44,6 +45,11 @@ namespace PotatoRaytracing
         public Bitmap GetTexture(string path)
         {
             return textures[path];
+        }
+
+        public Color GetTextureColor(Vector2 uv, string texturePath)
+        {
+            return GetTextureColor((int)uv.X, (int)uv.Y, texturePath);
         }
 
         public Color GetTextureColor(int x, int y, string texturePath)

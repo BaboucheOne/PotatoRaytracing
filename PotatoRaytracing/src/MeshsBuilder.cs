@@ -20,6 +20,8 @@ namespace PotatoRaytracing
 
         public void Build(ref List<PotatoMesh> meshes)
         {
+            if (meshes.Count == 0) return;
+
             loadFactory = new ObjLoaderFactory().Create();
             BakeAllMeshes(meshes);
         }

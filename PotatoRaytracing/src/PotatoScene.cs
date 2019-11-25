@@ -14,7 +14,7 @@ namespace PotatoRaytracing
 
         private Camera camera = new Camera(new Vector3(), new Quaternion());
 
-        private List<PotatoObject> potatoObjects = new List<PotatoObject>();
+        private List<PotatoSphere> spheres = new List<PotatoSphere>();
         private List<PotatoMesh> meshs = new List<PotatoMesh>();
         private List<PotatoPointLight> lights = new List<PotatoPointLight>();
         private HashSet<string> textures = new HashSet<string>();
@@ -34,16 +34,32 @@ namespace PotatoRaytracing
 
         public void LoadRandomScene()
         {
+            ClearScene();
+
             CreateRandomScene();
+            SceneLoaderAndSaver.SaveScene("SceneSphere.xml", spheres.ToArray(), meshs.ToArray(), lights.ToArray());
         }
 
         public void LoadScene(string filename)
         {
+            ClearScene();
+
             SceneFile sceneFile = SceneLoaderAndSaver.LoadScene(filename);
+            spheres = sceneFile.Spheres.ToList();
             lights = sceneFile.PointLights.ToList();
             meshsBuilder.Build(ref meshs);
 
+            SetSpheresTexture();
+
             SceneName = filename;
+        }
+
+        private void ClearScene()
+        {
+            textures.Clear();
+            meshs.Clear();
+            spheres.Clear();
+            lights.Clear();
         }
 
         private void InitOption()
@@ -66,9 +82,9 @@ namespace PotatoRaytracing
         public Option GetOptions() => option;
         public Camera GetCamera() => camera;
 
-        public int PotatoObjectsCount => potatoObjects.Count;
-        public List<PotatoObject> GetPotatoObjects() => potatoObjects;
-        public PotatoObject GetPotatoObject(int index) => potatoObjects[index];
+        public int SphereCount => spheres.Count;
+        public List<PotatoSphere> GetSpheres() => spheres;
+        public PotatoSphere GetSphere(int index) => spheres[index];
 
         public int MeshCout => meshs.Count;
         public List<PotatoMesh> GetPotatoMeshes() => meshs;
@@ -98,29 +114,30 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            //for (int i = 0; i < 25; i++)
-            //{
-            //    Vector3 pos = new Vector3(r.Next(0, 300), r.Next(-100, 100), r.Next(-100, 100));
-            //    float rad = (float)r.NextDouble() * 20;
-            //    potatoObjects.Add(new PotatoSphere(pos, rad, "Textures\\uvTexture.bmp"));
-            //    potatoObjects[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
-            //    textures.Add(potatoObjects[i].GetTexturePath());
-            //}
+            for (int i = 0; i < 0; i++)
+            {
+                Vector3 pos = new Vector3(r.Next(100, 300), r.Next(-100, 100), r.Next(-100, 100));
+                float rad = (float)r.NextDouble() * 20;
+                spheres.Add(new PotatoSphere(pos, rad, "Textures\\uvTexture.bmp"));
+                spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
+            }
 
-            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
+            SetSpheresTexture();
+
+            //ights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
             //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 250, 1, Color.Blue));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 250, 1, Color.White));
-            const int randomMeshCount = 100;
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 2500, 1, Color.Blue));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 2500, 1, Color.White));
+            const int randomMeshCount = 10;
 
             for (int i = 0; i < randomMeshCount; i++)
             {
                 PotatoMesh mesh = new PotatoMesh
                 {
                     Position = new Vector3(r.Next(1, 3), r.Next(-3, 3), r.Next(-3, 3)),
-                    ObjectPath = @"Objects\\tetrahedron.obj",
+                    ObjectPath = @"Objects\\cube.obj",
                     Color = colors[(int)(r.NextDouble() * colors.Count)]
-            };
+                };
 
                 meshs.Add(mesh);
             }
@@ -131,9 +148,17 @@ namespace PotatoRaytracing
             }
         }
 
+        private void SetSpheresTexture()
+        {
+            for (int i = 0; i < spheres.Count; i++)
+            {
+                textures.Add(spheres[i].GetTexturePath());
+            }
+        }
+
         public override string ToString()
         {
-            return string.Format("Objects: {0} \nLights: {1} \nTexture loaded: {2} \nmeshes count: {3}", potatoObjects.Count, lights.Count, textures.Count, meshs.Count);
+            return string.Format("Spheres: {0} \nLights: {1} \nTexture loaded: {2} \nmeshes count: {3}", spheres.Count, lights.Count, textures.Count, meshs.Count);
         }
     }
 }
