@@ -67,7 +67,7 @@ namespace PotatoRaytracing
                 }
 
                 meshs[i].SetTriangles(triangles.ToArray());
-                meshs[i].BakeMesh();
+                meshs[i].SetPosition(meshs[i].Position);
             }
         }
 

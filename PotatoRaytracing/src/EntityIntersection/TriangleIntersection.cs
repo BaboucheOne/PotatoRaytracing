@@ -11,9 +11,9 @@ namespace PotatoRaytracing
                                                  ref Vector3 outNormal,
                                                  ref double distance)
         {
-            Vector3 vertex0 = inTriangle.GetVertex0();
-            Vector3 vertex1 = inTriangle.GetVertex1();
-            Vector3 vertex2 = inTriangle.GetVertex2();
+            Vector3 vertex0 = inTriangle.P0;
+            Vector3 vertex1 = inTriangle.P1;
+            Vector3 vertex2 = inTriangle.P2;
             Vector3 edge1 = Vector3.Subtract(vertex1, vertex0);
             Vector3 edge2 = Vector3.Subtract(vertex2, vertex0);
             Vector3 h = Vector3.Cross(rayVector, edge2);
@@ -48,7 +48,7 @@ namespace PotatoRaytracing
             {
                 distance = t;
 
-                outNormal = inTriangle.GetNormal();
+                outNormal = inTriangle.Normal;
                 outIntersectionPoint = Vector3.Add(rayOrigin, Vector3.Multiply(rayVector, t));
                 return true;
             }

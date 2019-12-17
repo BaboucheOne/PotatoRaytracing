@@ -5,6 +5,37 @@ namespace PotatoRaytracing
 {
     public static class SphereIntersection
     {
+        public static bool Intersect(Ray ray, PotatoSphere sphere)
+        {
+            bool hit = false;
+            double d = 0;
+
+            Vector3 co = Vector3.Subtract(ray.Origin, sphere.Position);
+            double a = 1;
+            double b = 2 * Vector3.Dot(ray.Direction, co);
+            double c = co.Length() * co.Length() - sphere.Radius * sphere.Radius;
+            double delta = b * b - 4 * (a * c);
+
+            if (delta >= 0)
+            {
+                double d1 = (-b - Math.Sqrt(delta)) / (2 * a);
+                double d2 = (-b + Math.Sqrt(delta)) / (2 * a);
+
+                if (Math.Min(d1, d2) > 0)
+                {
+                    d = Math.Min(d1, d2);
+                }
+                else
+                {
+                    d = Math.Max(d1, d2);
+                }
+
+                hit = true;
+            }
+
+            return hit;
+        }
+
         public static bool Intersect(Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
         {
             //bool hit = false;
