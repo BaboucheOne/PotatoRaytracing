@@ -18,6 +18,8 @@ namespace PotatoRaytracing
         private List<PotatoMesh> meshs = new List<PotatoMesh>();
         private List<PotatoPointLight> lights = new List<PotatoPointLight>();
         private HashSet<string> textures = new HashSet<string>();
+        public BoundingBoxTree BoundingBoxTree;
+        public List<BoundingBoxNode> aabbNodes = new List<BoundingBoxNode>();
 
         public string SceneName { get; private set; } = "Untiled.xml";
 
@@ -37,7 +39,7 @@ namespace PotatoRaytracing
             ClearScene();
 
             CreateRandomScene();
-            SceneLoaderAndSaver.SaveScene("SceneSphere.xml", spheres.ToArray(), meshs.ToArray(), lights.ToArray());
+            //SceneLoaderAndSaver.SaveScene("SceneSphere.xml", spheres.ToArray(), meshs.ToArray(), lights.ToArray());
         }
 
         public void LoadScene(string filename)
@@ -56,6 +58,7 @@ namespace PotatoRaytracing
 
         private void ClearScene()
         {
+            aabbNodes.Clear();
             textures.Clear();
             meshs.Clear();
             spheres.Clear();
@@ -114,7 +117,7 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Vector3 pos = new Vector3(r.Next(100, 300), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;
@@ -122,30 +125,48 @@ namespace PotatoRaytracing
                 spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
             }
 
-            SetSpheresTexture();
-
-            //ights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
             //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 2500, 1, Color.Blue));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 2500, 1, Color.White));
-            const int randomMeshCount = 10;
+            const int randomMeshCount = 100;
 
-            for (int i = 0; i < randomMeshCount; i++)
+            for (int i = 0; i < 0; i++)
             {
                 PotatoMesh mesh = new PotatoMesh
                 {
-                    Position = new Vector3(r.Next(1, 3), r.Next(-3, 3), r.Next(-3, 3)),
-                    ObjectPath = @"Objects\\cube.obj",
+                    Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
+                    //Position = new Vector3(5, 0, i * 3 - 10),
+                    ObjectPath = @"Objects\\tetrahedron.obj",
                     Color = colors[(int)(r.NextDouble() * colors.Count)]
+
                 };
 
                 meshs.Add(mesh);
             }
+
             meshsBuilder.Build(ref meshs);
+
+            /* Tree intersection
+            List<PotatoBox> boxes = new List<PotatoBox>();
             for (int i = 0; i < randomMeshCount; i++)
             {
-                meshs[i].SetPosition();
+                Vector3 pos = new Vector3(5, i, i * 3 - 10);
+                //Vector3 pos = new Vector3(r.Next(1, 100), r.Next(0, 20), r.Next(0, 20));
+                float rad = 0.25f;
+                PotatoSphere sphere = new PotatoSphere(pos, rad, "Textures\\uvTexture.bmp");
+                spheres.Add(sphere);
+
+                PotatoBox box = new PotatoBox(pos);
+                BoundingBoxNode bbn = new BoundingBoxNode(box, spheres[i], false);
+                aabbNodes.Add(bbn);
             }
+
+            BoundingBoxTree = new BoundingBoxTree();
+            BoundingBoxTree.Build(ref aabbNodes);
+            */
+
+            SetSpheresTexture();
         }
 
         private void SetSpheresTexture()

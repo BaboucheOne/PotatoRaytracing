@@ -6,7 +6,7 @@ namespace PotatoRaytracing
     {
         private Vector3[] vertices = new Vector3[3];
         private Vector3[] normals = new Vector3[3];
-        private Vector3 normal = new Vector3();
+        public Vector3 Normal { get; private set; } = new Vector3();
 
         public Triangle(Vector3[] vertices)
         {
@@ -36,7 +36,7 @@ namespace PotatoRaytracing
             ComputeNormal();
         }
 
-        public void SetPosition(Vector3 position)
+        public void SetVerticesPosition(Vector3 position)
         {
             for(int i = 0; i < 3; i++)
             {
@@ -55,17 +55,16 @@ namespace PotatoRaytracing
         {
             Vector3 edge1 = Vector3.Subtract(vertices[1], vertices[0]);
             Vector3 edge2 = Vector3.Subtract(vertices[2], vertices[0]);
-            normal = Vector3.Normalize(Vector3.Cross(edge1, edge2));
+            Normal = Vector3.Normalize(Vector3.Cross(edge1, edge2));
         }
 
-        public Vector3 GetVertex0() => vertices[0];
-        public Vector3 GetVertex1() => vertices[1];
-        public Vector3 GetVertex2() => vertices[2];
+        public Vector3 P0 => vertices[0];
+        public Vector3 P1 => vertices[1];
+        public Vector3 P2 => vertices[2];
 
-        public Vector3 GetVertex0Normal() => normals[0];
-        public Vector3 GetVertex1Normal() => normals[1];
-        public Vector3 GetVertex2Normal() => normals[2];
-
-        public Vector3 GetNormal() => normal;
+        public Vector3 N0 => normals[0];
+        public Vector3 N1 => normals[1];
+        public Vector3 N2 => normals[2];
     }
 }
+
