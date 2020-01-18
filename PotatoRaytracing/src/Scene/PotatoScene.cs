@@ -131,13 +131,13 @@ namespace PotatoRaytracing
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 2500, 1, Color.White));
             const int randomMeshCount = 100;
 
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 1; i++)
             {
                 PotatoMesh mesh = new PotatoMesh
                 {
-                    Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
-                    //Position = new Vector3(5, 0, i * 3 - 10),
-                    ObjectPath = @"Objects\\tetrahedron.obj",
+                    //Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
+                    Position = new Vector3(5, 0, 0),
+                    ObjectPath = @"Objects\\box.obj",
                     Color = colors[(int)(r.NextDouble() * colors.Count)]
 
                 };
