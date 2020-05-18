@@ -12,24 +12,26 @@ namespace PotatoRaytracing
         public double Fov;
         public bool SuperSampling;
         public int SuperSamplingDivision;
+        public int VideoDuration;
+        public int VideoFPS;
         public Vector3 ScreenLeft;
         public Vector3 ScreenCenter;
 
         public Camera camera;
 
-        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision)
+        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int videoDuration, int videoFPS)
         {
-            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, null);
+            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, videoDuration, videoFPS, null);
         }
 
-        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, Camera cam)
+        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int videoDuration, int videoFPS, Camera cam)
         {
-            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, cam);
+            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, videoDuration, videoFPS, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, Camera cam)
+        private void InitializeParameters(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int videoDuration, int videoFPS, Camera cam)
         {
             Width = width;
             Height = heigth;
@@ -37,6 +39,8 @@ namespace PotatoRaytracing
             camera = cam;
             SuperSampling = superSampling;
             SuperSamplingDivision = superSamplingDivision;
+            VideoDuration = videoDuration;
+            VideoFPS = videoFPS;
         }
 
         public void SetCamera(Camera camera)

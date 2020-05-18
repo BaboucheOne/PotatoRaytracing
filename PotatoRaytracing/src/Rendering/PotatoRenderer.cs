@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Drawing;
 using System.DoubleNumerics;
+using System.Drawing.Imaging;
 
 namespace PotatoRaytracing
 {
     public class PotatoRenderer
     {
-        private Option option;
-        private PotatoScene scene;
-        private PotatoTracer tracer;
-        private TextureManager textureManager;
-        private SuperSampling superSampling;
-        private int lightIndex;
+        private readonly Option option;
+        private readonly PotatoScene scene;
+        private readonly PotatoTracer tracer;
+        private readonly TextureManager textureManager;
+        private readonly SuperSampling superSampling;
+        private readonly int lightIndex;
 
         public PotatoRenderer(PotatoScene scene, int lightIndex)
         {
@@ -31,23 +32,29 @@ namespace PotatoRaytracing
         {
             Console.WriteLine("light index to render {0}", lightIndex);
 
-            Bitmap image = new Bitmap(scene.GetOptions().Width, scene.GetOptions().Height);
-            Ray ray = new Ray();
-            Color pixelColor = Color.Black;
-
-            CreateRenderedImage(lightIndex, image, ref ray, ref pixelColor);
+            Bitmap img = CreateRenderedImage(lightIndex);
 
             textureManager.Clear();
 
-            return image;
+            return img;
         }
 
-        private void CreateRenderedImage(int lightIndex, Bitmap image, ref Ray ray, ref Color pixelColor)
+        private unsafe Bitmap CreateRenderedImage(int lightIndex)
         {
-            for (int x = 0; x < image.Width; x++)
+            Ray ray = new Ray();
+            Color pixelColor = Color.Black;
+
+            Bitmap image = new Bitmap(scene.GetOptions().Width, scene.GetOptions().Height);
+            BitmapData bData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite, image.PixelFormat);
+            byte bitsPerPixel = (byte)Image.GetPixelFormatSize(image.PixelFormat);
+            byte* scan0 = (byte*)bData.Scan0.ToPointer();
+
+            for (int x = 0; x < bData.Width; x++)
             {
-                for (int y = 0; y < image.Height; y++)
+                for (int y = 0; y < bData.Height; y++)
                 {
+                    byte* data = scan0 + x * bData.Stride + y * bitsPerPixel / 8;
+
                     if (option.SuperSampling)
                     {
                         pixelColor = superSampling.GetSampleColor(ray, lightIndex, x, y);
@@ -58,9 +65,15 @@ namespace PotatoRaytracing
                         pixelColor = tracer.Trace(ray, lightIndex);
                     }
 
-                    image.SetPixel(x, y, pixelColor);
+                    data[0] = pixelColor.B;
+                    data[1] = pixelColor.G;
+                    data[2] = pixelColor.R;
                 }
             }
+
+            image.UnlockBits(bData);
+
+            return image;
         }
 
         public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoScene scene, double pixelPositionX, double pixelPositionY)

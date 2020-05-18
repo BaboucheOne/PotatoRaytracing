@@ -22,7 +22,7 @@ namespace PotatoRaytracing
             double a = 0;
             double f = 0;
             double u = 0;
-            double v = 0; ;
+            double v = 0;
             a = Vector3.Dot(edge1, h);
             if (a > -Constants.EPSILON && a < Constants.EPSILON)
             {

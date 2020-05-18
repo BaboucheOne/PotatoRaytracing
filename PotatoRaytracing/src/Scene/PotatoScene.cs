@@ -12,7 +12,7 @@ namespace PotatoRaytracing
         private Option option;
         private MeshsBuilder meshsBuilder = new MeshsBuilder();
 
-        private Camera camera = new Camera(new Vector3(), new Quaternion());
+        public Camera camera = new Camera(new Vector3(), new Quaternion());
 
         private List<PotatoSphere> spheres = new List<PotatoSphere>();
         private List<PotatoMesh> meshs = new List<PotatoMesh>();
@@ -37,7 +37,6 @@ namespace PotatoRaytracing
         public void LoadRandomScene()
         {
             ClearScene();
-
             CreateRandomScene();
             //SceneLoaderAndSaver.SaveScene("SceneSphere.xml", spheres.ToArray(), meshs.ToArray(), lights.ToArray());
         }
@@ -71,7 +70,7 @@ namespace PotatoRaytracing
 
             if (option == null)
             {
-                option = new Option(256, 256, 60, false, 4, camera);
+                option = new Option(256, 256, 60, false, 4, 4, 5, camera);
             }
             else
             {
@@ -127,17 +126,17 @@ namespace PotatoRaytracing
 
             //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
             //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 2500, 1, Color.Blue));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 2500, 1, Color.Red));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 2500, 1, Color.White));
             const int randomMeshCount = 100;
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 0; i++)
             {
                 PotatoMesh mesh = new PotatoMesh
                 {
-                    //Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
-                    Position = new Vector3(5, 0, 0),
-                    ObjectPath = @"Objects\\box.obj",
+                    Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
+                    //Position = new Vector3(5, 0, 0),
+                    ObjectPath = @"Objects\\cube.obj",
                     Color = colors[(int)(r.NextDouble() * colors.Count)]
 
                 };

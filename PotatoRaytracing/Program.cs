@@ -8,7 +8,7 @@ namespace PotatoRaytracing
         public static Process CurrentProcess = Process.GetCurrentProcess();
         public static PotatoRenderContext RenderContext;
 
-        static void Main(string[] args)
+        static void Main()
         {
             CurrentProcess = Process.GetCurrentProcess();
 
@@ -20,16 +20,18 @@ namespace PotatoRaytracing
             Console.WriteLine("--- Potato Raytracing ---");
             Console.WriteLine("Scene parameters:");
             Console.WriteLine(RenderContext.Scene.ToString());
-            Console.WriteLine(string.Empty);
+            Console.WriteLine();
             Console.WriteLine("Configurations:");
             Console.WriteLine(RenderContext.Scene.GetOptions().ToString());
 
             Console.Write("Press to continue any key to beggin.");
             Console.ReadLine();
 
-            RenderContext.Start("potatoImage.bmp");
+            RenderContext.MakeImage("potatoImage.bmp");
+            // RenderContext.MakeVideo("potatoVideo.avi");
 
             Console.WriteLine("Render time: {0} seconds", RenderContext.GetRenderTime / Constants.millis);
+            Console.WriteLine("Render time: {0} ms", RenderContext.GetRenderTime);
 
             Console.Write("Press to continue any key to exit.");
             Console.ReadLine();

@@ -17,18 +17,18 @@ namespace PotatoRaytracing
             Parent = parent;
         }
 
-        public BoundingBoxNode(PotatoBox box, PotatoEntity entity, bool isMesh)
+        public BoundingBoxNode(PotatoBox box, PotatoEntity entity)
         {
             Box = box;
             Entity = entity;
-            IsMesh = isMesh;
+            IsMesh = typeof(PotatoMesh).IsAssignableFrom(entity.GetType());
         }
 
-        public BoundingBoxNode(PotatoBox box, PotatoEntity entity, bool isMesh, BoundingBoxNode parent) : this(parent)
+        public BoundingBoxNode(PotatoBox box, PotatoEntity entity, BoundingBoxNode parent) : this(parent)
         {
             Box = box;
             Entity = entity;
-            IsMesh = isMesh;
+            IsMesh = typeof(PotatoMesh).IsAssignableFrom(entity.GetType());
         }
 
         public bool HasChildren => Childs.Count > 0;
