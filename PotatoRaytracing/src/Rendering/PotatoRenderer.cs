@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.DoubleNumerics;
 using System.Drawing.Imaging;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace PotatoRaytracing
 {
@@ -13,6 +15,8 @@ namespace PotatoRaytracing
         private readonly TextureManager textureManager;
         private readonly SuperSampling superSampling;
         private readonly int lightIndex;
+
+        private Task<Color[]>[] tasks;
 
         public PotatoRenderer(PotatoScene scene, int lightIndex)
         {
@@ -28,46 +32,55 @@ namespace PotatoRaytracing
             if (option.SuperSampling) superSampling = new SuperSampling(option.Height, option.SuperSamplingDivision, scene, tracer);
         }
 
-        public Bitmap RenderImage()
+        public unsafe Bitmap RenderImage()
         {
             Console.WriteLine("light index to render {0}", lightIndex);
 
-            Bitmap img = CreateRenderedImage(lightIndex);
+            int tasksCount = 2;
+            int tileSize = 256;//scene.GetOptions().Width / tasksCount;
+            tasks = new Task<Color[]>[4];
+            int taskIndex = 0;
+            List<Vector2> screenIndex = new List<Vector2>();
+            for (int x = 0; x < tasksCount; x++)
+            {
+                for (int y = 0; y < tasksCount; y++)
+                {
+                    screenIndex.Add(new Vector2(x * tileSize, y * tileSize));
+                }
+            }
 
+            for (int i = 0; i < screenIndex.Count; i++)
+            {
+                int x = (int)screenIndex[i].X;
+                int y = (int)screenIndex[i].Y;
+                TestMultiTileRendering tmtr = new TestMultiTileRendering(scene, lightIndex);
+                tasks[i] = Task.Run(() => tmtr.CreateRenderImageWorker(x, y, lightIndex));
+                taskIndex++;
+            }
+
+            Task.WaitAll(tasks);
             textureManager.Clear();
-
-            return img;
-        }
-
-        private unsafe Bitmap CreateRenderedImage(int lightIndex)
-        {
-            Ray ray = new Ray();
-            Color pixelColor = Color.Black;
 
             Bitmap image = new Bitmap(scene.GetOptions().Width, scene.GetOptions().Height);
             BitmapData bData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite, image.PixelFormat);
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(image.PixelFormat);
             byte* scan0 = (byte*)bData.Scan0.ToPointer();
+            Console.WriteLine(bData.Width);
+            Console.WriteLine(bData.Height);
 
-            for (int x = 0; x < bData.Width; x++)
+            for (int i = 0; i < screenIndex.Count; i++)
             {
-                for (int y = 0; y < bData.Height; y++)
+                int arrWidth = 256;
+                for (int x = 0; x < arrWidth; x++)
                 {
-                    byte* data = scan0 + x * bData.Stride + y * bitsPerPixel / 8;
-
-                    if (option.SuperSampling)
+                    for (int y = 0; y < arrWidth; y++)
                     {
-                        pixelColor = superSampling.GetSampleColor(ray, lightIndex, x, y);
+                        byte* data = scan0 + (x + (int)screenIndex[i].X) * bData.Stride + (y + (int)screenIndex[i].Y) * bitsPerPixel / 8;
+                        int colorIndex = y * arrWidth + x;
+                        data[0] = tasks[i].Result[colorIndex].B;
+                        data[1] = tasks[i].Result[colorIndex].G;
+                        data[2] = tasks[i].Result[colorIndex].R;
                     }
-                    else
-                    {
-                        SetRayDirectionByPixelPosition(ref ray, scene, x, y);
-                        pixelColor = tracer.Trace(ray, lightIndex);
-                    }
-
-                    data[0] = pixelColor.B;
-                    data[1] = pixelColor.G;
-                    data[2] = pixelColor.R;
                 }
             }
 

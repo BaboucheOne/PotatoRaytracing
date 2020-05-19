@@ -70,7 +70,7 @@ namespace PotatoRaytracing
 
             if (option == null)
             {
-                option = new Option(256, 256, 60, false, 4, 4, 5, camera);
+                option = new Option(256, 256, 60, false, 4, 4, 4, 5, camera);
             }
             else
             {
@@ -116,7 +116,7 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 Vector3 pos = new Vector3(r.Next(100, 300), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;

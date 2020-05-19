@@ -14,6 +14,7 @@ namespace PotatoRaytracing
             <fov>60</fov>
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
+            <screenTiles>4</screenTiles>
             <videoDuration>5</videoDuration>
             <videoFPS>10</videoFPS>
         </option>";
@@ -23,6 +24,7 @@ namespace PotatoRaytracing
         private static double fov = 0.0;
         private static bool supersampling = true;
         private static int supersamplingDivision = 0;
+        private static int screenTiles = 0;
         private static int videoDuration = 0;
         private static int videoFPS = 0;
 
@@ -30,7 +32,7 @@ namespace PotatoRaytracing
         {
             ReadOptionFromFile();
 
-            return new Option(width, height, fov, supersampling, supersamplingDivision, videoDuration, videoFPS);
+            return new Option(width, height, fov, supersampling, supersamplingDivision, screenTiles, videoDuration, videoFPS);
         }
 
         private static void ReadOptionFromFile()
@@ -67,6 +69,7 @@ namespace PotatoRaytracing
             fov = double.Parse(node.SelectSingleNode("fov").InnerText);
             supersampling = bool.Parse(node.SelectSingleNode("supersampling").InnerText);
             supersamplingDivision = int.Parse(node.SelectSingleNode("supersamplingDivision").InnerText);
+            screenTiles = int.Parse(node.SelectSingleNode("screenTiles").InnerText);
             videoDuration = int.Parse(node.SelectSingleNode("videoDuration").InnerText);
             videoFPS = int.Parse(node.SelectSingleNode("videoFPS").InnerText);
         }

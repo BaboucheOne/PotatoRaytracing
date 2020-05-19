@@ -44,7 +44,7 @@ namespace PotatoRaytracing
         {
             RunRendererTasks();
 
-            Task.WaitAll(tasks);
+            //Task.WaitAll(tasks);
 
             TransfertTasksResultToImageRendererd();
         }
@@ -53,7 +53,7 @@ namespace PotatoRaytracing
         {
             for (int i = 0; i < tasksToDo; i++)
             {
-                imagesRendered[i] = tasks[i].Result;
+                //imagesRendered[i] = tasks[i].Result;
             }
         }
 
@@ -62,7 +62,8 @@ namespace PotatoRaytracing
             for (int i = 0; i < tasksToDo; i++)
             {
                 PotatoRenderer r = new PotatoRenderer(scene, i);
-                tasks[i] = Task.Run(() => r.RenderImage());
+                imagesRendered[i] = r.RenderImage();
+                //tasks[i] = Task.Run(() => r.RenderImage());
             }
         }
     }

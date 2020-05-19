@@ -28,7 +28,7 @@ namespace PotatoRaytracing
             Console.ReadLine();
 
             RenderContext.MakeImage("potatoImage.bmp");
-            // RenderContext.MakeVideo("potatoVideo.avi");
+            //RenderContext.MakeVideo("potatoVideo.avi");
 
             Console.WriteLine("Render time: {0} seconds", RenderContext.GetRenderTime / Constants.millis);
             Console.WriteLine("Render time: {0} ms", RenderContext.GetRenderTime);

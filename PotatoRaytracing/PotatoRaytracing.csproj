@@ -145,6 +145,7 @@
     <Compile Include="src\EntityIntersection\IntersectResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Rendering\TestMultiTileRendering.cs" />
     <Compile Include="src\Scene\MeshsBuilder.cs" />
     <Compile Include="src\General\Option.cs" />
     <Compile Include="src\General\OptionFactory.cs" />
