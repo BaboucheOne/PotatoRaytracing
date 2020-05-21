@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace PotatoRaytracing
 {
     public class ImageBlender
     {
-        private List<Bitmap> imagesRendered = new List<Bitmap>();
+        private readonly List<Bitmap> imagesRendered = new List<Bitmap>();
         private const int minimunImageCountToBlend = 1;
 
         public int GetRenderedImagesCount() => imagesRendered.Count;
@@ -58,24 +59,39 @@ namespace PotatoRaytracing
             return imagesRendered.Count > minimunImageCountToBlend;
         }
 
-        private Bitmap BlendImage(Bitmap bmpA, Bitmap bmpB)
+        private unsafe Bitmap BlendImage(Bitmap bmpA, Bitmap bmpB)
         {
-            Bitmap bmpC = bmpA;
+            Bitmap bmp = new Bitmap(bmpA);
 
-            for (int y = 0; y < bmpA.Height; y++)
+            BitmapData bData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+            BitmapData bDataA = bmpA.LockBits(new Rectangle(0, 0, bmpA.Width, bmpA.Height), ImageLockMode.ReadWrite, bmpA.PixelFormat);
+            BitmapData bDataB = bmpB.LockBits(new Rectangle(0, 0, bmpB.Width, bmpB.Height), ImageLockMode.ReadWrite, bmpB.PixelFormat);
+
+            byte bitsPerPixel = (byte)Image.GetPixelFormatSize(bmp.PixelFormat);
+
+            //Get pointers.
+            byte* scan0 = (byte*)bData.Scan0.ToPointer();
+            byte* scan0A = (byte*)bDataA.Scan0.ToPointer();
+            byte* scan0B = (byte*)bDataB.Scan0.ToPointer();
+
+            for (int i = 0; i < bData.Width; ++i)
             {
-                for (int x = 0; x < bmpA.Width; x++)
+                for (int j = 0; j < bData.Height; ++j)
                 {
-                    Color cA = bmpA.GetPixel(x, y);
-                    Color cB = bmpB.GetPixel(x, y);
-                    Color cC = Color.FromArgb(cA.A, (int)((cA.R + cB.R) * 0.5f),
-                                                    (int)((cA.G + cB.G) * 0.5f),
-                                                    (int)((cA.B + cB.B) * 0.5f));
-                    bmpC.SetPixel(x, y, cC);
+                    byte* data = scan0 + i * bData.Stride + j * bitsPerPixel / 8;
+                    byte* dataA = scan0A + i * bDataA.Stride + j * bitsPerPixel / 8;
+                    byte* dataB = scan0B + i * bDataB.Stride + j * bitsPerPixel / 8;
+
+                    for (int k = 0; k < 3; k++)
+                    {
+                        data[k] = (byte)((dataA[k] + dataB[k]) * 0.5f);
+                    }
                 }
             }
 
-            return bmpC;
+            bmp.UnlockBits(bData);
+
+            return bmp;
         }
     }
 }

@@ -9,20 +9,18 @@ namespace PotatoRaytracing
         private int blueChannel = 0;
         private Color samplingColor;
 
-        private int resolution = 0;
-        private int halfResolution = 0;
-        private float samplingSubPixelDivision = 0;
-        private int samplingAverage = 0;
+        private readonly int halfResolution = 0;
+        private readonly float samplingSubPixelDivision = 0;
+        private readonly int samplingAverage = 0;
 
-        private PotatoTracer tracer;
-        private PotatoScene scene;
+        private readonly PotatoTracer tracer;
+        private PotatoSceneData sceneData;
 
-        public SuperSampling(int resolution, float samplingSubPixelDivision, PotatoScene scene, PotatoTracer tracer)
+        public SuperSampling(int resolution, float samplingSubPixelDivision, PotatoSceneData sceneData, PotatoTracer tracer)
         {
-            this.resolution = resolution;
             this.samplingSubPixelDivision = samplingSubPixelDivision;
             this.tracer = tracer;
-            this.scene = scene;
+            this.sceneData = sceneData;
 
             halfResolution = resolution / 2;
             samplingAverage = (int)(samplingSubPixelDivision * samplingSubPixelDivision);
@@ -55,7 +53,7 @@ namespace PotatoRaytracing
 
         private void TraceSubPixel(Ray ray, int lightIndex, int pixelPositionX, int pixelPositionY, float divisionPixelX, float divisionPixelY)
         {
-            PotatoRenderer.SetRayDirectionByPixelPosition(ref ray, scene, pixelPositionX + (divisionPixelX - halfResolution) / halfResolution, pixelPositionY + (divisionPixelY - halfResolution) / halfResolution);
+            PotatoRenderer.SetRayDirectionByPixelPosition(ref ray, sceneData, pixelPositionX + (divisionPixelX - halfResolution) / halfResolution, pixelPositionY + (divisionPixelY - halfResolution) / halfResolution);
             samplingColor = tracer.Trace(ray, lightIndex);
             AddSamplingColorToColorChannels();
         }

@@ -2,6 +2,7 @@
 {
     public class SceneFile
     {
+        public PotatoSphere[] Spheres;
         public PotatoMesh[] Meshes;
         public PotatoPointLight[] PointLights;
 
@@ -9,8 +10,9 @@
         {
         }
 
-        public SceneFile(PotatoMesh[] meshes, PotatoPointLight[] pointLights)
+        public SceneFile(PotatoSphere[] spheres, PotatoMesh[] meshes, PotatoPointLight[] pointLights)
         {
+            Spheres = spheres;
             Meshes = meshes;
             PointLights = pointLights;
         }

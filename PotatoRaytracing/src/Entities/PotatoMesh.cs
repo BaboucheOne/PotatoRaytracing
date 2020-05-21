@@ -9,6 +9,7 @@ namespace PotatoRaytracing
         public string TexturePath;
         public string ObjectPath;
         public Color Color = Color.White;
+        public Vector3 Center { get; private set; }
 
         public PotatoMesh() { }
 
@@ -37,17 +38,34 @@ namespace PotatoRaytracing
             this.triangles = triangles;
         }
 
-        public void SetPosition()
+        public void SetPosition(Vector3 position)
         {
-            BakeMesh();
+            Position = position;
+
+            for (int i = 0; i < triangles.Length; i++)
+            {
+                triangles[i].SetVerticesPosition(Position);
+            }
+
+            CalculateCenter();
         }
 
-        public void BakeMesh()
+        private void CalculateCenter()
         {
-            for(int i = 0; i < triangles.Length; i++)
+            Center = Vector3.Zero;
+            double sumArea = 0.0;
+
+            for (int i = 0; i < triangles.Length; i++)
             {
-                triangles[i].SetPosition(Position);
+                Vector3 center = new Vector3();
+                center = Vector3.Divide(triangles[i].P0 + triangles[i].P1 + triangles[i].P2, 3);
+                double length = Vector3.Cross(triangles[i].P1 - triangles[i].P0, triangles[i].P2 - triangles[i].P0).Length();
+                double area = 0.5 * length;
+                Center += area * center;
+                sumArea += area;
             }
+
+            Center = Vector3.Divide(Center, sumArea);
         }
 
         public Triangle GetTriangle(int index) => triangles[index];

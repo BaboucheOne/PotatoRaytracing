@@ -20,6 +20,8 @@ namespace PotatoRaytracing
 
         public void Build(ref List<PotatoMesh> meshes)
         {
+            if (meshes.Count == 0) return;
+
             loadFactory = new ObjLoaderFactory().Create();
             BakeAllMeshes(meshes);
         }
@@ -65,12 +67,13 @@ namespace PotatoRaytracing
                 }
 
                 meshs[i].SetTriangles(triangles.ToArray());
-                meshs[i].BakeMesh();
+                meshs[i].SetPosition(meshs[i].Position);
             }
         }
 
         private void ReadAndLoadObjFileInLoadFactory(string path)
         {
+            
             FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
             loadResult = loadFactory.Load(fileStream);
             fileStream.Close();

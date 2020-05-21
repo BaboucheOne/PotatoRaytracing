@@ -6,14 +6,18 @@ namespace PotatoRaytracing
 {
     public class PotatoSphere : PotatoObject
     {
-        public readonly double Radius;
+        public readonly double Radius = 1.0;
+
+        public PotatoSphere() : this(new Vector3(), 1.0)
+        {
+        }
 
         public PotatoSphere(Vector3 pos, double radius) : base(pos)
         {
             Radius = radius;
         }
 
-        public PotatoSphere(Vector3 pos, double radius, string texturePath = "Textures\\uvTexture.bmp") : base(pos, texturePath)
+        public PotatoSphere(Vector3 pos, double radius, string texturePath = @"Resources\\Textures\\default.bmp") : base(pos, texturePath)
         {
             Radius = radius;
         }
