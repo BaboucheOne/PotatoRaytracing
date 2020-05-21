@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.DoubleNumerics;
 using System.Drawing;
 using System.IO;
@@ -7,7 +9,34 @@ namespace PotatoRaytracing
 {
     public class TextureManager
     {
-        private Dictionary<string, Bitmap> textures = new Dictionary<string, Bitmap>();
+        public ConcurrentDictionary<string, Bitmap> textures;
+        private readonly object _lock = new object();
+
+        public TextureManager()
+        {
+            int initialCapacity = 101;
+
+            int numProcs = Environment.ProcessorCount;
+            int concurrencyLevel = numProcs * 2;
+            textures = new ConcurrentDictionary<string, Bitmap>(concurrencyLevel, initialCapacity);
+        }
+
+        public Dictionary<string, Bitmap> CloneTextures()
+        {
+            Console.WriteLine(textures.Count);
+            Dictionary<string, Bitmap> texturesClone = new Dictionary<string, Bitmap>();
+
+            foreach (KeyValuePair<string, Bitmap> entry in textures)
+            {
+                Rectangle cloneRect = new Rectangle(0, 0, entry.Value.Width, entry.Value.Height);
+                System.Drawing.Imaging.PixelFormat format = entry.Value.PixelFormat;
+                Console.WriteLine(entry.Key);
+                Bitmap m = entry.Value.Clone(cloneRect, format);
+                textures[entry.Key] = m;
+            }
+
+            return texturesClone;
+        }
 
         public void Clear()
         {
@@ -25,7 +54,7 @@ namespace PotatoRaytracing
 
         public void AddTextures(string[] texturePaths)
         {
-            for(int i = 0; i < texturePaths.Length; i++)
+            for (int i = 0; i < texturePaths.Length; i++)
             {
                 AddTexture(texturePaths[i]);
             }
@@ -33,7 +62,7 @@ namespace PotatoRaytracing
 
         public void AddTexture(string texturePath)
         {
-            if(!textures.ContainsKey(texturePath))
+            if (!textures.ContainsKey(texturePath))
             {
                 if(File.Exists(texturePath))
                 {
@@ -44,7 +73,10 @@ namespace PotatoRaytracing
 
         public Bitmap GetTexture(string path)
         {
-            return textures[path];
+            lock (_lock)
+            {
+                return textures[path];
+            }
         }
 
         public Color GetTextureColor(Vector2 uv, string texturePath)
@@ -54,7 +86,10 @@ namespace PotatoRaytracing
 
         public Color GetTextureColor(int x, int y, string texturePath)
         {
-            return textures[texturePath].GetPixel(x, y);
+            lock (_lock)
+            {
+                return textures[texturePath].GetPixel(x, y);
+            }
         }
     }
 }

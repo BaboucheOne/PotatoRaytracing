@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using Accord.Video.FFMPEG;
 
 namespace PotatoRaytracing
@@ -9,7 +10,7 @@ namespace PotatoRaytracing
         public Option Option { get; private set; }
         public PotatoScene Scene { get; private set; }
         private readonly ImageBlender imageBlender;
-        private readonly PotatoTasksSceneRenderer tasksSceneRenderer;
+        private PotatoTasksSceneRenderer tasksSceneRenderer;
 
         private readonly Stopwatch watch = new Stopwatch();
 
@@ -20,7 +21,6 @@ namespace PotatoRaytracing
             Option = option;
 
             Scene = new PotatoScene(option);
-            tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene);
             imageBlender = new ImageBlender();
         }
 
@@ -28,6 +28,7 @@ namespace PotatoRaytracing
         public void MakeImage(string imageName)
         {
             watch.Start();
+            tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
             Bitmap[] imgs = tasksSceneRenderer.Run();
             BlendAllRenderedImageContainInTasksResult(imgs);
 
@@ -44,6 +45,8 @@ namespace PotatoRaytracing
             int imgCount = Option.VideoFPS * Option.VideoDuration;
             Bitmap[] image_sequence = new Bitmap[imgCount];
 
+            tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
+
             for (int i = 0; i < imgCount; i++)
             {
                 Bitmap[] imgs = tasksSceneRenderer.Run();
@@ -53,7 +56,7 @@ namespace PotatoRaytracing
                 Bitmap finalImage = imageBlender.GetFinalImageRender();
                 image_sequence[i] = finalImage.Clone(new Rectangle(0, 0, finalImage.Width, finalImage.Height), finalImage.PixelFormat);
 
-                Scene.camera.Position = Scene.camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
+                Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
                 imageBlender.Clear();
             }
 
@@ -101,7 +104,7 @@ namespace PotatoRaytracing
         private void SaveImage(string imgageName)
         {
             Bitmap finalImage = imageBlender.GetFinalImageRender();
-            finalImage.Save(imgageName);
+            finalImage.Save(imgageName, ImageFormat.Bmp);
         }
 
         private static void OpenImage(string imageName)

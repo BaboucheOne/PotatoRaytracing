@@ -5,11 +5,11 @@ namespace PotatoRaytracing
 {
     public class IntersectionHandler
     {
-        private PotatoScene scene;
+        private PotatoSceneData sceneData;
 
-        public IntersectionHandler(PotatoScene scene)
+        public IntersectionHandler(PotatoSceneData sceneData)
         {
-            this.scene = scene;
+            this.sceneData = sceneData;
         }
 
         public ClosestEntityIntersection GetClosestEntity(Ray ray)
@@ -117,7 +117,7 @@ namespace PotatoRaytracing
             double distance = double.PositiveInfinity;
             double t = 0;
 
-            LoopMeshListToGetTheClosets(ray, scene.GetPotatoMeshes(),  ref triangleInt, ref meshInt, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
+            LoopMeshListToGetTheClosets(ray,  sceneData.Meshs, ref triangleInt, ref meshInt, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
 
             return new ClosestTriangle(meshInt, triangleInt, hitPosition, hitNormal, distance);
         }
@@ -173,7 +173,7 @@ namespace PotatoRaytracing
             double distance = double.PositiveInfinity;
             double t = 0.0;
 
-            LoopSphereListToGetTheClosets(ray, scene.GetSpheres(), ref intersectedSphere, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
+            LoopSphereListToGetTheClosets(ray, sceneData.Spheres, ref intersectedSphere, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
 
             return new ClosestSphere(intersectedSphere, hitPosition, hitNormal, distance);
         }

@@ -1,106 +1,108 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.DoubleNumerics;
-using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System;
 
 namespace PotatoRaytracing
 {
     public class PotatoRenderer
     {
-        private readonly Option option;
-        private readonly PotatoScene scene;
-        private readonly PotatoTracer tracer;
+        private readonly PotatoSceneData sceneData;
         private readonly TextureManager textureManager;
-        private readonly SuperSampling superSampling;
-        private readonly int lightIndex;
 
-        private Task<Color[]>[] tasks;
-
-        public PotatoRenderer(PotatoScene scene, int lightIndex)
+        public PotatoRenderer(PotatoSceneData sceneData)
         {
-            this.scene = scene;
-            option = scene.GetOptions();
+            this.sceneData = sceneData;
 
             textureManager = new TextureManager();
-            textureManager.AddTextures(scene.GetTexturesPath());
-            tracer = new PotatoTracer(scene, textureManager);
-
-            this.lightIndex = lightIndex;
-
-            if (option.SuperSampling) superSampling = new SuperSampling(option.Height, option.SuperSamplingDivision, scene, tracer);
+            textureManager.AddTextures(sceneData.TexturePath);
         }
 
-        public unsafe Bitmap RenderImage()
+        public Bitmap ParallelWork(Tile[] tiles, int lightIndex)
         {
-            Console.WriteLine("light index to render {0}", lightIndex);
+            Bitmap bmp = new Bitmap(sceneData.Option.Width, sceneData.Option.Height);
 
-            int tasksCount = 2;
-            int tileSize = 256;//scene.GetOptions().Width / tasksCount;
-            tasks = new Task<Color[]>[4];
-            int taskIndex = 0;
-            List<Vector2> screenIndex = new List<Vector2>();
-            for (int x = 0; x < tasksCount; x++)
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            BitmapData data = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+            int bytesPerPixel = Image.GetPixelFormatSize(data.PixelFormat) / 8;
+
+            byte[] buffer = new byte[data.Width * data.Height * bytesPerPixel];
+
+            Marshal.Copy(data.Scan0, buffer, 0, buffer.Length);
+
+            Action[] actions = new Action[tiles.Length];
+            for (int i = 0; i < tiles.Length; i++)
             {
-                for (int y = 0; y < tasksCount; y++)
-                {
-                    screenIndex.Add(new Vector2(x * tileSize, y * tileSize));
-                }
+                int x = tiles[i].X;
+                int y = tiles[i].Y;
+                int size = tiles[i].Size;
+
+                PotatoSceneData sd = sceneData.DeepCopy();
+                TextureManager tex = new TextureManager();
+                tex.AddTextures(sd.TexturePath);
+                PotatoTracer t = new PotatoTracer(sd, tex);
+                actions[i] = () => Process(buffer, x, y, x + size, y + size, size * 2, bytesPerPixel, t, lightIndex);
             }
 
-            for (int i = 0; i < screenIndex.Count; i++)
+            Parallel.Invoke(actions);
+
+            Marshal.Copy(buffer, 0, data.Scan0, buffer.Length);
+
+            bmp.UnlockBits(data);
+
+            return bmp;
+        }
+
+        private void Process(byte[] buffer, int x, int y, int endx, int endy, int width, int bytesPerPixel, PotatoTracer t, int lightIndex)
+        {
+            Color col;
+            Ray ray = new Ray();
+            SuperSampling superSampling = null;
+            bool superSamplingEnable = false;
+
+            if (t.sceneData.Option.SuperSampling)
             {
-                int x = (int)screenIndex[i].X;
-                int y = (int)screenIndex[i].Y;
-                TestMultiTileRendering tmtr = new TestMultiTileRendering(scene, lightIndex);
-                tasks[i] = Task.Run(() => tmtr.CreateRenderImageWorker(x, y, lightIndex));
-                taskIndex++;
+                superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
+                superSamplingEnable = true;
             }
 
-            Task.WaitAll(tasks);
-            textureManager.Clear();
-
-            Bitmap image = new Bitmap(scene.GetOptions().Width, scene.GetOptions().Height);
-            BitmapData bData = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadWrite, image.PixelFormat);
-            byte bitsPerPixel = (byte)Image.GetPixelFormatSize(image.PixelFormat);
-            byte* scan0 = (byte*)bData.Scan0.ToPointer();
-            Console.WriteLine(bData.Width);
-            Console.WriteLine(bData.Height);
-
-            for (int i = 0; i < screenIndex.Count; i++)
+            for (int i = x; i < endx; i++)
             {
-                int arrWidth = 256;
-                for (int x = 0; x < arrWidth; x++)
+                for (int j = y; j < endy; j++)
                 {
-                    for (int y = 0; y < arrWidth; y++)
+                    int offset = ((j * width) + i) * bytesPerPixel;
+
+                    if (superSamplingEnable)
                     {
-                        byte* data = scan0 + (x + (int)screenIndex[i].X) * bData.Stride + (y + (int)screenIndex[i].Y) * bitsPerPixel / 8;
-                        int colorIndex = y * arrWidth + x;
-                        data[0] = tasks[i].Result[colorIndex].B;
-                        data[1] = tasks[i].Result[colorIndex].G;
-                        data[2] = tasks[i].Result[colorIndex].R;
+                        col = superSampling.GetSampleColor(ray, lightIndex, i, j);
                     }
+                    else
+                    {
+                        SetRayDirectionByPixelPosition(ref ray, t.sceneData, i, j);
+                        col = t.Trace(ray, lightIndex);
+                    }
+
+                    buffer[offset] = col.B;
+                    buffer[offset + 1] = col.G;
+                    buffer[offset + 2] = col.R;
                 }
             }
-
-            image.UnlockBits(bData);
-
-            return image;
         }
 
-        public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoScene scene, double pixelPositionX, double pixelPositionY)
+        public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoSceneData sceneData, double pixelPositionX, double pixelPositionY)
         {
-            ray.Set(scene.GetCamera().Position, GetDirectionFromPixel(scene, pixelPositionX, pixelPositionY));
+            ray.Set(sceneData.Camera.Position, GetDirectionFromPixel(sceneData, pixelPositionX, pixelPositionY));
         }
 
-        public static Vector3 GetDirectionFromPixel(PotatoScene scene, double pixelPositionX, double pixelPositionY)
+        public static Vector3 GetDirectionFromPixel(PotatoSceneData scene, double pixelPositionX, double pixelPositionY)
         {
-            Vector3 V1 = Vector3.Multiply(scene.GetCamera().Right(), pixelPositionX);
-            Vector3 V2 = Vector3.Multiply(scene.GetCamera().Up(), pixelPositionY);
-            Vector3 pixelPos = Vector3.Add(Vector3.Add(scene.GetOptions().ScreenLeft, V1), V2);
+            Vector3 V1 = Vector3.Multiply(scene.Camera.Right(), pixelPositionX);
+            Vector3 V2 = Vector3.Multiply(scene.Camera.Up(), pixelPositionY);
+            Vector3 pixelPos = Vector3.Add(Vector3.Add(scene.Option.ScreenLeft, V1), V2);
 
-            return Vector3.Normalize(Vector3.Add(scene.GetCamera().Forward(), pixelPos));
+            return Vector3.Normalize(Vector3.Add(scene.Camera.Forward(), pixelPos));
         }
     }
 }

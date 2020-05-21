@@ -6,20 +6,20 @@ namespace PotatoRaytracing
 {
     public class PotatoTracer
     {
-        private PotatoScene scene;
-        private TextureManager textureManager;
-        private IntersectionHandler intersectionHandler;
+        public PotatoSceneData sceneData;
+        private readonly TextureManager textureManager;
+        private readonly IntersectionHandler intersectionHandler;
 
         private Color pixelColor = Color.Black;
 
         private string objectRenderTexturePath = string.Empty;
         private Bitmap objectRenderTexture = null;
 
-        public PotatoTracer(PotatoScene scene, TextureManager textureManager)
+        public PotatoTracer(PotatoSceneData sceneData, TextureManager textureManager)
         {
-            this.scene = scene;
+            this.sceneData = sceneData;
             this.textureManager = textureManager;
-            intersectionHandler = new IntersectionHandler(scene);
+            intersectionHandler = new IntersectionHandler(sceneData);
         }
 
         public Color Trace(Ray renderRay, int lightIndex)
@@ -41,7 +41,7 @@ namespace PotatoRaytracing
         private Color TraceTriangle(int lightIndex, ClosestTriangle result)
         {
             pixelColor = result.Mesh.Color;
-            pixelColor = ComputeLight(pixelColor, result.HitPosition, result.HitNormal, scene.GetPointLight(lightIndex));
+            pixelColor = ComputeLight(pixelColor, result.HitPosition, result.HitNormal, sceneData.Lights[lightIndex]);
 
             return pixelColor;
         }
@@ -52,7 +52,7 @@ namespace PotatoRaytracing
 
             SetSphereUVProperties(result.Sphere);
             ProcessSphereUVTexture(result.Sphere, result.HitNormal);
-            pixelColor = ComputeLight(pixelColor, result.HitPosition, result.HitNormal, scene.GetPointLight(lightIndex));
+            pixelColor = ComputeLight(pixelColor, result.HitPosition, result.HitNormal, sceneData.Lights[lightIndex]);
 
             return pixelColor;
         }
