@@ -7,6 +7,7 @@ namespace PotatoRaytracing
     public static class OptionFactory
     {
         private const string optionFileName = "Options.xml";
+        private const string optionPath = @"Resources\\Options.xml";
         private const string optionXMLNode = "/option";
         private const string basicOptionFileTemplate = @"
         <option>
@@ -38,20 +39,20 @@ namespace PotatoRaytracing
 
         private static void ReadOptionFromFile()
         {
-            if (!File.Exists(optionFileName)) CreateOptionFileTemplate();
+            if (!File.Exists(optionPath)) CreateOptionFileTemplate();
 
             ReadXMLOptiondocument();
         }
 
         private static void CreateOptionFileTemplate()
         {
-            File.WriteAllText(@"Resources\\Options.xml", basicOptionFileTemplate);
+            File.WriteAllText(optionPath, basicOptionFileTemplate);
         }
 
         private static XmlNode GetOptionNodeFromOptionXML()
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load(optionFileName);
+            doc.Load(optionPath);
             XmlNode node = doc.DocumentElement.SelectNodes(optionXMLNode)[0];
             return node;
         }
