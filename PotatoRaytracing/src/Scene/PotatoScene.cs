@@ -78,18 +78,18 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 50; i++)
             {
-                Vector3 pos = new Vector3(r.Next(100, 300), r.Next(-100, 100), r.Next(-100, 100));
+                Vector3 pos = new Vector3(r.Next(50, 250), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;
-                spheres.Add(new PotatoSphere(pos, rad, "Textures\\uvTexture.bmp"));
+                spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
                 spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
             }
 
-            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 250, 1, Color.Green));
-            //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 250, 1, Color.Red));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 2500, 1, Color.Red));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 2500, 1, Color.White));
+            lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
+            lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 500, 1, Color.White));
 
             const int randomMeshCount = 10;
             for (int i = 0; i < randomMeshCount; i++)
@@ -97,7 +97,7 @@ namespace PotatoRaytracing
                 PotatoMesh mesh = new PotatoMesh
                 {
                     Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
-                    ObjectPath = @"Objects\\cube.obj",
+                    ObjectPath = @"Resources\\Objects\\cube.obj",
                     Color = colors[(int)(r.NextDouble() * colors.Count)]
 
                 };

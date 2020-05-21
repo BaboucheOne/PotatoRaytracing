@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 
 namespace PotatoRaytracing
 {
@@ -30,7 +32,7 @@ namespace PotatoRaytracing
             RenderContext.MakeImage("potatoImage.bmp");
             //RenderContext.MakeVideo("potatoVideo.avi");
 
-            Console.WriteLine("Render time: {0} seconds", RenderContext.GetRenderTime / Constants.millis);
+            Console.WriteLine("Render time: {0} seconds", RenderContext.GetRenderTime / Constants.MILLIS);
             Console.WriteLine("Render time: {0} ms", RenderContext.GetRenderTime);
 
             Console.Write("Press to continue any key to exit.");

@@ -4,14 +4,14 @@ using System.Xml;
 
 namespace PotatoRaytracing
 {
-    public class OptionFactory
+    public static class OptionFactory
     {
         private const string optionFileName = "Options.xml";
         private const string optionXMLNode = "/option";
         private const string basicOptionFileTemplate = @"
         <option>
-            <width>500</width>
-            <height>500</height>
+            <width>512</width>
+            <height>512</height>
             <fov>60</fov>
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
@@ -20,14 +20,14 @@ namespace PotatoRaytracing
             <videoFPS>10</videoFPS>
         </option>";
 
-        private static int width = 0;
-        private static int height = 0;
-        private static double fov = 0.0;
-        private static bool supersampling = true;
-        private static int supersamplingDivision = 0;
-        private static int screenTiles = 0;
-        private static int videoDuration = 0;
-        private static int videoFPS = 0;
+        private static int width = 512;
+        private static int height = 512;
+        private static double fov = 60.0;
+        private static bool supersampling = false;
+        private static int supersamplingDivision = 4;
+        private static int screenTiles = 4;
+        private static int videoDuration = 5;
+        private static int videoFPS = 10;
 
         public static Option CreateOption()
         {
@@ -45,7 +45,7 @@ namespace PotatoRaytracing
 
         private static void CreateOptionFileTemplate()
         {
-            File.WriteAllText("Options.xml", basicOptionFileTemplate);
+            File.WriteAllText(@"Resources\\Options.xml", basicOptionFileTemplate);
         }
 
         private static XmlNode GetOptionNodeFromOptionXML()
