@@ -1,16 +1,18 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml;
 
 namespace PotatoRaytracing
 {
-    public class OptionFactory
+    public static class OptionFactory
     {
         private const string optionFileName = "Options.xml";
+        private const string optionPath = @"Resources\\Options.xml";
         private const string optionXMLNode = "/option";
         private const string basicOptionFileTemplate = @"
         <option>
-            <width>500</width>
-            <height>500</height>
+            <width>512</width>
+            <height>512</height>
             <fov>60</fov>
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
@@ -19,14 +21,14 @@ namespace PotatoRaytracing
             <videoFPS>10</videoFPS>
         </option>";
 
-        private static int width = 0;
-        private static int height = 0;
-        private static double fov = 0.0;
-        private static bool supersampling = true;
-        private static int supersamplingDivision = 0;
-        private static int screenTiles = 0;
-        private static int videoDuration = 0;
-        private static int videoFPS = 0;
+        private static int width = 512;
+        private static int height = 512;
+        private static double fov = 60.0;
+        private static bool supersampling = false;
+        private static int supersamplingDivision = 4;
+        private static int screenTiles = 4;
+        private static int videoDuration = 5;
+        private static int videoFPS = 10;
 
         public static Option CreateOption()
         {
@@ -37,20 +39,20 @@ namespace PotatoRaytracing
 
         private static void ReadOptionFromFile()
         {
-            if (!File.Exists(optionFileName)) CreateOptionFileTemplate();
+            if (!File.Exists(optionPath)) CreateOptionFileTemplate();
 
             ReadXMLOptiondocument();
         }
 
         private static void CreateOptionFileTemplate()
         {
-            File.WriteAllText("Options.xml", basicOptionFileTemplate);
+            File.WriteAllText(optionPath, basicOptionFileTemplate);
         }
 
         private static XmlNode GetOptionNodeFromOptionXML()
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load(optionFileName);
+            doc.Load(optionPath);
             XmlNode node = doc.DocumentElement.SelectNodes(optionXMLNode)[0];
             return node;
         }
@@ -60,6 +62,27 @@ namespace PotatoRaytracing
             XmlNode node = GetOptionNodeFromOptionXML();
 
             AssignOptionValueFromXMLFile(node);
+
+            //TODO: Generer les exception autrement.
+            if(!IsPowerOf4(screenTiles))
+            {
+                throw new ArgumentException("ScreenTiles must be power of 4. (1, 4, 16, ...)");
+            }
+
+            if(width != height)
+            {
+                throw new ArgumentException("Width and Height must be equal");
+            }
+
+            if(!IsResoltionFit(width))
+            {
+                throw new ArgumentException("Width do not conform to supported resolution (32 to 4096)");
+            }
+
+            if ((width / screenTiles) < 1)
+            {
+                throw new ArgumentException("Width / screenTiles must be equal or greater than 1");
+            }
         }
 
         private static void AssignOptionValueFromXMLFile(XmlNode node)
@@ -72,6 +95,23 @@ namespace PotatoRaytracing
             screenTiles = int.Parse(node.SelectSingleNode("screenTiles").InnerText);
             videoDuration = int.Parse(node.SelectSingleNode("videoDuration").InnerText);
             videoFPS = int.Parse(node.SelectSingleNode("videoFPS").InnerText);
+        }
+
+        private static bool IsPowerOf4(int x)
+        {
+            double i = Math.Log(x) / Math.Log(4);
+            return i == Math.Floor(i);
+        }
+
+        //TODO: Chercher comment on peux reduire le tout (sans generer resolution).
+        private static bool IsResoltionFit(int width)
+        {
+            for (int i = 5; i < 12; i++)
+            {
+                if(width == (int)Math.Pow(2, i)) return true;
+            }
+
+            return false;
         }
     }
 }

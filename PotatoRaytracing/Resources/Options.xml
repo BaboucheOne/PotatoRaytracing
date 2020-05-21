@@ -1,0 +1,11 @@
+
+        <option>
+            <width>512</width>
+            <height>512</height>
+            <fov>60</fov>
+            <supersampling>false</supersampling>
+            <supersamplingDivision>4</supersamplingDivision>
+			<screenTiles>16</screenTiles>
+			<videoDuration>5</videoDuration>
+            <videoFPS>10</videoFPS>
+        </option>

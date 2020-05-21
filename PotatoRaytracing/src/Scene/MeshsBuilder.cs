@@ -73,6 +73,7 @@ namespace PotatoRaytracing
 
         private void ReadAndLoadObjFileInLoadFactory(string path)
         {
+            
             FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
             loadResult = loadFactory.Load(fileStream);
             fileStream.Close();
