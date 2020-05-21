@@ -22,16 +22,31 @@ namespace PotatoRaytracing
 
         public Bitmap ParallelWork(Tile[] tiles, int lightIndex)
         {
-            Bitmap bmp = new Bitmap(sceneData.Option.Width, sceneData.Option.Height);
+            CreateImageBuffer(out Bitmap bmp, out BitmapData data, out int bytesPerPixel, out byte[] buffer);
+            GenerateTiles(tiles, lightIndex, bmp, data, bytesPerPixel, buffer);
+            return bmp;
+        }
 
-            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-            BitmapData data = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
-            int bytesPerPixel = Image.GetPixelFormatSize(data.PixelFormat) / 8;
-
-            byte[] buffer = new byte[data.Width * data.Height * bytesPerPixel];
-
+        private void GenerateTiles(Tile[] tiles, int lightIndex, Bitmap bmp, BitmapData data, int bytesPerPixel, byte[] buffer)
+        {
             Marshal.Copy(data.Scan0, buffer, 0, buffer.Length);
+            Action[] actions = CreateTileAction(tiles, lightIndex, data, bytesPerPixel, buffer);
+            Parallel.Invoke(actions);
+            Marshal.Copy(buffer, 0, data.Scan0, buffer.Length);
+            bmp.UnlockBits(data);
+        }
 
+        private void CreateImageBuffer(out Bitmap bmp, out BitmapData data, out int bytesPerPixel, out byte[] buffer)
+        {
+            bmp = new Bitmap(sceneData.Option.Width, sceneData.Option.Height);
+            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            data = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
+            bytesPerPixel = Image.GetPixelFormatSize(data.PixelFormat) / 8;
+            buffer = new byte[data.Width * data.Height * bytesPerPixel];
+        }
+
+        private Action[] CreateTileAction(Tile[] tiles, int lightIndex, BitmapData data, int bytesPerPixel, byte[] buffer)
+        {
             Action[] actions = new Action[tiles.Length];
             for (int i = 0; i < tiles.Length; i++)
             {
@@ -40,19 +55,16 @@ namespace PotatoRaytracing
                 int size = tiles[i].Size;
 
                 PotatoSceneData sd = sceneData.DeepCopy();
-                TextureManager tex = new TextureManager();
-                tex.AddTextures(sd.TexturePath);
+                TextureManager tex = new TextureManager
+                {
+                    textures = textureManager.DeepCloneTextures()
+                };
                 PotatoTracer t = new PotatoTracer(sd, tex);
-                actions[i] = () => Process(buffer, x, y, x + size, y + size, size * 2, bytesPerPixel, t, lightIndex);
+
+                actions[i] = () => Process(buffer, x, y, x + size, y + size, data.Width, bytesPerPixel, t, lightIndex);
             }
 
-            Parallel.Invoke(actions);
-
-            Marshal.Copy(buffer, 0, data.Scan0, buffer.Length);
-
-            bmp.UnlockBits(data);
-
-            return bmp;
+            return actions;
         }
 
         private void Process(byte[] buffer, int x, int y, int endx, int endy, int width, int bytesPerPixel, PotatoTracer t, int lightIndex)

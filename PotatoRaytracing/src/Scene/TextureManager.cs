@@ -9,30 +9,23 @@ namespace PotatoRaytracing
 {
     public class TextureManager
     {
-        public ConcurrentDictionary<string, Bitmap> textures;
+        public Dictionary<string, Bitmap> textures = new Dictionary<string, Bitmap>(); 
         private readonly object _lock = new object();
 
         public TextureManager()
         {
-            int initialCapacity = 101;
-
-            int numProcs = Environment.ProcessorCount;
-            int concurrencyLevel = numProcs * 2;
-            textures = new ConcurrentDictionary<string, Bitmap>(concurrencyLevel, initialCapacity);
         }
 
-        public Dictionary<string, Bitmap> CloneTextures()
+        public Dictionary<string, Bitmap> DeepCloneTextures()
         {
-            Console.WriteLine(textures.Count);
             Dictionary<string, Bitmap> texturesClone = new Dictionary<string, Bitmap>();
 
             foreach (KeyValuePair<string, Bitmap> entry in textures)
             {
                 Rectangle cloneRect = new Rectangle(0, 0, entry.Value.Width, entry.Value.Height);
                 System.Drawing.Imaging.PixelFormat format = entry.Value.PixelFormat;
-                Console.WriteLine(entry.Key);
                 Bitmap m = entry.Value.Clone(cloneRect, format);
-                textures[entry.Key] = m;
+                texturesClone[entry.Key] = m;
             }
 
             return texturesClone;

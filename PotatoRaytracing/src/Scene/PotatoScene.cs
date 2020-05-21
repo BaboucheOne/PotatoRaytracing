@@ -8,8 +8,8 @@ namespace PotatoRaytracing
 {
     public class PotatoScene
     {
-        private Option option;
-        private MeshsBuilder meshsBuilder = new MeshsBuilder();
+        private readonly Option option;
+        private readonly MeshsBuilder meshsBuilder = new MeshsBuilder();
 
         public PotatoSceneData PotatoSceneData;
         public BoundingBoxTree BoundingBoxTree;
@@ -124,7 +124,7 @@ namespace PotatoRaytracing
 
         public override string ToString()
         {
-            return string.Format("Spheres: {0} \nLights: {1} \nTexture loaded: {2} \nmeshes count: {3}",
+            return string.Format("Spheres: {0} \nLights: {1} \nTexture loaded: {2} \nmeshes: {3}",
                                 PotatoSceneData.Spheres.Count, PotatoSceneData.Lights.Count, PotatoSceneData.Textures.Count, PotatoSceneData.Meshs.Count);
         }
     }

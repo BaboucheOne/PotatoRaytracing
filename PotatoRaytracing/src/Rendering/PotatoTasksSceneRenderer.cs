@@ -32,7 +32,7 @@ namespace PotatoRaytracing
 
         private void InitTiles()
         {
-            int tileArrayLen = sceneData.Option.ScreenTiles / 2;
+            int tileArrayLen = (int)System.Math.Sqrt(sceneData.Option.ScreenTiles);
 
             tiles = new Tile[sceneData.Option.ScreenTiles];
             tileSize = sceneData.Option.Width / tileArrayLen;

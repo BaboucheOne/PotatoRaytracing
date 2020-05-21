@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Xml;
 
 namespace PotatoRaytracing
@@ -60,6 +61,27 @@ namespace PotatoRaytracing
             XmlNode node = GetOptionNodeFromOptionXML();
 
             AssignOptionValueFromXMLFile(node);
+
+            //TODO: Generer les exception autrement.
+            if(!IsPowerOf4(screenTiles))
+            {
+                throw new ArgumentException("ScreenTiles must be power of 4. (1, 4, 16, ...)");
+            }
+
+            if(width != height)
+            {
+                throw new ArgumentException("Width and Height must be equal");
+            }
+
+            if(!IsResoltionFit(width))
+            {
+                throw new ArgumentException("Width do not conform to supported resolution (32 to 4096)");
+            }
+
+            if ((width / screenTiles) < 1)
+            {
+                throw new ArgumentException("Width / screenTiles must be equal or greater than 1");
+            }
         }
 
         private static void AssignOptionValueFromXMLFile(XmlNode node)
@@ -72,6 +94,23 @@ namespace PotatoRaytracing
             screenTiles = int.Parse(node.SelectSingleNode("screenTiles").InnerText);
             videoDuration = int.Parse(node.SelectSingleNode("videoDuration").InnerText);
             videoFPS = int.Parse(node.SelectSingleNode("videoFPS").InnerText);
+        }
+
+        private static bool IsPowerOf4(int x)
+        {
+            double i = Math.Log(x) / Math.Log(4);
+            return i == Math.Floor(i);
+        }
+
+        //TODO: Chercher comment on peux reduire le tout (sans generer resolution).
+        private static bool IsResoltionFit(int width)
+        {
+            for (int i = 5; i < 12; i++)
+            {
+                if(width == (int)Math.Pow(2, i)) return true;
+            }
+
+            return false;
         }
     }
 }
