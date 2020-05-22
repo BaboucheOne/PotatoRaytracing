@@ -9,6 +9,7 @@ namespace PotatoRaytracing
     {
         public Option Option;
         public Camera Camera;
+        public Cubemap Cubemap;
         public readonly List<PotatoSphere> Spheres;
         public readonly List<PotatoMesh> Meshs;
         public readonly List<PotatoPointLight> Lights;
@@ -16,13 +17,14 @@ namespace PotatoRaytracing
 
         public string[] TexturePath => Textures.ToArray();
 
-        public PotatoSceneData(List<PotatoSphere> spheres, List<PotatoMesh> meshs, List<PotatoPointLight> lights, HashSet<string> textures, Option option) : this()
+        public PotatoSceneData(List<PotatoSphere> spheres, List<PotatoMesh> meshs, List<PotatoPointLight> lights, HashSet<string> textures, Option option, Cubemap cubemap) : this()
         {
             Spheres = spheres;
             Meshs = meshs;
             Lights = lights;
             Textures = textures;
             Option = option;
+            Cubemap = cubemap;
 
             this.Camera = new Camera(new Vector3(), new Quaternion());
 
@@ -52,8 +54,9 @@ namespace PotatoRaytracing
             List<PotatoMesh> meshs = new List<PotatoMesh>(Meshs);
             List<PotatoPointLight> lights = new List<PotatoPointLight>(Lights);
             HashSet<string> textures = new HashSet<string>(Textures);
+            Cubemap cubemap = Cubemap.DeepCopy();
 
-            return new PotatoSceneData(spheres, meshs, lights, textures, Option);
+            return new PotatoSceneData(spheres, meshs, lights, textures, Option, cubemap);
         }
     }
 }
