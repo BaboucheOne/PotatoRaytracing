@@ -149,7 +149,7 @@
   <ItemGroup>
     <Compile Include="src\BoundingBoxNode.cs" />
     <Compile Include="src\BoundingBoxTree.cs" />
-    <Compile Include="src\Cubemap.cs" />
+    <Compile Include="src\Rendering\Cubemap.cs" />
     <Compile Include="src\Entities\Camera.cs" />
     <Compile Include="src\Entities\PotatoBox.cs" />
     <Compile Include="src\EntityIntersection\BoxIntersection.cs" />
