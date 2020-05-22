@@ -11,6 +11,7 @@ namespace PotatoRaytracing
         private readonly IntersectionHandler intersectionHandler;
 
         private Color pixelColor = Color.Black;
+        private Color globalColor = Color.Black;
 
         private string objectRenderTexturePath = string.Empty;
         private Bitmap objectRenderTexture = null;
@@ -24,18 +25,55 @@ namespace PotatoRaytracing
 
         public Color Trace(Ray renderRay, int lightIndex)
         {
-            pixelColor = Color.Black;
+            //pixelColor = Color.Black;
 
-            ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(renderRay);
+            //ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(renderRay);
 
-            if (result.IsNull) return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
+            //if (result.IsNull) return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
+
+            //if (result.IsMesh)
+            //{
+            //    return TraceTriangle(lightIndex, result as ClosestTriangle);
+            //}
+
+            //return TraceSphere(lightIndex, result as ClosestSphere);
+
+            RecursiveTrace(renderRay, lightIndex, 0);
+            return globalColor;
+        }
+
+        private Color RecursiveTrace(Ray ray, int lightIndex, int depth)
+        {
+            if (depth >= 1)
+            {
+                globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
+                return globalColor;
+            }
+            ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(ray);
+
+            if (result.IsNull)
+            {
+                globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
+                return globalColor;
+            }
+
+            ray.SetDirection(ReflectRay(ray.Direction, result.HitNormal));
 
             if (result.IsMesh)
             {
-                return TraceTriangle(lightIndex, result as ClosestTriangle);
+                Color c = TraceTriangle(lightIndex, result as ClosestTriangle);
+                //pixelColor = Color.FromArgb(pixelColor.R + (byte)(c.R * 0.5f), pixelColor.G + (byte)(c.G * 0.5f), pixelColor.B + (byte)(c.B * 0.5f));
+                globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.8f)) / 2, (globalColor.G + (byte)(c.G * 0.8f)) / 2, (globalColor.B + (byte)(c.B * 0.8f)) / 2);
+                RecursiveTrace(ray, lightIndex, depth + 1);
+            } else
+            {
+                Color c = TraceSphere(lightIndex, result as ClosestSphere);
+                //globalColor = Color.Red;// c;//Color.FromArgb(pixelColor.R + (byte)(c.R * 0.25f), pixelColor.G + (byte)(c.G * 0.25f), pixelColor.B + (byte)(c.B * 0.25f));
+                globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.8f)) / 2, (globalColor.G + (byte)(c.G * 0.8f)) / 2, (globalColor.B + (byte)(c.B * 0.8f)) / 2);
+                RecursiveTrace(ray, lightIndex, depth + 1);
             }
 
-            return TraceSphere(lightIndex, result as ClosestSphere);
+            return globalColor;
         }
 
         private Color TraceTriangle(int lightIndex, ClosestTriangle result)

@@ -80,7 +80,7 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Vector3 pos = new Vector3(r.Next(50, 250), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;
@@ -88,9 +88,9 @@ namespace PotatoRaytracing
                 spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
             }
 
-            lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
-            lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
+            //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 500, 1, Color.White));
 
             const int randomMeshCount = 0;
@@ -109,7 +109,7 @@ namespace PotatoRaytracing
 
             meshsBuilder.Build(ref meshs);
 
-            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap.bmp");
+            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap2.bmp");
             PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap);
         }
 
