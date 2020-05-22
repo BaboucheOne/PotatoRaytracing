@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.DoubleNumerics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace PotatoRaytracing
@@ -23,7 +22,7 @@ namespace PotatoRaytracing
             foreach (KeyValuePair<string, Bitmap> entry in textures)
             {
                 Rectangle cloneRect = new Rectangle(0, 0, entry.Value.Width, entry.Value.Height);
-                System.Drawing.Imaging.PixelFormat format = entry.Value.PixelFormat;
+                PixelFormat format = entry.Value.PixelFormat;
                 Bitmap m = entry.Value.Clone(cloneRect, format);
                 texturesClone[entry.Key] = m;
             }

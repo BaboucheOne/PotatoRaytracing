@@ -70,7 +70,8 @@ namespace PotatoRaytracing
         {
             for (int i = 0; i < tasksToDo; i++)
             {
-                PotatoRenderer pr = new PotatoRenderer(sceneData);
+                PotatoSceneData sd = sceneData.DeepCopy();
+                PotatoRenderer pr = new PotatoRenderer(sd);
                 int light = i;
                 tasks[i] = Task.Run(() => pr.ParallelWork(tiles, light));
             }

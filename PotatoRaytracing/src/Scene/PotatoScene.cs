@@ -11,6 +11,7 @@ namespace PotatoRaytracing
         private readonly Option option;
         private readonly MeshsBuilder meshsBuilder = new MeshsBuilder();
 
+        public Cubemap Cubemap = new Cubemap();
         public PotatoSceneData PotatoSceneData;
         public BoundingBoxTree BoundingBoxTree;
         public List<BoundingBoxNode> aabbNodes = new List<BoundingBoxNode>();
@@ -44,7 +45,8 @@ namespace PotatoRaytracing
 
             SceneName = filename;
 
-            PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), option);
+            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap.bmp");
+            PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), option, Cubemap);
         }
 
         private void ClearScene()
@@ -89,9 +91,9 @@ namespace PotatoRaytracing
             lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
             lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
             lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 500, 1, Color.White));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 500, 1, Color.White));
 
-            const int randomMeshCount = 10;
+            const int randomMeshCount = 0;
             for (int i = 0; i < randomMeshCount; i++)
             {
                 PotatoMesh mesh = new PotatoMesh
@@ -107,7 +109,8 @@ namespace PotatoRaytracing
 
             meshsBuilder.Build(ref meshs);
 
-            PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option);
+            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap.bmp");
+            PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap);
         }
 
         private HashSet<string> RetreiveAllTextureInScene(List<PotatoSphere> spheres)
