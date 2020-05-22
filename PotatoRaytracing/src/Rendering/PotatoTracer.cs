@@ -28,7 +28,10 @@ namespace PotatoRaytracing
 
             ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(renderRay);
 
-            if (result.IsNull) return pixelColor;
+            if (result.IsNull)
+            {
+                return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
+            }
 
             if (result.IsMesh)
             {

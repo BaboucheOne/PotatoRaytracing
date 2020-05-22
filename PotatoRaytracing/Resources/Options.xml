@@ -5,7 +5,7 @@
             <fov>60</fov>
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
-			<screenTiles>16</screenTiles>
+			<screenTiles>4</screenTiles>
 			<videoDuration>5</videoDuration>
             <videoFPS>10</videoFPS>
         </option>
