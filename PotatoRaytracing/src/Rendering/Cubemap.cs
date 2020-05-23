@@ -86,13 +86,13 @@ namespace PotatoRaytracing
 
             if ((absX >= absY) && (absX >= absZ))
             {
-                if (direction.X > 0.0f)
+                if (direction.X > 0.0)
                 {
                     int u = (int)((direction.Z / direction.X + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((direction.Y / direction.X + 1.0) * 0.5 * bmpSizeMinusOne);
                     return Right.GetPixel(u, v);
                 }
-                else if (direction.X < 0.0f)
+                else if (direction.X < 0.0)
                 {
                     int u = (int)((direction.Z / direction.X + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((1.0 - (direction.Y / direction.X + 1.0) * 0.5) * bmpSizeMinusOne);
@@ -101,13 +101,13 @@ namespace PotatoRaytracing
             }
             else if ((absY >= absX) && (absY >= absZ))
             {
-                if (direction.Y > 0.0f)
+                if (direction.Y > 0.0)
                 {
                     int u = (int)((direction.X / direction.Y + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((direction.Z / direction.Y + 1.0) * 0.5 * bmpSizeMinusOne);
                     return Down.GetPixel(u, v);
                 }
-                else if (direction.Y < 0.0f)
+                else if (direction.Y < 0.0)
                 {
                     int u = (int)((1.0 - (direction.X / direction.Y + 1.0) * 0.5) * bmpSizeMinusOne);
                     int v = (int)((direction.Z / direction.Y + 1.0) * 0.5 * bmpSizeMinusOne);
@@ -116,13 +116,13 @@ namespace PotatoRaytracing
             }
             else if ((absZ >= absX) && (absZ >= absY))
             {
-                if (direction.Z > 0.0f)
+                if (direction.Z > 0.0)
                 {
                     int u = (int)((1.0 - (direction.X / direction.Z + 1.0) * 0.5) * bmpSizeMinusOne);
                     int v = (int)((direction.Y / direction.Z + 1.0) * 0.5 * bmpSizeMinusOne);
                     return Back.GetPixel(u, v);
                 }
-                else if (direction.Z < 0.0f)
+                else if (direction.Z < 0.0)
                 {
                     int u = (int)((direction.X / direction.Z + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((1.0 - (direction.Y / direction.Z + 1.0) * 0.5) * bmpSizeMinusOne);

@@ -25,26 +25,13 @@ namespace PotatoRaytracing
 
         public Color Trace(Ray renderRay, int lightIndex)
         {
-            //pixelColor = Color.Black;
-
-            //ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(renderRay);
-
-            //if (result.IsNull) return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
-
-            //if (result.IsMesh)
-            //{
-            //    return TraceTriangle(lightIndex, result as ClosestTriangle);
-            //}
-
-            //return TraceSphere(lightIndex, result as ClosestSphere);
-
             RecursiveTrace(renderRay, lightIndex, 0);
             return globalColor;
         }
 
         private Color RecursiveTrace(Ray ray, int lightIndex, int depth)
         {
-            if (depth >= 1)
+            if (depth >= sceneData.Option.RecursionDepth)
             {
                 globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
                 return globalColor;
@@ -62,14 +49,12 @@ namespace PotatoRaytracing
             if (result.IsMesh)
             {
                 Color c = TraceTriangle(lightIndex, result as ClosestTriangle);
-                //pixelColor = Color.FromArgb(pixelColor.R + (byte)(c.R * 0.5f), pixelColor.G + (byte)(c.G * 0.5f), pixelColor.B + (byte)(c.B * 0.5f));
                 globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.8f)) / 2, (globalColor.G + (byte)(c.G * 0.8f)) / 2, (globalColor.B + (byte)(c.B * 0.8f)) / 2);
                 RecursiveTrace(ray, lightIndex, depth + 1);
             } else
             {
                 Color c = TraceSphere(lightIndex, result as ClosestSphere);
-                //globalColor = Color.Red;// c;//Color.FromArgb(pixelColor.R + (byte)(c.R * 0.25f), pixelColor.G + (byte)(c.G * 0.25f), pixelColor.B + (byte)(c.B * 0.25f));
-                globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.8f)) / 2, (globalColor.G + (byte)(c.G * 0.8f)) / 2, (globalColor.B + (byte)(c.B * 0.8f)) / 2);
+                globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.25f)) / 2, (globalColor.G + (byte)(c.G * 0.25f)) / 2, (globalColor.B + (byte)(c.B * 0.25f)) / 2);
                 RecursiveTrace(ray, lightIndex, depth + 1);
             }
 

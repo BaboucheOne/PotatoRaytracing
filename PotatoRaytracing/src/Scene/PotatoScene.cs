@@ -12,6 +12,7 @@ namespace PotatoRaytracing
         private readonly MeshsBuilder meshsBuilder = new MeshsBuilder();
 
         public Cubemap Cubemap = new Cubemap();
+        public Camera Camera = new Camera();
         public PotatoSceneData PotatoSceneData;
         public BoundingBoxTree BoundingBoxTree;
         public List<BoundingBoxNode> aabbNodes = new List<BoundingBoxNode>();
@@ -80,18 +81,23 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 10; i++)
             {
-                Vector3 pos = new Vector3(r.Next(50, 250), r.Next(-100, 100), r.Next(-100, 100));
+                Vector3 pos = new Vector3(r.Next(-250, 250), r.Next(-100, 100), r.Next(-100, 100));
                 float rad = (float)r.NextDouble() * 20;
                 spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
                 spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
             }
 
+            //Vector3 pos = new Vector3(50, 0, 0);
+            //float rad = 20f;//(float)r.NextDouble() * 20;
+            //spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
+            //spheres[0].Color = colors[(int)(r.NextDouble() * colors.Count)];
+
             //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
             //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
             //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100), 500, 1, Color.White));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100000), 500, 1, Color.White));
 
             const int randomMeshCount = 0;
             for (int i = 0; i < randomMeshCount; i++)
@@ -109,8 +115,8 @@ namespace PotatoRaytracing
 
             meshsBuilder.Build(ref meshs);
 
-            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap2.bmp");
-            PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap);
+            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap4.bmp");
+            PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap, Camera);
         }
 
         private HashSet<string> RetreiveAllTextureInScene(List<PotatoSphere> spheres)

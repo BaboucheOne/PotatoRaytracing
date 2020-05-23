@@ -11,8 +11,9 @@ namespace PotatoRaytracing
         public int HalfHeight;
         public double Fov;
         public bool SuperSampling;
-        public int ScreenTiles;
         public int SuperSamplingDivision;
+        public int ScreenTiles;
+        public int RecursionDepth;
         public int VideoDuration;
         public int VideoFPS;
         public Vector3 ScreenLeft;
@@ -20,27 +21,28 @@ namespace PotatoRaytracing
 
         public Camera camera;
 
-        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int videoDuration, int videoFPS)
+        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS)
         {
-            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, screenTiles, videoDuration, videoFPS, null);
+            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, null);
         }
 
-        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int videoDuration, int videoFPS, Camera cam)
+        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, Camera cam)
         {
-            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, screenTiles, videoDuration, videoFPS, cam);
+            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int videoDuration, int videoFPS, Camera cam)
+        private void InitializeParameters(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, Camera cam)
         {
             Width = width;
             Height = heigth;
             Fov = fov;
             camera = cam;
             SuperSampling = superSampling;
-            ScreenTiles = screenTiles;
             SuperSamplingDivision = superSamplingDivision;
+            ScreenTiles = screenTiles;
+            RecursionDepth = recursionDepth;
             VideoDuration = videoDuration;
             VideoFPS = videoFPS;
         }
@@ -61,15 +63,15 @@ namespace PotatoRaytracing
 
         private void SetLeftScreenBorder()
         {
-            Vector3 rightScreen = Vector3.Subtract(ScreenCenter, camera.Right()) * HalfWidth;
-            Vector3 upScreen = camera.Up() * HalfHeight;
+            Vector3 rightScreen = Vector3.Subtract(ScreenCenter, camera.Right) * HalfWidth;
+            Vector3 upScreen = camera.Up * HalfHeight;
 
             ScreenLeft = Vector3.Subtract(rightScreen, upScreen);
         }
 
         private void SetScreenCenter()
         {
-            ScreenCenter = Vector3.Subtract(camera.Position, camera.Forward());
+            ScreenCenter = Vector3.Subtract(camera.Position, camera.Forward);
         }
 
         private void SetHalfResolution()
@@ -90,10 +92,11 @@ namespace PotatoRaytracing
                 "Super sampling enable {7} \n" +
                 "Super sampling division {8} \n" +
                 "Screen tiles {9} \n" +
-                "Video Duration {10} \n" +
-                "Video FPS {11}", Width, Height, Fov, camera.Position, camera.Rotation,
+                "Recursion depth {10} \n" +
+                "Video Duration {11} \n" +
+                "Video FPS {12}", Width, Height, Fov, camera.Position, camera.Rotation,
                                     ScreenCenter, ScreenLeft, SuperSampling, SuperSamplingDivision,
-                                    ScreenTiles, VideoDuration, VideoFPS);
+                                    ScreenTiles, RecursionDepth, VideoDuration, VideoFPS);
         }
     }
 }
