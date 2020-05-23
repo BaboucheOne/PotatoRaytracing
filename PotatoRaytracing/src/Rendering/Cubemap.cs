@@ -17,15 +17,13 @@ namespace PotatoRaytracing
         private int bmpSize = 0;
         private int bmpSizeMinusOne;
 
-        public Cubemap()
-        {
-        }
+        public Cubemap() { }
 
         public Cubemap(string path) => LoadCubemap(path);
 
         public Cubemap(Bitmap cubemapSource) => BuildCubemap(cubemapSource);
 
-        public Cubemap(Bitmap top, Bitmap left, Bitmap front, Bitmap right, Bitmap back, Bitmap down)
+        public Cubemap(Bitmap top, Bitmap down, Bitmap left, Bitmap right, Bitmap front, Bitmap back)
         {
             Top = top;
             Left = left;
@@ -50,7 +48,7 @@ namespace PotatoRaytracing
             Bitmap FrontCopy = Front.Clone(cloneRect, format);
             Bitmap DownCopy = Down.Clone(cloneRect, format);
 
-            return new Cubemap(TopCopy, LeftCopy, FrontCopy, RightCopy, BackCopy, DownCopy);
+            return new Cubemap(TopCopy, DownCopy, LeftCopy, RightCopy, FrontCopy, BackCopy);
         }
 
         public void LoadCubemap(string path)
@@ -65,19 +63,19 @@ namespace PotatoRaytracing
             bmpSizeMinusOne = bmpSize - 1;
 
             Rectangle cloneRectTop = new Rectangle(bmpSize, 0, bmpSize, bmpSize);
-            Rectangle cloneRectLeft = new Rectangle(0, bmpSize, bmpSize, bmpSize);
-            Rectangle cloneRectFront = new Rectangle(bmpSize, bmpSize, bmpSize, bmpSize);
-            Rectangle cloneRectRight = new Rectangle(bmpSize * 2, bmpSize, bmpSize, bmpSize);
-            Rectangle cloneRectBack = new Rectangle(bmpSize * 3, bmpSize, bmpSize, bmpSize);
             Rectangle cloneRectDown = new Rectangle(bmpSize, bmpSize * 2, bmpSize, bmpSize);
+            Rectangle cloneRectLeft = new Rectangle(0, bmpSize, bmpSize, bmpSize);
+            Rectangle cloneRectRight = new Rectangle(bmpSize * 2, bmpSize, bmpSize, bmpSize);
+            Rectangle cloneRectFront = new Rectangle(bmpSize, bmpSize, bmpSize, bmpSize);
+            Rectangle cloneRectBack = new Rectangle(bmpSize * 3, bmpSize, bmpSize, bmpSize);
 
 
             Top = cubemap.Clone(cloneRectTop, cubemap.PixelFormat);
-            Left = cubemap.Clone(cloneRectLeft, cubemap.PixelFormat);
-            Front = cubemap.Clone(cloneRectFront, cubemap.PixelFormat);
-            Right = cubemap.Clone(cloneRectRight, cubemap.PixelFormat);
-            Back = cubemap.Clone(cloneRectBack, cubemap.PixelFormat);
             Down = cubemap.Clone(cloneRectDown, cubemap.PixelFormat);
+            Left = cubemap.Clone(cloneRectLeft, cubemap.PixelFormat);
+            Right = cubemap.Clone(cloneRectRight, cubemap.PixelFormat);
+            Front = cubemap.Clone(cloneRectFront, cubemap.PixelFormat);
+            Back = cubemap.Clone(cloneRectBack, cubemap.PixelFormat);
         }
 
         public Color GetCubemapColor(Vector3 direction)
@@ -88,13 +86,13 @@ namespace PotatoRaytracing
 
             if ((absX >= absY) && (absX >= absZ))
             {
-                if (direction.X > 0.0f)
+                if (direction.X > 0.0)
                 {
                     int u = (int)((direction.Z / direction.X + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((direction.Y / direction.X + 1.0) * 0.5 * bmpSizeMinusOne);
                     return Right.GetPixel(u, v);
                 }
-                else if (direction.X < 0.0f)
+                else if (direction.X < 0.0)
                 {
                     int u = (int)((direction.Z / direction.X + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((1.0 - (direction.Y / direction.X + 1.0) * 0.5) * bmpSizeMinusOne);
@@ -103,32 +101,32 @@ namespace PotatoRaytracing
             }
             else if ((absY >= absX) && (absY >= absZ))
             {
-                if (direction.Y > 0.0f)
+                if (direction.Y > 0.0)
                 {
                     int u = (int)((direction.X / direction.Y + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((direction.Z / direction.Y + 1.0) * 0.5 * bmpSizeMinusOne);
-                    return Top.GetPixel(u, v);
+                    return Down.GetPixel(u, v);
                 }
-                else if (direction.Y < 0.0f)
+                else if (direction.Y < 0.0)
                 {
                     int u = (int)((1.0 - (direction.X / direction.Y + 1.0) * 0.5) * bmpSizeMinusOne);
                     int v = (int)((direction.Z / direction.Y + 1.0) * 0.5 * bmpSizeMinusOne);
-                    return Down.GetPixel(u, v);
+                    return Top.GetPixel(u, v);
                 }
             }
             else if ((absZ >= absX) && (absZ >= absY))
             {
-                if (direction.Z > 0.0f)
+                if (direction.Z > 0.0)
                 {
                     int u = (int)((1.0 - (direction.X / direction.Z + 1.0) * 0.5) * bmpSizeMinusOne);
                     int v = (int)((direction.Y / direction.Z + 1.0) * 0.5 * bmpSizeMinusOne);
-                    return Front.GetPixel(u, v);
+                    return Back.GetPixel(u, v);
                 }
-                else if (direction.Z < 0.0f)
+                else if (direction.Z < 0.0)
                 {
                     int u = (int)((direction.X / direction.Z + 1.0) * 0.5 * bmpSizeMinusOne);
                     int v = (int)((1.0 - (direction.Y / direction.Z + 1.0) * 0.5) * bmpSizeMinusOne);
-                    return Back.GetPixel(u, v);
+                    return Front.GetPixel(u, v);
                 }
             }
 

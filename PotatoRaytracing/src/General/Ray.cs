@@ -36,6 +36,12 @@ namespace PotatoRaytracing
             SetInvertDirection();
         }
 
+        public void SetDirection(Vector3 direction)
+        {
+            Direction = direction;
+            SetInvertDirection();
+        }
+
         private void SetInvertDirection()
         {
             Vector3 vector3 = new Vector3(1 / Direction.X, 1 / Direction.Y, 1 / Direction.Z);
