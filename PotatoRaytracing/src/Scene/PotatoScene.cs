@@ -41,7 +41,7 @@ namespace PotatoRaytracing
 
             SceneFile sceneFile = SceneLoaderAndSaver.LoadScene(filename);
             List<PotatoSphere> spheres = sceneFile.Spheres.ToList();
-            List<PotatoMesh> meshs = new List<PotatoMesh>(); //TODO: Support mesh in scenes.
+            List<PotatoMesh> meshs = new List<PotatoMesh>(); //TODO: Support mesh in scenes data file.
             meshsBuilder.Build(ref meshs);
 
             SceneName = filename;
@@ -115,7 +115,7 @@ namespace PotatoRaytracing
 
             meshsBuilder.Build(ref meshs);
 
-            Cubemap.LoadCubemap(option.Cubemap); //TODO: Put it in option.
+            Cubemap.LoadCubemap(option.Cubemap);
             PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap, Camera);
         }
 
