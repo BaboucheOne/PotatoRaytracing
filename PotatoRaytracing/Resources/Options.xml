@@ -1,11 +1,12 @@
-
-        <option>
-            <width>512</width>
-            <height>512</height>
-            <fov>60</fov>
-            <supersampling>false</supersampling>
-            <supersamplingDivision>4</supersamplingDivision>
-			<screenTiles>4</screenTiles>
-			<videoDuration>5</videoDuration>
-            <videoFPS>10</videoFPS>
-        </option>
+<option>
+  <width>512</width>
+  <height>512</height>
+  <fov>60</fov>
+  <supersampling>false</supersampling>
+  <supersamplingDivision>4</supersamplingDivision>
+  <screenTiles>4</screenTiles>
+  <recursionDepth>1</recursionDepth>
+  <videoDuration>5</videoDuration>
+  <videoFPS>10</videoFPS>
+  <cubemap>Resources\\Textures\\cubemap5.bmp</cubemap>
+</option>

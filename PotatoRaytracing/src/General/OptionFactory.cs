@@ -6,7 +6,6 @@ namespace PotatoRaytracing
 {
     public static class OptionFactory
     {
-        private const string optionFileName = "Options.xml";
         private const string optionPath = @"Resources\\Options.xml";
         private const string optionXMLNode = "/option";
         private const string basicOptionFileTemplate = @"
@@ -17,8 +16,10 @@ namespace PotatoRaytracing
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
             <screenTiles>4</screenTiles>
+            <recursionDepth>1</recursionDepth>
             <videoDuration>5</videoDuration>
             <videoFPS>10</videoFPS>
+            <cubemap>Resources\\Textures\\cubemap5.bmp</cubemap>
         </option>";
 
         private static int width = 512;
@@ -27,14 +28,16 @@ namespace PotatoRaytracing
         private static bool supersampling = false;
         private static int supersamplingDivision = 4;
         private static int screenTiles = 4;
+        private static int recursionDepth = 1;
         private static int videoDuration = 5;
         private static int videoFPS = 10;
+        private static string cubemap = @"Resources\\Textures\\cubemap5.bmp";
 
         public static Option CreateOption()
         {
             ReadOptionFromFile();
 
-            return new Option(width, height, fov, supersampling, supersamplingDivision, screenTiles, videoDuration, videoFPS);
+            return new Option(width, height, fov, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap);
         }
 
         private static void ReadOptionFromFile()
@@ -93,8 +96,10 @@ namespace PotatoRaytracing
             supersampling = bool.Parse(node.SelectSingleNode("supersampling").InnerText);
             supersamplingDivision = int.Parse(node.SelectSingleNode("supersamplingDivision").InnerText);
             screenTiles = int.Parse(node.SelectSingleNode("screenTiles").InnerText);
+            recursionDepth = int.Parse(node.SelectSingleNode("recursionDepth").InnerText);
             videoDuration = int.Parse(node.SelectSingleNode("videoDuration").InnerText);
             videoFPS = int.Parse(node.SelectSingleNode("videoFPS").InnerText);
+            cubemap = node.SelectSingleNode("cubemap").InnerText;
         }
 
         private static bool IsPowerOf4(int x)

@@ -1,25 +1,51 @@
-# Potato ray tracing
-A simple ray tracing developed on C# engine.
-## Features
-- Sphere detection
-- Mesh rendering
-- Multiple lights
-- Sphere Texture
-- Multi thread renderer
-- Option file
-- Scene file reader
-- Double precision
+# Potato raytracing
 
-##Rendered images
-![](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/27_10_19_image3.bmp)
+Potato is a simple raytracing C# program, developed during free time.
 
-> Multiple lights rendering.
+The orignal goal was to create a dll and export it into a software to render images easly.
+Since, my new goal is still create a dll but, running on gpu in realtime.
 
-![](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/04_11_19_image1.bmp)
+:warning: Because mipmap is not supported, changing default cubemap will result to a pixelize background
 
-> Multiple lights & textures rendering.
+**Still many things to improve, to refactor and to simply for better performance.**
 
-Get more images in the folder 'renderedImages'.
+**How to use it**
 
-#Documentations
-- [scratchapixel - rendering technique](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview/ray-tracing-rendering-technique-overview)
+Simply clone and run it.
+Modify 'option.xml' in the 'Resources' folder to play with settings.
+
+# New Features!
+
+  - Cubemap
+  - Reflection
+  - Multi-threading (improved!)
+  - Video
+# Features
+
+ -  Sphere rendering
+ -  Texture on sphere
+ -  Mesh rendering (only obj)
+ -  Mutiple lights
+ -  Double precision
+ -  Custom scene file
+ -  Multi-threading
+# Screenshots
+![multiple lights](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/27_10_19_image1.bmp)
+
+![multiple lights and textures](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/04_11_19_image1.bmp)
+
+![cubemap and reflection](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/20_07_20_cubemap_2.bmp)
+
+See also [rendered images folder](https://github.com/BaboucheOne/PotatoRaytracing/tree/master/renderedImages) for more!
+
+# Futher features
+
+ - K-Tree
+ - 2 type of rendering (Solid color or cubemap)
+ - Textures on meshs
+ - Mimap for cubemap
+ - Material on object
+
+# Documentation
+
+ - [Scratchapixel 2.0 - Ray-Tracing Rendering Technique](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview/ray-tracing-rendering-technique-overview)

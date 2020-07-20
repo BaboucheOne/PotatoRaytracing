@@ -11,6 +11,7 @@ namespace PotatoRaytracing
         private readonly IntersectionHandler intersectionHandler;
 
         private Color pixelColor = Color.Black;
+        private Color globalColor = Color.Black;
 
         private string objectRenderTexturePath = string.Empty;
         private Bitmap objectRenderTexture = null;
@@ -24,21 +25,40 @@ namespace PotatoRaytracing
 
         public Color Trace(Ray renderRay, int lightIndex)
         {
-            pixelColor = Color.Black;
+            RecursiveTrace(renderRay, lightIndex, 0);
+            return globalColor;
+        }
 
-            ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(renderRay);
+        private Color RecursiveTrace(Ray ray, int lightIndex, int depth)
+        {
+            if (depth >= sceneData.Option.RecursionDepth)
+            {
+                globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
+                return globalColor;
+            }
+            ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(ray);
 
             if (result.IsNull)
             {
-                return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
+                globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
+                return globalColor;
             }
+
+            ray.SetDirection(ReflectRay(ray.Direction, result.HitNormal));
 
             if (result.IsMesh)
             {
-                return TraceTriangle(lightIndex, result as ClosestTriangle);
+                Color c = TraceTriangle(lightIndex, result as ClosestTriangle);
+                globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.8f)) / 2, (globalColor.G + (byte)(c.G * 0.8f)) / 2, (globalColor.B + (byte)(c.B * 0.8f)) / 2);
+                RecursiveTrace(ray, lightIndex, depth + 1);
+            } else
+            {
+                Color c = TraceSphere(lightIndex, result as ClosestSphere);
+                globalColor = Color.FromArgb((globalColor.R + (byte)(c.R * 0.25f)) / 2, (globalColor.G + (byte)(c.G * 0.25f)) / 2, (globalColor.B + (byte)(c.B * 0.25f)) / 2);
+                RecursiveTrace(ray, lightIndex, depth + 1);
             }
 
-            return TraceSphere(lightIndex, result as ClosestSphere);
+            return globalColor;
         }
 
         private Color TraceTriangle(int lightIndex, ClosestTriangle result)

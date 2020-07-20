@@ -110,11 +110,11 @@ namespace PotatoRaytracing
 
         public static Vector3 GetDirectionFromPixel(PotatoSceneData scene, double pixelPositionX, double pixelPositionY)
         {
-            Vector3 V1 = Vector3.Multiply(scene.Camera.Right(), pixelPositionX);
-            Vector3 V2 = Vector3.Multiply(scene.Camera.Up(), pixelPositionY);
+            Vector3 V1 = Vector3.Multiply(scene.Camera.Right, pixelPositionX);
+            Vector3 V2 = Vector3.Multiply(scene.Camera.Up, pixelPositionY);
             Vector3 pixelPos = Vector3.Add(Vector3.Add(scene.Option.ScreenLeft, V1), V2);
 
-            return Vector3.Normalize(Vector3.Add(scene.Camera.Forward(), pixelPos));
+            return Vector3.Normalize(Vector3.Add(scene.Camera.Forward, pixelPos));
         }
     }
 }

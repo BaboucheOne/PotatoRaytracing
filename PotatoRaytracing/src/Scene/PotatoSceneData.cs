@@ -17,7 +17,7 @@ namespace PotatoRaytracing
 
         public string[] TexturePath => Textures.ToArray();
 
-        public PotatoSceneData(List<PotatoSphere> spheres, List<PotatoMesh> meshs, List<PotatoPointLight> lights, HashSet<string> textures, Option option, Cubemap cubemap) : this()
+        public PotatoSceneData(List<PotatoSphere> spheres, List<PotatoMesh> meshs, List<PotatoPointLight> lights, HashSet<string> textures, Option option, Cubemap cubemap, Camera cam = null) : this()
         {
             Spheres = spheres;
             Meshs = meshs;
@@ -26,7 +26,14 @@ namespace PotatoRaytracing
             Option = option;
             Cubemap = cubemap;
 
-            this.Camera = new Camera(new Vector3(), new Quaternion());
+            if (cam == null)
+            {
+                Camera = new Camera(new Vector3(), new Quaternion());
+            }
+            else
+            {
+                Camera = cam;
+            }
 
             InitOption();
         }
@@ -37,11 +44,11 @@ namespace PotatoRaytracing
 
             if (Option == null)
             {
-                Option = new Option(512, 512, 60, false, 4, 4, 4, 5, Camera);
+                Option = new Option(512, 512, 60, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
             }
             else
             {
-                if (Option.camera == null)
+                if (Option.Camera == null)
                 {
                     Option.SetCamera(Camera);
                 }
@@ -56,7 +63,7 @@ namespace PotatoRaytracing
             HashSet<string> textures = new HashSet<string>(Textures);
             Cubemap cubemap = Cubemap.DeepCopy();
 
-            return new PotatoSceneData(spheres, meshs, lights, textures, Option, cubemap);
+            return new PotatoSceneData(spheres, meshs, lights, textures, Option, cubemap, Camera);
         }
     }
 }
