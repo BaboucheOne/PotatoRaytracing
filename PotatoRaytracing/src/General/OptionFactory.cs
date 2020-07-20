@@ -19,6 +19,7 @@ namespace PotatoRaytracing
             <recursionDepth>1</recursionDepth>
             <videoDuration>5</videoDuration>
             <videoFPS>10</videoFPS>
+            <cubemap>Resources\\Textures\\cubemap5.bmp</cubemap>
         </option>";
 
         private static int width = 512;
@@ -30,12 +31,13 @@ namespace PotatoRaytracing
         private static int recursionDepth = 1;
         private static int videoDuration = 5;
         private static int videoFPS = 10;
+        private static string cubemap = @"Resources\\Textures\\cubemap5.bmp";
 
         public static Option CreateOption()
         {
             ReadOptionFromFile();
 
-            return new Option(width, height, fov, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS);
+            return new Option(width, height, fov, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap);
         }
 
         private static void ReadOptionFromFile()
@@ -97,6 +99,7 @@ namespace PotatoRaytracing
             recursionDepth = int.Parse(node.SelectSingleNode("recursionDepth").InnerText);
             videoDuration = int.Parse(node.SelectSingleNode("videoDuration").InnerText);
             videoFPS = int.Parse(node.SelectSingleNode("videoFPS").InnerText);
+            cubemap = node.SelectSingleNode("cubemap").InnerText;
         }
 
         private static bool IsPowerOf4(int x)

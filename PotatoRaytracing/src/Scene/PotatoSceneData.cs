@@ -44,11 +44,11 @@ namespace PotatoRaytracing
 
             if (Option == null)
             {
-                Option = new Option(512, 512, 60, false, 4, 4, 1, 4, 5, Camera);
+                Option = new Option(512, 512, 60, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
             }
             else
             {
-                if (Option.camera == null)
+                if (Option.Camera == null)
                 {
                     Option.SetCamera(Camera);
                 }

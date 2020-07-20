@@ -46,7 +46,7 @@ namespace PotatoRaytracing
 
             SceneName = filename;
 
-            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap.bmp");
+            Cubemap.LoadCubemap(option.Cubemap);
             PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), option, Cubemap);
         }
 
@@ -59,7 +59,7 @@ namespace PotatoRaytracing
         public Option GetOptions() => option;
         public Camera GetCamera() => PotatoSceneData.Camera;
 
-        private void CreateRandomScene()
+        private void CreateRandomScene() //TODO: Refactor this (colors should go, separate into several methods)
         {
             List<PotatoSphere> spheres = new List<PotatoSphere>();
             List<PotatoMesh> meshs = new List<PotatoMesh>();
@@ -105,7 +105,7 @@ namespace PotatoRaytracing
                 PotatoMesh mesh = new PotatoMesh
                 {
                     Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
-                    ObjectPath = @"Resources\\Objects\\cube.obj",
+                    ObjectPath = @"Resources\\Objects\\cube.obj", //TODO: Implement ressource path.
                     Color = colors[(int)(r.NextDouble() * colors.Count)]
 
                 };
@@ -115,7 +115,7 @@ namespace PotatoRaytracing
 
             meshsBuilder.Build(ref meshs);
 
-            Cubemap.LoadCubemap(@"Resources\\Textures\\cubemap4.bmp");
+            Cubemap.LoadCubemap(option.Cubemap); //TODO: Put it in option.
             PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap, Camera);
         }
 
