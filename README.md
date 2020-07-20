@@ -4,11 +4,13 @@ Potato is a simple raytracing C# program, developed during free time.
 
 The orignal goal was to create a dll and export it into a software to render image easly.
 Since, my new goal is still create a dll but, running on gpu in realtime.
+
 :warning: Because mipmap is not supported, changing default cubemap will result to a pixelize background
 
 **Still many things to improve, to refactor and to simply for better performance.**
 
 **How to use it**
+
 Simply clone and run it.
 Modify 'option.xml' in the 'Resources' folder to play with settings.
 
