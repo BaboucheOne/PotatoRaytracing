@@ -8,7 +8,7 @@ Since, my new goal is still create a dll but, running on gpu in realtime.
 
 **Still many things to improve, to refactor and to simply for better performance.**
 
-**++How to use it ?++**
+**How to use it**
 Simply clone and run it.
 Modify 'option.xml' in the 'Resources' folder to play with settings.
 
