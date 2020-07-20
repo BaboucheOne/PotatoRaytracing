@@ -34,7 +34,9 @@ Modify 'option.xml' in the 'Resources' folder to play with settings.
 
 ![multiple lights and textures](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/04_11_19_image1.bmp)
 
-![cubemap and reflection](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/20_07_20_cubemap_2.bmp)
+![cubemap and light](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/22_05_20_cubemap_1.bmp)
+
+Reflection image will come soon. (But you can render your own image!)
 
 See also [rendered images folder](https://github.com/BaboucheOne/PotatoRaytracing/tree/master/renderedImages) for more!
 
