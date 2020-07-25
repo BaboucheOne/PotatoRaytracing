@@ -23,15 +23,71 @@ namespace PotatoRaytracing
             intersectionHandler = new IntersectionHandler(sceneData);
         }
 
-        public Color Trace(Ray renderRay, int lightIndex)
+        public Color Trace(Ray renderRay, KDTree tree, int lightIndex)
         {
-            RecursiveTrace(renderRay, lightIndex, 0);
-            return globalColor;
+            //RecursiveTrace(renderRay, lightIndex, 0);
+            return TraceKD(renderRay, tree, lightIndex); //TODO: Implementer recursive avec les materiaux
+            return TraceOld(renderRay, lightIndex);
+        }
+
+        private Color TraceOld(Ray ray, int lightIndex)
+        {
+            ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(ray);
+            if (result.IsNull || !result.IsIntersect)
+            {
+                return sceneData.Cubemap.GetCubemapColor(ray.Direction);
+            }
+
+            if(result.IsMesh)
+            {
+                return TraceTriangle(lightIndex, result as ClosestTriangle);
+            }
+
+            return TraceSphere(lightIndex, result as ClosestSphere);
+        }
+
+        private Color TraceKD(Ray renderRay, KDTree tree, int lightIndex)
+        {
+            KDIntersectionResult kD = KDIntersection.Intersect(renderRay, tree.Root);
+
+            if(kD != null && kD.Hit)
+            {
+                return ComputeKDLights(Color.Red, kD.HitPosition, kD.HitNormal, sceneData.Lights[lightIndex], tree.Root);
+            }
+
+            return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
+        }
+
+        private Color ComputeKDLights(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoLight light, KDNode node)
+        {
+            Vector3 directionToLight = light.DirectionToLight(hitPosition);
+            Ray shadowRay = new Ray(hitPosition + hitNormal * sceneData.Option.Bias, directionToLight);
+
+            if (light.Intensity > 0 && light.IsInRange(hitPosition) && !KDIntersection.Intersect(shadowRay, node).Hit)
+            {
+                Vector3 dir2light = light.DirectionToLight(hitPosition);
+                double normalAngleToLight = Vector3.Dot(dir2light, hitNormal);
+
+                if (normalAngleToLight > 0)
+                {
+                    float lightPower = (float)(normalAngleToLight * light.IntensityOverDistance(hitPosition));
+                    float albedo = 1f; //Toujours en dessous de 1.
+                    float lightReflected = albedo / (float)Math.PI;
+
+                    int r = (int)Math.Round((light.Color.R + finalColor.R) * 0.5f * lightPower * lightReflected);
+                    int g = (int)Math.Round((light.Color.G + finalColor.G) * 0.5f * lightPower * lightReflected);
+                    int b = (int)Math.Round((light.Color.B + finalColor.B) * 0.5f * lightPower * lightReflected);
+
+                    return Color.FromArgb(r.Clamp(0, 255), g.Clamp(0, 255), b.Clamp(0, 255));
+                }
+            }
+
+            return Color.Black;
         }
 
         private Color RecursiveTrace(Ray ray, int lightIndex, int depth)
         {
-            if (depth >= sceneData.Option.RecursionDepth)
+            if (depth >= sceneData.Option.RecursionDepth) //TODO: Just ==
             {
                 globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
                 return globalColor;
@@ -129,30 +185,35 @@ namespace PotatoRaytracing
             return originDirection - 2 * Vector3.Dot(originDirection, hitNormal) * hitNormal;
         }
 
-        private Color ComputeLight(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoPointLight light)
+        private Color ComputeLight(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoLight light)
         {
-            Vector3 directionToLight = light.GetDirection(hitPosition);
+            Vector3 directionToLight = light.DirectionToLight(hitPosition);
 
-            if (light.InRange(hitPosition))
+            Ray shadowRay = new Ray(hitPosition + hitNormal * sceneData.Option.Bias, directionToLight);
+            ClosestEntityIntersection result = intersectionHandler.GetClosestEntity(shadowRay);
+            if (light.Intensity > 0 && light.IsInRange(hitPosition) && result != null && result.IsIntersect)
             {
-                double normalAng = DiffuseAngle(hitPosition, hitNormal, light);
+                Vector3 dir2light = light.DirectionToLight(hitPosition);
+                double normalAngleToLight = Vector3.Dot(dir2light, hitNormal);
 
-                if (normalAng > 0)
+                if (normalAngleToLight > 0)
                 {
-                    finalColor = Color.FromArgb((int)Math.Round((light.Color.R + finalColor.R) * 0.5f * normalAng * light.Intensity),
-                                (int)Math.Round((light.Color.G + finalColor.G) * 0.5f * normalAng * light.Intensity),
-                                (int)Math.Round((light.Color.B + finalColor.B) * 0.5f * normalAng * light.Intensity));
-                }
-                else
-                {
-                    finalColor = Color.Black;
+                    float lightPower = (float)(normalAngleToLight * light.IntensityOverDistance(hitPosition));
+                    float albedo = 1f; //Toujours en dessous de 1.
+                    float lightReflected = albedo / (float)Math.PI;
+
+                    int r = (int)Math.Round((light.Color.R + finalColor.R) * 0.5f * lightPower * lightReflected);
+                    int g = (int)Math.Round((light.Color.G + finalColor.G) * 0.5f * lightPower * lightReflected);
+                    int b = (int)Math.Round((light.Color.B + finalColor.B) * 0.5f * lightPower * lightReflected);
+
+                    return Color.FromArgb(r.Clamp(0, 255), g.Clamp(0, 255), b.Clamp(0, 255));
                 }
             }
 
-            return finalColor;
+            return Color.Black;
         }
 
-        public static double DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoPointLight light)
+        public static double DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoLight light)
         {
             Vector3 dir = Vector3.Normalize(light.Position - hitPoint);
             return Vector3.Dot(dir, normal);

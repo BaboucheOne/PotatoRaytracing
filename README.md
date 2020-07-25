@@ -49,3 +49,6 @@ See also [rendered images folder](https://github.com/BaboucheOne/PotatoRaytracin
 # Documentation
 
  - [Scratchapixel 2.0 - Ray-Tracing Rendering Technique](https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-overview/ray-tracing-rendering-technique-overview)
+ - [Write raytracer in rust part 2 - Light](https://bheisler.github.io/post/writing-raytracer-in-rust-part-2/)
+ - [Custom raytracer renderer](https://dietertack.files.wordpress.com/2017/11/tackdieter_paper.pdf)
+ - [Free obj models](http://casual-effects.com/data/index.html)

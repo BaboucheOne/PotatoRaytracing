@@ -10,6 +10,7 @@ namespace PotatoRaytracing
         public int HalfWidth;
         public int HalfHeight;
         public double Fov;
+        public double Bias;
         public bool SuperSampling;
         public int SuperSamplingDivision;
         public int ScreenTiles;
@@ -22,23 +23,24 @@ namespace PotatoRaytracing
 
         public Camera Camera;
 
-        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap)
+        public Option(int width, int heigth, double fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap)
         {
-            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, null);
+            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, null);
         }
 
-        public Option(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
+        public Option(int width, int heigth, double fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
         {
-            InitializeParameters(width, heigth, fov, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, cam);
+            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, double fov, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
+        private void InitializeParameters(int width, int heigth, double fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
         {
             Width = width;
             Height = heigth;
             Fov = fov;
+            Bias = bias;
             Camera = cam;
             SuperSampling = superSampling;
             SuperSamplingDivision = superSamplingDivision;
@@ -87,17 +89,18 @@ namespace PotatoRaytracing
             return string.Format("Width: {0} \n" +
                 "Height: {1} \n" +
                 "Fov: {2} \n" +
-                "Camera Position: {3} \n" +
-                "Camera Rotation: {4} \n" +
-                "Screen Center {5} \n" +
-                "Screen Left {6} \n" +
-                "Super sampling enable {7} \n" +
-                "Super sampling division {8} \n" +
-                "Screen tiles {9} \n" +
-                "Recursion depth {10} \n" +
-                "Video Duration {11} \n" +
-                "Video FPS {12} \n" +
-                "Cubemap {13}", Width, Height, Fov, Camera.Position, Camera.Rotation,
+                "Fov: {3} \n" +
+                "Camera Position: {4} \n" +
+                "Camera Rotation: {5} \n" +
+                "Screen Center {6} \n" +
+                "Screen Left {7} \n" +
+                "Super sampling enable {8} \n" +
+                "Super sampling division {9} \n" +
+                "Screen tiles {10} \n" +
+                "Recursion depth {11} \n" +
+                "Video Duration {12} \n" +
+                "Video FPS {13} \n" +
+                "Cubemap {14}", Width, Height, Fov, Bias, Camera.Position, Camera.Rotation,
                                     ScreenCenter, ScreenLeft, SuperSampling, SuperSamplingDivision,
                                     ScreenTiles, RecursionDepth, VideoDuration, VideoFPS, Cubemap);
         }

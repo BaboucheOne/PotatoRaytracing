@@ -93,7 +93,7 @@ namespace PotatoRaytracing
                     else
                     {
                         SetRayDirectionByPixelPosition(ref ray, t.sceneData, i, j);
-                        col = t.Trace(ray, lightIndex);
+                        col = t.Trace(ray, t.sceneData.Tree, lightIndex);
                     }
 
                     buffer[offset] = col.B;

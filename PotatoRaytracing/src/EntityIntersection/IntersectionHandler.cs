@@ -146,7 +146,7 @@ namespace PotatoRaytracing
 
                 for (int j = 0; j < mesh.GetTrianglesCount; j++)
                 {
-                    if (TriangleIntersection.RayIntersectsTriangle(ray.Origin, ray.Direction, mesh.GetTriangle(j), ref localHitPosition, ref localHitNormal, ref t))
+                    if (TriangleIntersection.Intersect(ray.Origin, ray.Direction, mesh.GetTriangle(j), ref localHitPosition, ref localHitNormal, ref t))
                     {
                         if (t < distance)
                         {

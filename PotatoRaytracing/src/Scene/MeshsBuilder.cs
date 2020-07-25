@@ -42,28 +42,24 @@ namespace PotatoRaytracing
 
         private void BuildMeshs(List<PotatoMesh> meshs)
         {
-            List<Triangle> triangles = new List<Triangle>();
-
             for (int i = 0; i < loadResult.Groups.Count; i++)
             {
                 Group group = loadResult.Groups[i];
-                int faces = group.Faces.Count;
 
+                List<Triangle> triangles = new List<Triangle>();
                 triangles.Clear();
-                for (int j = 0; j < faces; j++)
-                {
-                    Vector3[] triangleVertices = new Vector3[3];
-                    Vector3[] triangleNormals = new Vector3[3];
-                    for (int k = 0; k < verticesCount; k++)
-                    {
-                        int vertexIndex = group.Faces[j][k].VertexIndex - verticesGap;
-                        int normalIndex = group.Faces[j][k].NormalIndex - verticesGap;
 
-                        triangleVertices[k] = VertexToVector3(loadResult.Vertices[vertexIndex]);
-                        //triangleNormals[k] = VertexToVector3(loadResult.Vertices[normalIndex]);
+                for (int j = 0; j < group.Faces.Count; j++)
+                {
+                    Vector3[] vertices = new Vector3[verticesCount];
+                    Vector3[] normals = new Vector3[verticesCount];
+                    for (int k = 0; k < group.Faces[j].Count; k++)
+                    {
+                        vertices[k] = VertexToVector3(loadResult.Vertices[group.Faces[j][k].VertexIndex - verticesGap]);
+                        normals[k] = VertexToVector3(loadResult.Vertices[group.Faces[j][k].NormalIndex - verticesGap]);
                     }
 
-                    triangles.Add(new Triangle(triangleVertices, triangleNormals));
+                    triangles.Add(new Triangle(vertices, normals));
                 }
 
                 meshs[i].SetTriangles(triangles.ToArray());
@@ -72,8 +68,7 @@ namespace PotatoRaytracing
         }
 
         private void ReadAndLoadObjFileInLoadFactory(string path)
-        {
-            
+        { 
             FileStream fileStream = new FileStream(path, FileMode.OpenOrCreate);
             loadResult = loadFactory.Load(fileStream);
             fileStream.Close();
@@ -82,11 +77,6 @@ namespace PotatoRaytracing
         private Vector3 VertexToVector3(Vertex vertex)
         {
             return new Vector3(vertex.X, vertex.Y, vertex.Z);
-        }
-
-        private Vector3 NormalToVector3(Normal normal)
-        {
-            return new Vector3(normal.X, normal.Y, normal.Z);
         }
     }
 }
