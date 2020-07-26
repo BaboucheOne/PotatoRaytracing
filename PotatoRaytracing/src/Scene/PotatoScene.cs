@@ -140,7 +140,6 @@ namespace PotatoRaytracing
             List<Triangle> triangles = new List<Triangle>();
             foreach (PotatoMesh mesh in meshs)
             {
-                Console.WriteLine(mesh.GetTriangles().Length);
                 triangles.AddRange(mesh.GetTriangles().ToList());
             }
 
