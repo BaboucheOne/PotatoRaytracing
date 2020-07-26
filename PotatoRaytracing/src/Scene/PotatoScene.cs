@@ -118,8 +118,8 @@ namespace PotatoRaytracing
                 Position = new Vector3(5, -3.5, 0),
                 //Position = new Vector3(3, 0, 0),
                 //ObjectPath = @"Resources\\Objects\\kukuri.obj", //TODO: Implement ressource path.
-                //ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.
-                ObjectPath = @"Resources\\Objects\\bunny.obj", //TODO: Implement ressource path.
+                ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\bunny.obj", //TODO: Implement ressource path.
                 //ObjectPath = @"Resources\\Objects\\teapot.obj", //TODO: Implement ressource path.
                 //ObjectPath = @"Resources\\Objects\\red_dot.obj", //TODO: Implement ressource path.
                 //ObjectPath = @"Resources\\Objects\\ico.obj", //TODO: Implement ressource path.
@@ -140,7 +140,8 @@ namespace PotatoRaytracing
             List<Triangle> triangles = new List<Triangle>();
             foreach (PotatoMesh mesh in meshs)
             {
-                triangles.Concat(mesh.GetTriangles());
+                Console.WriteLine(mesh.GetTriangles().Length);
+                triangles.AddRange(mesh.GetTriangles().ToList());
             }
 
             return triangles;
