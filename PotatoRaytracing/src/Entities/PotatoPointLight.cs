@@ -3,35 +3,29 @@ using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
-    public class PotatoPointLight : PotatoEntity
+    public class PotatoPointLight : PotatoLight
     {
-        public Color Color;
-        public float Radius;
-        public float Intensity;
+        public readonly float Radius;
 
-        public PotatoPointLight() : base(Vector3.Zero)
+        public PotatoPointLight(Vector3 position, float radius, float intensity, Color color) : base(position, intensity, color, LightType.Point)
         {
-            Color = Color.White;
-            Radius = 10f;
-            Intensity = 1;
-            Position = Vector3.Zero;
-        }
-
-        public PotatoPointLight(Vector3 position, float radius, float intensity, Color color) : base(position)
-        {
-            Color = color;
             Radius = radius;
-            Intensity = intensity;
         }
 
-        public bool InRange(Vector3 hitPosition)
-        {
-            return Vector3.Distance(hitPosition, Position) <= Radius;
-        }
-
-        public Vector3 GetDirection(Vector3 position)
+        public override Vector3 DirectionToLight(Vector3 position)
         {
             return Vector3.Normalize(Position - position);
+        }
+
+        public override float IntensityOverDistance(Vector3 position)
+        {
+            double dst = Vector3.Distance(position, Position);
+            return (float)(Intensity / (4 * System.Math.PI * (dst * dst)));
+        }
+
+        public override bool IsInRange(Vector3 position)
+        {
+            return Vector3.Distance(position, Position) <= Radius;
         }
     }
 }

@@ -12,17 +12,20 @@ namespace PotatoRaytracing
         public Cubemap Cubemap;
         public readonly List<PotatoSphere> Spheres;
         public readonly List<PotatoMesh> Meshs;
-        public readonly List<PotatoPointLight> Lights;
+        public readonly List<PotatoLight> Lights;
         public readonly HashSet<string> Textures;
+        public readonly KDTree Tree;
 
         public string[] TexturePath => Textures.ToArray();
 
-        public PotatoSceneData(List<PotatoSphere> spheres, List<PotatoMesh> meshs, List<PotatoPointLight> lights, HashSet<string> textures, Option option, Cubemap cubemap, Camera cam = null) : this()
+        public PotatoSceneData(List<PotatoSphere> spheres, List<PotatoMesh> meshs, List<PotatoLight> lights,
+                                HashSet<string> textures, KDTree tree, Option option, Cubemap cubemap, Camera cam = null) : this()
         {
             Spheres = spheres;
             Meshs = meshs;
             Lights = lights;
             Textures = textures;
+            Tree = tree;
             Option = option;
             Cubemap = cubemap;
 
@@ -44,7 +47,7 @@ namespace PotatoRaytracing
 
             if (Option == null)
             {
-                Option = new Option(512, 512, 60, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
+                Option = new Option(512, 512, 60, 0.001, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
             }
             else
             {
@@ -59,11 +62,11 @@ namespace PotatoRaytracing
         {
             List<PotatoSphere> spheres = new List<PotatoSphere>(Spheres);
             List<PotatoMesh> meshs = new List<PotatoMesh>(Meshs);
-            List<PotatoPointLight> lights = new List<PotatoPointLight>(Lights);
+            List<PotatoLight> lights = new List<PotatoLight>(Lights);
             HashSet<string> textures = new HashSet<string>(Textures);
             Cubemap cubemap = Cubemap.DeepCopy();
 
-            return new PotatoSceneData(spheres, meshs, lights, textures, Option, cubemap, Camera);
+            return new PotatoSceneData(spheres, meshs, lights, textures, Tree, Option, cubemap, Camera);
         }
     }
 }

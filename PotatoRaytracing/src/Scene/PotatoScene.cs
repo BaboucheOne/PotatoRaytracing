@@ -14,8 +14,6 @@ namespace PotatoRaytracing
         public Cubemap Cubemap = new Cubemap();
         public Camera Camera = new Camera();
         public PotatoSceneData PotatoSceneData;
-        public BoundingBoxTree BoundingBoxTree;
-        public List<BoundingBoxNode> aabbNodes = new List<BoundingBoxNode>();
 
         public string SceneName { get; private set; } = "Untiled.xml";
 
@@ -47,12 +45,14 @@ namespace PotatoRaytracing
             SceneName = filename;
 
             Cubemap.LoadCubemap(option.Cubemap);
-            PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), option, Cubemap);
+
+            KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
+            PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), tree, option, Cubemap);
         }
 
         private void ClearScene()
         {
-            aabbNodes.Clear();
+            //throw new NotImplementedException();
         }
 
 
@@ -63,7 +63,7 @@ namespace PotatoRaytracing
         {
             List<PotatoSphere> spheres = new List<PotatoSphere>();
             List<PotatoMesh> meshs = new List<PotatoMesh>();
-            List<PotatoPointLight> lights = new List<PotatoPointLight>();
+            List<PotatoLight> lights = new List<PotatoLight>();
 
             List<Color> colors = new List<Color>()
             {
@@ -81,42 +81,69 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 10; i++)
-            {
-                Vector3 pos = new Vector3(r.Next(-250, 250), r.Next(-100, 100), r.Next(-100, 100));
-                float rad = (float)r.NextDouble() * 20;
-                spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
-                spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
-            }
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Vector3 pos = new Vector3(r.Next(0, 200), r.Next(-100, 100), r.Next(-100, 100));
+            //    float rad = (float)r.NextDouble() * 5;
+            //    spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
+            //    spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
+            //}
 
             //Vector3 pos = new Vector3(50, 0, 0);
-            //float rad = 20f;//(float)r.NextDouble() * 20;
+            //float rad = 10f;//(float)r.NextDouble() * 20;
             //spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
-            //spheres[0].Color = colors[(int)(r.NextDouble() * colors.Count)];
+            //spheres[0].Color = Color.Red;
 
-            //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 100000), 500, 1, Color.White));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.White));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 1000, Color.Red));
+            //PotatoDirectionalLight directionalLight = new PotatoDirectionalLight(new Vector3(0.2, 0.76, 0.4), 3f, Color.White);
+            lights.Add(new PotatoDirectionalLight(new Vector3(0.4, -0.5, -0.2), 3f, Color.White));
 
-            const int randomMeshCount = 0;
-            for (int i = 0; i < randomMeshCount; i++)
+            //const int randomMeshCount = 1;
+            //for (int i = 0; i < randomMeshCount; i++)
+            //{
+            //    PotatoMesh mesh = new PotatoMesh
+            //    {
+            //        Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
+            //        ObjectPath = @"Resources\\Objects\\teapot.obj", //TODO: Implement ressource path.
+            //        Color = colors[(int)(r.NextDouble() * colors.Count)]
+            //    };
+
+            //    meshs.Add(mesh);
+            //}
+
+            PotatoMesh mesh = new PotatoMesh
             {
-                PotatoMesh mesh = new PotatoMesh
-                {
-                    Position = new Vector3(r.Next(1, 20), r.Next(-20, 20), r.Next(-20, 20)),
-                    ObjectPath = @"Resources\\Objects\\cube.obj", //TODO: Implement ressource path.
-                    Color = colors[(int)(r.NextDouble() * colors.Count)]
+                //Position = new Vector3(3, -3.5, 0),
+                Position = new Vector3(5, -3.5, 0),
+                //Position = new Vector3(3, 0, 0),
+                //ObjectPath = @"Resources\\Objects\\kukuri.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.
+                ObjectPath = @"Resources\\Objects\\bunny.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\teapot.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\red_dot.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\ico.obj", //TODO: Implement ressource path.
+                Color = colors[(int)(r.NextDouble() * colors.Count)]
+            };
 
-                };
-
-                meshs.Add(mesh);
-            }
-
+            meshs.Add(mesh);
             meshsBuilder.Build(ref meshs);
 
             Cubemap.LoadCubemap(option.Cubemap);
-            PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), option, Cubemap, Camera);
+
+            KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
+            PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), tree, option, Cubemap, Camera);
+        }
+
+        private List<Triangle> GetAllTrianglesInScene(List<PotatoMesh> meshs)
+        {
+            List<Triangle> triangles = new List<Triangle>();
+            foreach (PotatoMesh mesh in meshs)
+            {
+                triangles.Concat(mesh.GetTriangles());
+            }
+
+            return triangles;
         }
 
         private HashSet<string> RetreiveAllTextureInScene(List<PotatoSphere> spheres)

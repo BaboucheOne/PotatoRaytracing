@@ -72,13 +72,9 @@ namespace PotatoRaytracing
             Color col;
             Ray ray = new Ray();
             SuperSampling superSampling = null;
-            bool superSamplingEnable = false;
+            bool superSamplingEnable = t.sceneData.Option.SuperSampling;
 
-            if (t.sceneData.Option.SuperSampling)
-            {
-                superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
-                superSamplingEnable = true;
-            }
+            if (superSamplingEnable) superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
 
             for (int i = x; i < endx; i++)
             {
@@ -93,7 +89,7 @@ namespace PotatoRaytracing
                     else
                     {
                         SetRayDirectionByPixelPosition(ref ray, t.sceneData, i, j);
-                        col = t.Trace(ray, lightIndex);
+                        col = t.Trace(ray, t.sceneData.Tree, lightIndex);
                     }
 
                     buffer[offset] = col.B;

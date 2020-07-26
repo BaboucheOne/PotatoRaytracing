@@ -147,11 +147,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\BoundingBoxNode.cs" />
-    <Compile Include="src\BoundingBoxTree.cs" />
+    <Compile Include="src\General\BoundingBox.cs" />
+    <Compile Include="src\Entities\PotatoDirectionalLight.cs" />
+    <Compile Include="src\Entities\PotatoLight.cs" />
+    <Compile Include="src\EntityIntersection\KDIntersection.cs" />
+    <Compile Include="src\General\Extensions.cs" />
+    <Compile Include="src\General\KDNode.cs" />
+    <Compile Include="src\General\KDTree.cs" />
     <Compile Include="src\Rendering\Cubemap.cs" />
     <Compile Include="src\Entities\Camera.cs" />
-    <Compile Include="src\Entities\PotatoBox.cs" />
     <Compile Include="src\EntityIntersection\BoxIntersection.cs" />
     <Compile Include="src\EntityIntersection\ClosestEntityIntersection.cs" />
     <Compile Include="src\General\Constants.cs" />
