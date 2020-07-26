@@ -27,7 +27,7 @@ namespace PotatoRaytracing
         {
             //RecursiveTrace(renderRay, lightIndex, 0);
             return TraceKD(renderRay, tree, lightIndex); //TODO: Implementer recursive avec les materiaux
-            return TraceOld(renderRay, lightIndex);
+            //return TraceOld(renderRay, lightIndex);
         }
 
         private Color TraceOld(Ray ray, int lightIndex)
@@ -48,11 +48,14 @@ namespace PotatoRaytracing
 
         private Color TraceKD(Ray renderRay, KDTree tree, int lightIndex)
         {
-            KDIntersectionResult kD = KDIntersection.Intersect(renderRay, tree.Root);
+            Vector3 hitPosition = new Vector3();
+            Vector3 hitNormal = new Vector3();
+            double dst = 0.0;
+            bool hit = KDIntersection.Intersect(renderRay, tree.Root, ref hitPosition, ref hitNormal, ref dst);
 
-            if(kD != null && kD.Hit)
+            if(hit)
             {
-                return ComputeKDLights(Color.Red, kD.HitPosition, kD.HitNormal, sceneData.Lights[lightIndex], tree.Root);
+                return ComputeKDLights(Color.Red, hitPosition, hitNormal, sceneData.Lights[lightIndex], tree.Root);
             }
 
             return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
@@ -63,7 +66,10 @@ namespace PotatoRaytracing
             Vector3 directionToLight = light.DirectionToLight(hitPosition);
             Ray shadowRay = new Ray(hitPosition + hitNormal * sceneData.Option.Bias, directionToLight);
 
-            if (light.Intensity > 0 && light.IsInRange(hitPosition) && !KDIntersection.Intersect(shadowRay, node).Hit)
+            double distance = 0.0;
+            Vector3 hitPos = new Vector3();
+            Vector3 hitNor = new Vector3();
+            if (light.Intensity > 0 && light.IsInRange(hitPosition) && !KDIntersection.Intersect(shadowRay, node, ref hitPos, ref hitNor, ref distance))
             {
                 Vector3 dir2light = light.DirectionToLight(hitPosition);
                 double normalAngleToLight = Vector3.Dot(dir2light, hitNormal);
@@ -87,7 +93,7 @@ namespace PotatoRaytracing
 
         private Color RecursiveTrace(Ray ray, int lightIndex, int depth)
         {
-            if (depth >= sceneData.Option.RecursionDepth) //TODO: Just ==
+            if (depth == sceneData.Option.RecursionDepth)
             {
                 globalColor = sceneData.Cubemap.GetCubemapColor(ray.Direction);
                 return globalColor;

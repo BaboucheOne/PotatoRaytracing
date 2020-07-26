@@ -1,50 +1,35 @@
 ﻿using System.DoubleNumerics;
-using System.Drawing;
 
 namespace PotatoRaytracing
 {
-    public class KDIntersectionResult
-    {
-        public bool Hit;
-        public Vector3 HitPosition;
-        public Vector3 HitNormal;
-        public Color Color = Color.Yellow;
-
-        public KDIntersectionResult(bool hit, Vector3 hitPosition, Vector3 hitNormal, Color color)
-        {
-            Hit = hit;
-            HitPosition = hitPosition;
-            HitNormal = hitNormal;
-            Color = color;
-        }
-    }
-
     public static class KDIntersection
     {
-        public static KDIntersectionResult Intersect(Ray ray, KDNode node)
+        public static bool Intersect(Ray ray, KDNode node, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
         {
             double boxDst = 0.0;
             bool boxHit = BoxIntersection.Intersect(ray, node.Bbox, ref boxDst);
 
-            if (!boxHit) return null;
+            if (!boxHit) return false;
 
             if(node.Left != null || node.Right != null)
             {
+                bool hitLeft = false;
+                bool hitRight = false;
                 if(node.Left != null)
                 {
-                    return Intersect(ray, node.Left);
+                    hitLeft = Intersect(ray, node.Left, ref hitPosition, ref hitNormal, ref distance);
                 }
 
                 if(node.Right != null)
                 {
-                    return Intersect(ray, node.Right);
+                    hitRight = Intersect(ray, node.Right, ref hitPosition, ref hitNormal, ref distance);
                 }
+
+                return hitLeft || hitRight;
             }
 
             bool hit = false;
             double minDst = double.MaxValue;
-            Vector3 hitP = new Vector3();
-            Vector3 hitN = new Vector3();
             for (int i = 0; i < node.Triangles.Count; i++)
             {
                 Vector3 hitPos = new Vector3();
@@ -56,13 +41,15 @@ namespace PotatoRaytracing
                     {
                         minDst = dst;
                         hit = true;
-                        hitP = hitPos;
-                        hitN = hitNor;
+
+                        distance = dst;
+                        hitPosition = hitPos;
+                        hitNormal = hitNor;
                     }
                 }
             }
 
-            return new KDIntersectionResult(hit, hitP, hitN, Color.White);
+            return hit;
         }
     }
 }

@@ -5,27 +5,23 @@ namespace PotatoRaytracing
     public class KDTree
     {
         public KDNode Root;
-
-        public KDTree()
-        {
-            Root = new KDNode();
-        }
+        private const int maxDepth = 4;
 
         public KDTree(List<Triangle> triangles)
         {
-            Root = Split(triangles);
+            Root = Split(triangles, 0);
         }
 
-        public static KDNode Split(List<Triangle> triangles)
+        public static KDNode Split(List<Triangle> triangles, int depth)
         {
             KDNode node = new KDNode(triangles);
 
-            if (triangles.Count == 0) return node;
+            if (depth == maxDepth || triangles.Count == 0) return node;
 
             List<Triangle> leftTriangles = new List<Triangle>();
             List<Triangle> rightTriangles = new List<Triangle>();
 
-            int axis = node.Bbox.GetBiggerAxis(); //TODO: Le coter le plus grand.
+            int axis = node.Bbox.GetLongestAxis();
             foreach (Triangle triangle in triangles)
             {
                 switch(axis)
@@ -66,12 +62,13 @@ namespace PotatoRaytracing
 
             if (leftTriangles.Count > 0 && rightTriangles.Count != 0)
             {
-                node.Left = Split(leftTriangles);
+                node.Left = Split(leftTriangles, depth + 1);
                 node.Left.Parent = node;
             }
+
             if(rightTriangles.Count > 0 && leftTriangles.Count != 0)
             {
-                node.Right = Split(rightTriangles);
+                node.Right = Split(rightTriangles, depth + 1);
                 node.Right.Parent = node;
             }
 

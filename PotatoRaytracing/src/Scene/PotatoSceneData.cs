@@ -13,7 +13,6 @@ namespace PotatoRaytracing
         public readonly List<PotatoSphere> Spheres;
         public readonly List<PotatoMesh> Meshs;
         public readonly List<PotatoLight> Lights;
-        //public readonly PotatoDirectionalLight DirectionalLight;
         public readonly HashSet<string> Textures;
         public readonly KDTree Tree;
 
@@ -25,7 +24,6 @@ namespace PotatoRaytracing
             Spheres = spheres;
             Meshs = meshs;
             Lights = lights;
-            //DirectionalLight = directionalLight;
             Textures = textures;
             Tree = tree;
             Option = option;
@@ -65,11 +63,10 @@ namespace PotatoRaytracing
             List<PotatoSphere> spheres = new List<PotatoSphere>(Spheres);
             List<PotatoMesh> meshs = new List<PotatoMesh>(Meshs);
             List<PotatoLight> lights = new List<PotatoLight>(Lights);
-            //PotatoDirectionalLight dr = new PotatoDirectionalLight(DirectionalLight.Direction, DirectionalLight.Intensity, DirectionalLight.Color);
             HashSet<string> textures = new HashSet<string>(Textures);
             Cubemap cubemap = Cubemap.DeepCopy();
 
-            return new PotatoSceneData(spheres, meshs, lights, textures, Tree, Option, cubemap, Camera);//TODO: Deep copy Tree.
+            return new PotatoSceneData(spheres, meshs, lights, textures, Tree, Option, cubemap, Camera);
         }
     }
 }

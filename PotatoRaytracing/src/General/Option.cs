@@ -89,7 +89,7 @@ namespace PotatoRaytracing
             return string.Format("Width: {0} \n" +
                 "Height: {1} \n" +
                 "Fov: {2} \n" +
-                "Fov: {3} \n" +
+                "Bias: {3} \n" +
                 "Camera Position: {4} \n" +
                 "Camera Rotation: {5} \n" +
                 "Screen Center {6} \n" +

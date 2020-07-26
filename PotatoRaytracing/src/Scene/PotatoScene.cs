@@ -45,8 +45,9 @@ namespace PotatoRaytracing
             SceneName = filename;
 
             Cubemap.LoadCubemap(option.Cubemap);
-            //TODO: Implementer tree.
-            PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), null, option, Cubemap);
+
+            KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
+            PotatoSceneData = new PotatoSceneData(spheres, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), tree, option, Cubemap);
         }
 
         private void ClearScene()
@@ -93,18 +94,10 @@ namespace PotatoRaytracing
             //spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
             //spheres[0].Color = Color.Red;
 
-            //lights.Add(new PotatoPointLight(new Vector3(0, -100, 0), 500, 1, Color.Green));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.Blue));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 100, 0), 500, 1, Color.Red));
             //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.White));
             //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 1000, Color.Red));
-            for (int i = 0; i < 0; i++)
-            {
-                lights.Add(new PotatoPointLight(new Vector3(r.Next(0, 200), r.Next(-100, 100), r.Next(-100, 100)), 50000, 100000, colors[(int)(r.NextDouble() * colors.Count)]));
-            }
-            //lights.Add(new PotatoPointLight(new Vector3(3, 0, 3), 500, 1, Color.White));
-            //lights.Add(new PotatoPointLight(new Vector3(3, 3, 0), 500, 1, Color.White));
-            //lights.Add(new PotatoPointLight(new Vector3(3, -3, 0), 500, 1, Color.White));
+            //PotatoDirectionalLight directionalLight = new PotatoDirectionalLight(new Vector3(0.2, 0.76, 0.4), 3f, Color.White);
+            lights.Add(new PotatoDirectionalLight(new Vector3(0.4, -0.5, -0.2), 3f, Color.White));
 
             //const int randomMeshCount = 1;
             //for (int i = 0; i < randomMeshCount; i++)
@@ -125,7 +118,8 @@ namespace PotatoRaytracing
                 Position = new Vector3(5, -3.5, 0),
                 //Position = new Vector3(3, 0, 0),
                 //ObjectPath = @"Resources\\Objects\\kukuri.obj", //TODO: Implement ressource path.
-                ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.
+                ObjectPath = @"Resources\\Objects\\bunny.obj", //TODO: Implement ressource path.
                 //ObjectPath = @"Resources\\Objects\\teapot.obj", //TODO: Implement ressource path.
                 //ObjectPath = @"Resources\\Objects\\red_dot.obj", //TODO: Implement ressource path.
                 //ObjectPath = @"Resources\\Objects\\ico.obj", //TODO: Implement ressource path.
@@ -137,13 +131,19 @@ namespace PotatoRaytracing
 
             Cubemap.LoadCubemap(option.Cubemap);
 
-
-            KDTree tree = new KDTree(meshs[0].GetTriangles().ToList());
-            //tree.Split(3);
-            //Console.WriteLine(tree.Root.Right == null);
-            //PotatoDirectionalLight directionalLight = new PotatoDirectionalLight(new Vector3(0.2, 0.76, 0.4), 3f, Color.White);
-            lights.Add(new PotatoDirectionalLight(new Vector3(0.4, -0.5, -0.2), 3f, Color.White));
+            KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
             PotatoSceneData = new PotatoSceneData(spheres, meshs, lights, RetreiveAllTextureInScene(spheres), tree, option, Cubemap, Camera);
+        }
+
+        private List<Triangle> GetAllTrianglesInScene(List<PotatoMesh> meshs)
+        {
+            List<Triangle> triangles = new List<Triangle>();
+            foreach (PotatoMesh mesh in meshs)
+            {
+                triangles.Concat(mesh.GetTriangles());
+            }
+
+            return triangles;
         }
 
         private HashSet<string> RetreiveAllTextureInScene(List<PotatoSphere> spheres)

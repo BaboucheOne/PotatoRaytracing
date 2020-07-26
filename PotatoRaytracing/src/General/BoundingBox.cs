@@ -1,4 +1,6 @@
-﻿using System.DoubleNumerics;
+﻿using System;
+using System.DoubleNumerics;
+using System.Collections.Generic;
 
 namespace PotatoRaytracing
 {
@@ -11,48 +13,28 @@ namespace PotatoRaytracing
 
         public BoundingBox()
         {
-            SetBounds(0);
         }
 
-        public BoundingBox(Triangle triangle)
+        public BoundingBox(List<Triangle> triangles)
         {
-            SetBounds(triangle);
+            SetBounds(triangles);
         }
 
-        public void SetBounds(Triangle t)
+        public void SetBounds(List<Triangle> triangles)
         {
-            Min.X = t.V0.X < t.V1.X ? (t.V0.X < t.V2.X ? t.V0.X : t.V2.X) : (t.V1.X < t.V2.X ? t.V1.X : t.V2.X);
-            Min.Y = t.V0.Y < t.V1.Y ? (t.V0.Y < t.V2.Y ? t.V0.Y : t.V2.Y) : (t.V1.Y < t.V2.Y ? t.V1.Y : t.V2.Y);
-            Min.Z = t.V0.Z < t.V1.Z ? (t.V0.Z < t.V2.Z ? t.V0.Z : t.V2.Z) : (t.V1.Z < t.V2.Z ? t.V1.Z : t.V2.Z);
+            Min.Set(0.0);
+            Max.Set(0.0);
 
-            Max.X = t.V0.X > t.V1.X ? (t.V0.X > t.V2.X ? t.V0.X : t.V2.X) : (t.V1.X > t.V2.X ? t.V1.X : t.V2.X);
-            Max.Y = t.V0.Y > t.V1.Y ? (t.V0.Y > t.V2.Y ? t.V0.Y : t.V2.Y) : (t.V1.Y > t.V2.Y ? t.V1.Y : t.V2.Y);
-            Max.Z = t.V0.Z > t.V1.Z ? (t.V0.Z > t.V2.Z ? t.V0.Z : t.V2.Z) : (t.V1.Z > t.V2.Z ? t.V1.Z : t.V2.Z);
+            foreach (Triangle t in triangles)
+            {
+                Min.X = Math.Min(Min.X, t.Min.X);
+                Min.Y = Math.Min(Min.Y, t.Min.Y);
+                Min.Z = Math.Min(Min.Z, t.Min.Z);
 
-            UpdateCentroid();
-            UpdateSize();
-        }
-
-        public void SetBounds(double val)
-        {
-            Min.Set(val);
-            Max.Set(val);
-            Center.Set(val);
-            Size.Set(0.0);
-        }
-
-        public void SetBounds(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax)
-        {
-            Min.Set(xMin, yMin, zMin);
-            Max.Set(xMax, yMax, zMax);
-            UpdateCentroid();
-        }
-
-        public void SetBounds(Vector3 min, Vector3 max)
-        {
-            Min = min;
-            Max = max;
-            UpdateCentroid();
+                Max.X = Math.Max(Max.X, t.Max.X);
+                Max.Y = Math.Max(Max.Y, t.Max.Y);
+                Max.Z = Math.Max(Max.Z, t.Max.Z);
+            }
         }
 
         public void UpdateCentroid()
@@ -70,15 +52,12 @@ namespace PotatoRaytracing
             Size.Z = Min.Z < Max.Z ? Max.Z - Min.Z : Min.Z - Max.Z;
         }
 
-        public int GetBiggerAxis()
+        public int GetLongestAxis()
         {
-            double sizeX = Max.X - Min.X;
-            double sizeY = Max.Y - Min.Y;
-            double sizeZ = Max.Z - Min.Z;
+            double max = Math.Max(Size.X, Math.Max(Size.Y, Size.Z));
 
-            if (sizeX > sizeY && sizeX > sizeZ) return 0;
-            if (sizeY > sizeZ && sizeY > sizeX) return 1;
-
+            if (Size.X == max) return 0;
+            if (Size.Y == max) return 1;
             return 2;
         }
     }
