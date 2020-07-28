@@ -80,7 +80,7 @@ namespace PotatoRaytracing
         {
             lock (_lock)
             {
-                return textures[texturePath].GetPixel(x, y);
+                return textures[texturePath].GetPixel(x, y.Clamp(0, textures[texturePath].Height)); //TODO: Trouver pouquoi la valeur est > textures[texturePath].Height. Sans doute le int avant qui doit mal etre converti.
             }
         }
     }

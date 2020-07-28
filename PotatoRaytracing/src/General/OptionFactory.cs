@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Xml;
 
@@ -12,15 +13,17 @@ namespace PotatoRaytracing
         <option>
             <width>512</width>
             <height>512</height>
-            <fov>60</fov>
-            <bias>60</bias>
+            <fov>40</fov>
+            <bias>0,001</bias>
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
             <screenTiles>4</screenTiles>
             <recursionDepth>1</recursionDepth>
             <videoDuration>5</videoDuration>
             <videoFPS>10</videoFPS>
+            <useSolidColor>false</useSolidColor>
             <cubemap>Resources\\Textures\\cubemap5.bmp</cubemap>
+            <solidColor>0 0 0</solidColor>
         </option>";
 
         private static int width = 512;
@@ -33,13 +36,15 @@ namespace PotatoRaytracing
         private static int recursionDepth = 1;
         private static int videoDuration = 5;
         private static int videoFPS = 10;
+        private static bool useSolidColor = false;
         private static string cubemap = @"Resources\\Textures\\cubemap5.bmp";
+        private static Color solidColor = Color.Black;
 
         public static Option CreateOption()
         {
             ReadOptionFromFile();
 
-            return new Option(width, height, fov, bias, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap);
+            return new Option(width, height, fov, bias, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor);
         }
 
         private static void ReadOptionFromFile()
@@ -88,7 +93,9 @@ namespace PotatoRaytracing
             recursionDepth = int.Parse(node.SelectSingleNode("recursionDepth").InnerText);
             videoDuration = int.Parse(node.SelectSingleNode("videoDuration").InnerText);
             videoFPS = int.Parse(node.SelectSingleNode("videoFPS").InnerText);
+            useSolidColor = bool.Parse(node.SelectSingleNode("useSolidColor").InnerText);
             cubemap = node.SelectSingleNode("cubemap").InnerText;
+            solidColor = Extensions.ParseColor(node.SelectSingleNode("solidColor").InnerText);
         }
 
         private static bool IsPowerOf4(int x)

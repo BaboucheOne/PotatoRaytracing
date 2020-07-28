@@ -1,5 +1,6 @@
 ﻿using System;
 using System.DoubleNumerics;
+using System.Drawing;
 
 namespace PotatoRaytracing
 {
@@ -58,6 +59,12 @@ namespace PotatoRaytracing
         {
             vector2.X = x;
             vector2.Y = y;
+        }
+
+        public static Color ParseColor(string str)
+        {
+            string[] values = str.Split(' ');
+            return Color.FromArgb(int.Parse(values[0]), int.Parse(values[1]), int.Parse(values[2]));
         }
     }
 }
