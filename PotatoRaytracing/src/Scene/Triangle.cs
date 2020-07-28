@@ -1,4 +1,5 @@
-﻿using System.DoubleNumerics;
+﻿using System;
+using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
@@ -8,7 +9,7 @@ namespace PotatoRaytracing
         private Vector3[] normals = new Vector3[3];
         public Vector3 Normal { get; private set; } = new Vector3();
 
-        public Vector3 Min = new Vector3();
+        public Vector3 Min = new Vector3(double.MaxValue, double.MaxValue, double.MaxValue);
         public Vector3 Max = new Vector3();
         public Vector3 Center = new Vector3();
 
@@ -46,8 +47,8 @@ namespace PotatoRaytracing
 
         private void RecalculateAll()
         {
-            ComputeCentroid();
             ComputeBounds();
+            ComputeCentroid();
             ComputeNormal();
         }
 
@@ -62,7 +63,6 @@ namespace PotatoRaytracing
         private void SetVertexPosition(int vertexID, Vector3 position)
         {
             vertices[vertexID] = Vector3.Add(vertices[vertexID], position);
-
             RecalculateAll();
         }
 
@@ -75,20 +75,25 @@ namespace PotatoRaytracing
 
         private void ComputeCentroid()
         {
-            Center.X = (vertices[0].X + vertices[1].X + vertices[2].X) / 3.0;
-            Center.Y = (vertices[0].Y + vertices[1].Y + vertices[2].Y) / 3.0;
-            Center.Z = (vertices[0].Z + vertices[1].Z + vertices[2].Z) / 3.0;
+            Center = (Max + Min) * 0.5f;
         }
+
+        public Vector3 MidPoint => new Vector3
+        {
+            X = (vertices[0].X + vertices[1].X + vertices[2].X) / 3.0,
+            Y = (vertices[0].Y + vertices[1].Y + vertices[2].Y) / 3.0,
+            Z = (vertices[0].Z + vertices[1].Z + vertices[2].Z) / 3.0,
+        };
 
         private void ComputeBounds()
         {
-            Min.X = vertices[0].X < vertices[0].Y ? (vertices[0].X < vertices[0].Z ? vertices[0].X : vertices[0].Z) : (vertices[0].Y < vertices[0].Z ? vertices[0].Y : vertices[0].Z);
-            Min.Y = vertices[1].X < vertices[1].Y ? (vertices[1].X < vertices[1].Z ? vertices[1].X : vertices[1].Z) : (vertices[1].Y < vertices[1].Z ? vertices[1].Y : vertices[1].Z);
-            Min.Z = vertices[2].X < vertices[2].Y ? (vertices[2].X < vertices[2].Z ? vertices[2].X : vertices[2].Z) : (vertices[2].Y < vertices[2].Z ? vertices[2].Y : vertices[2].Z);
+            Min.X = Math.Min(vertices[0].X, Math.Min(vertices[1].X, vertices[2].X));
+            Min.Y = Math.Min(vertices[0].Y, Math.Min(vertices[1].Y, vertices[2].Y));
+            Min.Z = Math.Min(vertices[0].Z, Math.Min(vertices[1].Z, vertices[2].Z));
 
-            Max.X = vertices[0].X > vertices[0].Y ? (vertices[0].X > vertices[0].Z ? vertices[0].X : vertices[0].Z) : (vertices[0].Y > vertices[0].Z ? vertices[0].Y : vertices[0].Z);
-            Max.Y = vertices[1].X > vertices[1].Y ? (vertices[1].X > vertices[1].Z ? vertices[1].X : vertices[1].Z) : (vertices[1].Y > vertices[1].Z ? vertices[1].Y : vertices[1].Z);
-            Max.Z = vertices[2].X > vertices[2].Y ? (vertices[2].X > vertices[2].Z ? vertices[2].X : vertices[2].Z) : (vertices[2].Y > vertices[2].Z ? vertices[2].Y : vertices[2].Z);
+            Max.X = Math.Max(vertices[0].X, Math.Max(vertices[1].X, vertices[2].X));
+            Max.Y = Math.Max(vertices[0].Y, Math.Max(vertices[1].Y, vertices[2].Y));
+            Max.Z = Math.Max(vertices[0].Z, Math.Max(vertices[1].Z, vertices[2].Z));
         }
     }
 }

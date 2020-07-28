@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.DoubleNumerics;
+using System.Drawing;
 
 namespace PotatoRaytracing
 {
@@ -26,18 +27,18 @@ namespace PotatoRaytracing
             samplingAverage = (int)(samplingSubPixelDivision * samplingSubPixelDivision);
         }
 
-        public Color GetSampleColor(Ray ray, int lightIndex, int pixelPositionX, int pixelPositionY)
+        public Color GetSampleColor(int lightIndex, int pixelPositionX, int pixelPositionY)
         {
             ResetColorChannel();
 
-            LoopSubPixel(ray, lightIndex, pixelPositionX, pixelPositionY);
+            LoopSubPixel(lightIndex, pixelPositionX, pixelPositionY);
 
             ReportColorChannelsToUsableRGBValues();
 
             return Color.FromArgb(255, redChannel, greenChannel, blueChannel);
         }
 
-        private void LoopSubPixel(Ray ray, int lightIndex, int pixelPositionX, int pixelPositionY)
+        private void LoopSubPixel(int lightIndex, int pixelPositionX, int pixelPositionY)
         {
             for (int i = 0; i < samplingSubPixelDivision; i++)
             {
@@ -46,15 +47,15 @@ namespace PotatoRaytracing
                 {
                     float divisionPixelY = pixelPositionY + j / samplingSubPixelDivision;
 
-                    TraceSubPixel(ray, lightIndex, pixelPositionX, pixelPositionY, divisionPixelX, divisionPixelY);
+                    TraceSubPixel(lightIndex, pixelPositionX, pixelPositionY, divisionPixelX, divisionPixelY);
                 }
             }
         }
 
-        private void TraceSubPixel(Ray ray, int lightIndex, int pixelPositionX, int pixelPositionY, float divisionPixelX, float divisionPixelY)
+        private void TraceSubPixel(int lightIndex, int pixelPositionX, int pixelPositionY, float divisionPixelX, float divisionPixelY)
         {
-            PotatoRenderer.SetRayDirectionByPixelPosition(ref ray, sceneData, pixelPositionX + (divisionPixelX - halfResolution) / halfResolution, pixelPositionY + (divisionPixelY - halfResolution) / halfResolution);
-            samplingColor = tracer.Trace(ray, sceneData.Tree, lightIndex);
+            Vector2 screenCoord = new Vector2((2.0 * (pixelPositionX + (divisionPixelX - halfResolution)) / sceneData.Option.Width) - 1.0, (-2.0 * (pixelPositionY + (divisionPixelY - halfResolution)) / sceneData.Option.Height) + 1.0);
+            samplingColor = tracer.Trace(sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex);
             AddSamplingColorToColorChannels();
         }
 

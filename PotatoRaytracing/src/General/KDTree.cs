@@ -1,22 +1,40 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.DoubleNumerics;
 
 namespace PotatoRaytracing
 {
     public class KDTree
     {
         public KDNode Root;
-        private const int maxDepth = 4;
 
         public KDTree(List<Triangle> triangles)
         {
-            Root = Split(triangles, 0);
+            Root = Split(triangles);
         }
 
-        public static KDNode Split(List<Triangle> triangles, int depth)
+        public static KDNode Split(List<Triangle> triangles)
         {
             KDNode node = new KDNode(triangles);
+            if (triangles.Count == 0) return node;
 
-            if (depth == maxDepth || triangles.Count == 0) return node;
+            Vector3 Min = new Vector3(double.MaxValue, double.MaxValue, double.MaxValue);
+            Vector3 Max = new Vector3();
+            foreach (Triangle t in triangles)
+            {
+                Min.X = Math.Min(Min.X, t.Min.X);
+                Min.Y = Math.Min(Min.Y, t.Min.Y);
+                Min.Z = Math.Min(Min.Z, t.Min.Z);
+
+                Max.X = Math.Max(Max.X, t.Max.X);
+                Max.Y = Math.Max(Max.Y, t.Max.Y);
+                Max.Z = Math.Max(Max.Z, t.Max.Z);
+            }
+
+            double width = Max.X - Min.X;
+            double height = Max.Y - Min.Y;
+            double ddepth = Max.Z - Min.Z;
+            node.Bbox = new BoundingBox((Max + Min) * 0.5, width, height, ddepth);
 
             List<Triangle> leftTriangles = new List<Triangle>();
             List<Triangle> rightTriangles = new List<Triangle>();
@@ -27,7 +45,7 @@ namespace PotatoRaytracing
                 switch(axis)
                 {
                     case 0:
-                        if (triangle.Center.X <= node.Bbox.Center.X) 
+                        if (triangle.MidPoint.X <= node.Bbox.Position.X) 
                         { 
                             leftTriangles.Add(triangle);
                         } else
@@ -37,7 +55,7 @@ namespace PotatoRaytracing
                         break;
 
                     case 1:
-                        if (triangle.Center.Y <= node.Bbox.Center.Y)
+                        if (triangle.MidPoint.Y <= node.Bbox.Position.Y)
                         {
                             leftTriangles.Add(triangle);
                         }
@@ -48,7 +66,7 @@ namespace PotatoRaytracing
                         break;
 
                     case 2:
-                        if (triangle.Center.Z <= node.Bbox.Center.Z)
+                        if (triangle.MidPoint.Z <= node.Bbox.Position.Z)
                         {
                             leftTriangles.Add(triangle);
                         }
@@ -62,13 +80,13 @@ namespace PotatoRaytracing
 
             if (leftTriangles.Count > 0 && rightTriangles.Count != 0)
             {
-                node.Left = Split(leftTriangles, depth + 1);
+                node.Left = Split(leftTriangles);
                 node.Left.Parent = node;
             }
 
             if(rightTriangles.Count > 0 && leftTriangles.Count != 0)
             {
-                node.Right = Split(rightTriangles, depth + 1);
+                node.Right = Split(rightTriangles);
                 node.Right.Parent = node;
             }
 

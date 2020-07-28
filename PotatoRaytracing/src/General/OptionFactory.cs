@@ -25,7 +25,7 @@ namespace PotatoRaytracing
 
         private static int width = 512;
         private static int height = 512;
-        private static double fov = 60.0;
+        private static float fov = 60.0f;
         private static double bias = 0.001;
         private static bool supersampling = false;
         private static int supersamplingDivision = 4;
@@ -80,7 +80,7 @@ namespace PotatoRaytracing
         {
             width = int.Parse(node.SelectSingleNode("width").InnerText);
             height = int.Parse(node.SelectSingleNode("height").InnerText);
-            fov = double.Parse(node.SelectSingleNode("fov").InnerText);
+            fov = float.Parse(node.SelectSingleNode("fov").InnerText);
             bias = double.Parse(node.SelectSingleNode("bias").InnerText);
             supersampling = bool.Parse(node.SelectSingleNode("supersampling").InnerText);
             supersamplingDivision = int.Parse(node.SelectSingleNode("supersamplingDivision").InnerText);
