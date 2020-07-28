@@ -31,7 +31,7 @@ namespace PotatoRaytracing
 
             if (cam == null)
             {
-                Camera = new Camera(new Vector3(), new Quaternion());
+                Camera = new Camera(new Vector3(), new Quaternion(), option.Fov, option.AspectRatio);
             }
             else
             {
@@ -43,11 +43,9 @@ namespace PotatoRaytracing
 
         private void InitOption()
         {
-            Camera.SetPointOfInterest(PotatoCoordinate.VECTOR_FORWARD);
-
             if (Option == null)
             {
-                Option = new Option(512, 512, 60, 0.001, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
+                Option = new Option(512, 512, 60.0f, 0.001, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
             }
             else
             {

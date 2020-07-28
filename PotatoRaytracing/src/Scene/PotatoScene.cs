@@ -81,23 +81,25 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            //for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 5; i++)
+            {
+                Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(30, 70));
+                float rad = (float)r.NextDouble() * 20;
+                spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
+                spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
+            }
+
+            //for (int i = 0; i < 10; i++) //TODO: Rework la camera ! Le y est inverser !!!!!!!!!!
             //{
-            //    Vector3 pos = new Vector3(r.Next(0, 200), r.Next(-100, 100), r.Next(-100, 100));
-            //    float rad = (float)r.NextDouble() * 5;
+            //    Vector3 pos = new Vector3(0, i, 100);
+            //    float rad = 10f;//(float)r.NextDouble() * 20;
             //    spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
-            //    spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
+            //    spheres[0].Color = Color.Red;
             //}
 
-            //Vector3 pos = new Vector3(50, 0, 0);
-            //float rad = 10f;//(float)r.NextDouble() * 20;
-            //spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
-            //spheres[0].Color = Color.Red;
-
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 500, 1, Color.White));
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 1000, Color.Red));
-            //PotatoDirectionalLight directionalLight = new PotatoDirectionalLight(new Vector3(0.2, 0.76, 0.4), 3f, Color.White);
-            lights.Add(new PotatoDirectionalLight(new Vector3(0.4, -0.5, -0.2), 3f, Color.White));
+            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 100000, Color.Blue));
+            lights.Add(new PotatoDirectionalLight(new Vector3(0, 0, 1), 1f, Color.White));
+            //lights.Add(new PotatoDirectionalLight(new Vector3(0, 0, 1), 3f, Color.White));
 
             //const int randomMeshCount = 1;
             //for (int i = 0; i < randomMeshCount; i++)
@@ -114,8 +116,8 @@ namespace PotatoRaytracing
 
             PotatoMesh mesh = new PotatoMesh
             {
-                //Position = new Vector3(3, -3.5, 0),
-                Position = new Vector3(5, -3.5, 0),
+                Position = new Vector3(0, -5, 10),
+                //Position = new Vector3(5, 0, 0),
                 //Position = new Vector3(3, 0, 0),
                 //ObjectPath = @"Resources\\Objects\\kukuri.obj", //TODO: Implement ressource path.
                 ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.

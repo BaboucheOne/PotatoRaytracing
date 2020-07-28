@@ -9,7 +9,7 @@ namespace PotatoRaytracing
         public int Height;
         public int HalfWidth;
         public int HalfHeight;
-        public double Fov;
+        public float Fov;
         public double Bias;
         public bool SuperSampling;
         public int SuperSamplingDivision;
@@ -21,21 +21,23 @@ namespace PotatoRaytracing
         public Vector3 ScreenLeft;
         public Vector3 ScreenCenter;
 
+        public float AspectRatio => Width / (float)Height;
+
         public Camera Camera;
 
-        public Option(int width, int heigth, double fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap)
+        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap)
         {
             InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, null);
         }
 
-        public Option(int width, int heigth, double fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
+        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
         {
             InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, double fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
+        private void InitializeParameters(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
         {
             Width = width;
             Height = heigth;

@@ -1,230 +1,84 @@
-﻿using System.Collections.Generic;
-using System.DoubleNumerics;
+﻿using System.DoubleNumerics;
+using System.Drawing;
 
 namespace PotatoRaytracing
 {
     public class IntersectionHandler
     {
         private PotatoSceneData sceneData;
+        private readonly TextureManager textureManager;
 
-        public IntersectionHandler(PotatoSceneData sceneData)
+        public IntersectionHandler(PotatoSceneData sceneData, TextureManager textureManager)
         {
             this.sceneData = sceneData;
+            this.textureManager = textureManager;
         }
 
-        public ClosestEntityIntersection GetClosestEntity(Ray ray)
+        public HitInfo Intersect(Ray ray)
         {
-            /* Tree intersection
-            HashSet<BoundingBoxNode> nodesToExplore = new HashSet<BoundingBoxNode>();
-            double distance = 0.0;
-            for(int i = 0; i < scene.BoundingBoxTree.Root.Childs.Count; i++)
+            double dstTriangle = 0.0;
+            Vector3 hitPosTriangle = new Vector3();
+            Vector3 hitNormalTriangle = new Vector3();
+            bool hitTriangle = KDIntersection.Intersect(ray, sceneData.Tree.Root, ref hitPosTriangle, ref hitNormalTriangle, ref dstTriangle);
+
+            double dstSphere = double.MaxValue;
+            bool hitSphere = false;
+            PotatoSphere sphere = null;
+            Vector3 hitPosSphere = new Vector3();
+            Vector3 hitNormalSphere = new Vector3();
+            for (int i = 0; i < sceneData.Spheres.Count; i++)
             {
-                if(BoxIntersection.Intersect(ray, scene.BoundingBoxTree.Root.Childs[i].Box, ref distance))
+                double dst = 0.0;
+                Vector3 hitPos = new Vector3();
+                Vector3 hitNormal = new Vector3();
+                bool hit = SphereIntersection.Intersect(ray, sceneData.Spheres[i], ref hitPos, ref hitNormal, ref dst);
+                if(hit && dst < dstSphere)
                 {
-                    System.Console.WriteLine("Root to explore");
-                    nodesToExplore.Add(scene.BoundingBoxTree.Root.Childs[i]);
+                    hitSphere = true;
+                    dstSphere = dst;
+                    hitPosSphere = hitPos;
+                    hitNormalSphere = hitNormal;
+                    sphere = sceneData.Spheres[i];
                 }
             }
 
-            while(nodesToExplore.Count > 1)
+            if (hitTriangle && hitSphere)
             {
-                foreach (BoundingBoxNode node in nodesToExplore)
+                if (dstTriangle < dstSphere)
                 {
-                    for (int i = 0; i < node.Childs.Count; i++)
-                    {
-                        if (BoxIntersection.Intersect(ray, node.Childs[i].Box, ref distance))
-                        {
-                            nodesToExplore.Add(node.Childs[i]);
-                        }
-                    }
-
-                    nodesToExplore.Remove(node);
-                }
-            }
-
-            bool intersect = false;
-            double distance = 0.0;
-            double realDistance = double.PositiveInfinity;
-            BoundingBoxNode aabbNode = null;
-            List<BoundingBoxNode> closestIntersectedBox = new List<BoundingBoxNode>();
-            for(int i = 0; i < scene.aabbNodes.Count; i++)
-            {
-                if(BoxIntersection.Intersect(ray, scene.aabbNodes[i].Box, ref distance))
-                {
-                    if (distance < realDistance)
-                    {
-                        intersect = true;
-                        aabbNode = scene.aabbNodes[i];
-                        realDistance = distance;
-
-                        closestIntersectedBox.Add(scene.aabbNodes[i]);
-                    }
-                }
-            }
-
-            for (int i = closestIntersectedBox.Count - 1; i >= 0; i--)
-            {
-                if (closestIntersectedBox[i].IsMesh)
-                {
-                    ClosestTriangle st = GetClosestTriangleIntersectionInList(ray, new List<PotatoMesh>() { closestIntersectedBox[i].Entity as PotatoMesh });
-                    if (st.IsIntersect) return st;
+                    return new HitInfo(true, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, Color.Red);
                 }
                 else
                 {
-                    ClosestSphere sr = GetClosestSphereIntersectionInList(ray, new List<PotatoSphere>() { closestIntersectedBox[i].Entity as PotatoSphere });
-                    if (sr.IsIntersect) return sr;
+                    return ProcessSphereHit(hitNormalTriangle, dstSphere, sphere, hitPosSphere, hitNormalSphere);
                 }
             }
-
-            return new ClosestEntityIntersection(new Vector3(), new Vector3(), 0.0, false, true);
-            */
-
-
-            ClosestTriangle triangleResult = GetClosestTriangleIntersectionInScene(ray);
-            ClosestSphere sphereResult = GetClosestSphereIntersectionInScene(ray);
-
-            if (!triangleResult.IsIntersect && sphereResult.IsIntersect)
+            else
             {
-                return sphereResult;
-            }
-            else if (!sphereResult.IsIntersect && triangleResult.IsIntersect)
-            {
-                return triangleResult;
-            }
-            else if (triangleResult.IsIntersect && sphereResult.IsIntersect)
-            {
-                if (sphereResult.Distance > triangleResult.Distance)
+                if (hitTriangle)
                 {
-                    return triangleResult;
+                    return new HitInfo(true, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, Color.Red);
                 }
-                else
+                else if (hitSphere)
                 {
-                    return sphereResult;
+                    return ProcessSphereHit(hitNormalTriangle, dstSphere, sphere, hitPosSphere, hitNormalSphere);
                 }
             }
 
-            return new ClosestEntityIntersection(new Vector3(), new Vector3(), 0.0, false, true);
+            return new HitInfo(false, new Vector3(), new Vector3(), dstTriangle, Color.White, Color.Red);
         }
 
-        private ClosestTriangle GetClosestTriangleIntersectionInScene(Ray ray)
+        private HitInfo ProcessSphereHit(Vector3 hitNormalTriangle, double dstSphere, PotatoSphere sphere, Vector3 hitPosSphere, Vector3 hitNormalSphere)
         {
-            Triangle triangleInt = null;
-            PotatoMesh meshInt = null;
-            Vector3 hitPosition = new Vector3();
-            Vector3 hitNormal = new Vector3();
-            Vector3 localHitPosition = new Vector3();
-            Vector3 localHitNormal = new Vector3();
-            double distance = double.PositiveInfinity;
-            double t = 0;
-
-            LoopMeshListToGetTheClosets(ray,  sceneData.Meshs, ref triangleInt, ref meshInt, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
-
-            return new ClosestTriangle(meshInt, triangleInt, hitPosition, hitNormal, distance);
+            Color textureColor = GetSphereTextureUV(sphere, hitNormalTriangle);
+            return new HitInfo(true, hitPosSphere, hitNormalSphere, dstSphere, textureColor, Color.Red);
         }
 
-        private ClosestTriangle GetClosestTriangleIntersectionInList(Ray ray, List<PotatoMesh> meshs)
+        private Color GetSphereTextureUV(PotatoSphere sphere, Vector3 normal)
         {
-            Triangle triangleInt = null;
-            PotatoMesh meshInt = null;
-            Vector3 hitPosition = new Vector3();
-            Vector3 hitNormal = new Vector3();
-            Vector3 localHitPosition = new Vector3();
-            Vector3 localHitNormal = new Vector3();
-            double distance = double.PositiveInfinity;
-            double t = 0;
-
-            LoopMeshListToGetTheClosets(ray, meshs, ref triangleInt, ref meshInt, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
-
-            return new ClosestTriangle(meshInt, triangleInt, hitPosition, hitNormal, distance);
-        }
-
-        private void LoopMeshListToGetTheClosets(Ray ray, List<PotatoMesh> meshs, ref Triangle triangleInt, ref PotatoMesh meshInt, ref Vector3 hitPosition, ref Vector3 hitNormal, ref Vector3 localHitPosition, ref Vector3 localHitNormal, ref double distance, ref double t)
-        {
-            for (int i = 0; i < meshs.Count; i++)
-            {
-                PotatoMesh mesh = meshs[i];
-
-                for (int j = 0; j < mesh.GetTrianglesCount; j++)
-                {
-                    if (TriangleIntersection.Intersect(ray.Origin, ray.Direction, mesh.GetTriangle(j), ref localHitPosition, ref localHitNormal, ref t))
-                    {
-                        if (t < distance)
-                        {
-                            distance = t;
-                            triangleInt = mesh.GetTriangle(j);
-                            meshInt = mesh;
-
-                            hitPosition = localHitPosition;
-                            hitNormal = localHitNormal;
-                        }
-                    }
-                }
-            }
-        }
-
-        private ClosestSphere GetClosestSphereIntersectionInScene(Ray ray)
-        {
-            PotatoSphere intersectedSphere = null;
-            Vector3 hitPosition = new Vector3();
-            Vector3 hitNormal = new Vector3();
-
-            Vector3 localHitPosition = new Vector3();
-            Vector3 localHitNormal = new Vector3();
-            double distance = double.PositiveInfinity;
-            double t = 0.0;
-
-            LoopSphereListToGetTheClosets(ray, sceneData.Spheres, ref intersectedSphere, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
-
-            return new ClosestSphere(intersectedSphere, hitPosition, hitNormal, distance);
-        }
-
-        private ClosestSphere GetClosestSphereIntersectionInList(Ray ray, List<PotatoSphere> spheres)
-        {
-            PotatoSphere intersectedSphere = null;
-            Vector3 hitPosition = new Vector3();
-            Vector3 hitNormal = new Vector3();
-
-            Vector3 localHitPosition = new Vector3();
-            Vector3 localHitNormal = new Vector3();
-            double distance = double.PositiveInfinity;
-            double t = 0.0;
-
-            //LoopSphereListToGetTheClosets(ray, spheres, ref intersectedSphere, ref hitPosition, ref hitNormal, ref localHitPosition, ref localHitNormal, ref distance, ref t);
-
-            for (int i = 0; i < spheres.Count; i++)
-            {
-                if (SphereIntersection.Intersect(ray, spheres[i], ref localHitPosition, ref localHitNormal, ref t))
-                {
-                    if (t < distance)
-                    {
-                        distance = t;
-                        intersectedSphere = spheres[i];
-
-                        hitPosition = localHitPosition;
-                        hitNormal = localHitNormal;
-                    }
-                }
-            }
-
-            return new ClosestSphere(intersectedSphere, hitPosition, hitNormal, distance);
-        }
-
-        private void LoopSphereListToGetTheClosets(Ray ray, List<PotatoSphere> spheres, ref PotatoSphere intersectedSphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref Vector3 localHitPosition, ref Vector3 localHitNormal, ref double distance, ref double t)
-        {
-            for (int i = 0; i < spheres.Count; i++)
-            {
-                if (SphereIntersection.Intersect(ray, spheres[i], ref localHitPosition, ref localHitNormal, ref t))
-                {
-                    if (t < distance)
-                    {
-                        distance = t;
-                        intersectedSphere = spheres[i];
-
-                        hitPosition = localHitPosition;
-                        hitNormal = localHitNormal;
-                    }
-                }
-            }
+            string path = sphere.GetTexturePath();
+            Bitmap texture = textureManager.GetTexture(sphere.GetTexturePath());
+            return textureManager.GetTextureColor(sphere.GetUV(normal, texture), path);
         }
     }
 }

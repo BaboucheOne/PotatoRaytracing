@@ -1,55 +1,33 @@
 ﻿using System;
 using System.DoubleNumerics;
-using System.Collections.Generic;
 
 namespace PotatoRaytracing
 {
     public class BoundingBox
     {
-        public Vector3 Min = new Vector3();
-        public Vector3 Max = new Vector3();
-        public Vector3 Center = new Vector3();
-        public Vector3 Size = new Vector3();
+        public Vector3 Position { get; private set; } = new Vector3();
+        public Vector3 Size => size;
+        public Vector3 Min {get; private set; }= new Vector3(double.MaxValue, double.MaxValue, double.MaxValue);
+        public Vector3 Max {get; private set; }= new Vector3();
+
+        private Vector3 size = new Vector3();
 
         public BoundingBox()
         {
         }
 
-        public BoundingBox(List<Triangle> triangles)
+        public BoundingBox(Vector3 position, double width, double height, double depth)
         {
-            SetBounds(triangles);
+            Position = position;
+            SetBounds(width, height, depth);
         }
 
-        public void SetBounds(List<Triangle> triangles)
+        public void SetBounds(double width, double height, double depth)
         {
-            Min.Set(0.0);
-            Max.Set(0.0);
-
-            foreach (Triangle t in triangles)
-            {
-                Min.X = Math.Min(Min.X, t.Min.X);
-                Min.Y = Math.Min(Min.Y, t.Min.Y);
-                Min.Z = Math.Min(Min.Z, t.Min.Z);
-
-                Max.X = Math.Max(Max.X, t.Max.X);
-                Max.Y = Math.Max(Max.Y, t.Max.Y);
-                Max.Z = Math.Max(Max.Z, t.Max.Z);
-            }
-        }
-
-        public void UpdateCentroid()
-        {
-            Center.X = (Min.X + Max.X) * 0.5;
-            Center.Y = (Min.Y + Max.Y) * 0.5;
-            Center.Z = (Min.Z + Max.Z) * 0.5;
-            UpdateSize();
-        }
-
-        public void UpdateSize()
-        {
-            Size.X = Min.X < Max.X ? Max.X - Min.X : Min.X - Max.X;
-            Size.Y = Min.Y < Max.Y ? Max.Y - Min.Y : Min.Y - Max.Y;
-            Size.Z = Min.Z < Max.Z ? Max.Z - Min.Z : Min.Z - Max.Z;
+            Vector3 half = new Vector3(width * 0.5, height * 0.5, depth * 0.5);
+            Min = Position - half;
+            Max = Position + half;
+            size.Set(width, height, depth);
         }
 
         public int GetLongestAxis()
@@ -60,5 +38,10 @@ namespace PotatoRaytracing
             if (Size.Y == max) return 1;
             return 2;
         }
-    }
+
+        public bool ContainsPoint(Vector3 point)
+        {
+            return (Min.X <= point.X && point.X <= Max.X) && (Min.Y <= point.Y && point.Y <= Max.Y) && (Min.Z <= point.Z && point.Z <= Max.Z);
+        }
+}
 }

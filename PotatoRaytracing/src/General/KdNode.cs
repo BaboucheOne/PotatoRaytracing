@@ -13,7 +13,6 @@ namespace PotatoRaytracing
         public KDNode(List<Triangle> triangles)
         {
             Triangles = triangles;
-            Bbox.SetBounds(triangles);
         }
 
         public KDNode GetRoot()

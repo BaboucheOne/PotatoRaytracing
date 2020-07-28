@@ -1,6 +1,6 @@
 <option>
-  <width>128</width>
-  <height>128</height>
+  <width>512</width>
+  <height>512</height>
   <fov>60</fov>
   <bias>0,001</bias>
   <supersampling>false</supersampling>
