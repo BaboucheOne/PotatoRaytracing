@@ -1,6 +1,7 @@
 ﻿using PotatoRaytracing.WorldCoordinate;
 using System.Collections.Generic;
 using System.DoubleNumerics;
+using System.Drawing;
 using System.Linq;
 
 namespace PotatoRaytracing
@@ -45,7 +46,7 @@ namespace PotatoRaytracing
         {
             if (Option == null)
             {
-                Option = new Option(512, 512, 60.0f, 0.001, false, 4, 4, 1, 4, 5, @"Resources\\Textures\cubemap5.bmp", Camera);
+                Option = new Option(512, 512, 60.0f, 0.001, false, 4, 4, 1, 4, 5, true, @"Resources\\Textures\cubemap5.bmp", Color.Black, Camera);
             }
             else
             {

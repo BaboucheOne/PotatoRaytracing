@@ -28,6 +28,8 @@ namespace PotatoRaytracing
                 return ComputeLights(hitInfo.Color, hitInfo.HitPosition, hitInfo.HitNormal, sceneData.Lights[lightIndex]);
             }
 
+            if (sceneData.Option.UseSolidColor) return sceneData.Option.SolidColor;
+
             return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
         }
 

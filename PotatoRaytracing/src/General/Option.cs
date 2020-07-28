@@ -1,5 +1,6 @@
 ﻿using System;
 using System.DoubleNumerics;
+using System.Drawing;
 
 namespace PotatoRaytracing
 {
@@ -17,7 +18,9 @@ namespace PotatoRaytracing
         public int RecursionDepth;
         public int VideoDuration;
         public int VideoFPS;
+        public bool UseSolidColor;
         public string Cubemap;
+        public Color SolidColor;
         public Vector3 ScreenLeft;
         public Vector3 ScreenCenter;
 
@@ -25,19 +28,19 @@ namespace PotatoRaytracing
 
         public Camera Camera;
 
-        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap)
+        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor)
         {
-            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, null);
+            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor, null);
         }
 
-        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
+        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor, Camera cam)
         {
-            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, cubemap, cam);
+            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, string cubemap, Camera cam)
+        private void InitializeParameters(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor, Camera cam)
         {
             Width = width;
             Height = heigth;
@@ -50,7 +53,9 @@ namespace PotatoRaytracing
             RecursionDepth = recursionDepth;
             VideoDuration = videoDuration;
             VideoFPS = videoFPS;
+            UseSolidColor = useSolidColor;
             Cubemap = cubemap;
+            SolidColor = solidColor;
         }
 
         public void SetCamera(Camera camera)
@@ -102,9 +107,10 @@ namespace PotatoRaytracing
                 "Recursion depth {11} \n" +
                 "Video Duration {12} \n" +
                 "Video FPS {13} \n" +
-                "Cubemap {14}", Width, Height, Fov, Bias, Camera.Position, Camera.Rotation,
+                "Cubemap {14} \n" +
+                "Solid color {15}", Width, Height, Fov, Bias, Camera.Position, Camera.Rotation,
                                     ScreenCenter, ScreenLeft, SuperSampling, SuperSamplingDivision,
-                                    ScreenTiles, RecursionDepth, VideoDuration, VideoFPS, Cubemap);
+                                    ScreenTiles, RecursionDepth, VideoDuration, VideoFPS, Cubemap, UseSolidColor);
         }
     }
 }
