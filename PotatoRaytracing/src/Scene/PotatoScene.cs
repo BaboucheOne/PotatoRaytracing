@@ -3,6 +3,7 @@ using System.Linq;
 using System.Drawing;
 using System.DoubleNumerics;
 using System.Collections.Generic;
+using PotatoRaytracing.Materials;
 
 namespace PotatoRaytracing
 {
@@ -81,25 +82,17 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 500; i++)
             {
                 Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(30, 70));
-                float rad = (float)r.NextDouble() * 20;
-                spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
-                spheres[i].Color = colors[(int)(r.NextDouble() * colors.Count)];
+                float rad = (float)r.NextDouble() * 5;
+                Material mat = new Lambertian(1f, colors[(int)(r.NextDouble() * colors.Count)]);
+                //Material mat = new DefaultMaterial(0.25f, 0.3f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
+                spheres.Add(new PotatoSphere(pos, rad, mat, @"Resources\\Textures\\default.bmp"));
             }
 
-            //for (int i = 0; i < 10; i++) //TODO: Rework la camera ! Le y est inverser !!!!!!!!!!
-            //{
-            //    Vector3 pos = new Vector3(0, i, 100);
-            //    float rad = 10f;//(float)r.NextDouble() * 20;
-            //    spheres.Add(new PotatoSphere(pos, rad, @"Resources\\Textures\\default.bmp"));
-            //    spheres[0].Color = Color.Red;
-            //}
-
-            lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 100000, Color.Blue));
-            lights.Add(new PotatoDirectionalLight(new Vector3(0, 0, 1), 1f, Color.White));
-            //lights.Add(new PotatoDirectionalLight(new Vector3(0, 0, 1), 3f, Color.White));
+            lights.Add(new PotatoPointLight(new Vector3(0, 10, 0), 5000, 10000000, Color.White));
+            lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.5, 0.5), 100f, Color.White));
 
             //const int randomMeshCount = 1;
             //for (int i = 0; i < randomMeshCount; i++)
@@ -114,21 +107,21 @@ namespace PotatoRaytracing
             //    meshs.Add(mesh);
             //}
 
-            PotatoMesh mesh = new PotatoMesh
+            PotatoMesh mesh = new PotatoMesh //TODO: Implement ressource path.
             {
-                Position = new Vector3(0, -5, 10),
+                Position = new Vector3(0, -5, 6),
                 //Position = new Vector3(5, 0, 0),
                 //Position = new Vector3(3, 0, 0),
-                //ObjectPath = @"Resources\\Objects\\kukuri.obj", //TODO: Implement ressource path.
-                ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj", //TODO: Implement ressource path.
-                //ObjectPath = @"Resources\\Objects\\bunny.obj", //TODO: Implement ressource path.
-                //ObjectPath = @"Resources\\Objects\\teapot.obj", //TODO: Implement ressource path.
-                //ObjectPath = @"Resources\\Objects\\red_dot.obj", //TODO: Implement ressource path.
-                //ObjectPath = @"Resources\\Objects\\ico.obj", //TODO: Implement ressource path.
+                //ObjectPath = @"Resources\\Objects\\kukuri.obj",
+                ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj",
+                //ObjectPath = @"Resources\\Objects\\bunny.obj",
+                //ObjectPath = @"Resources\\Objects\\teapot.obj",
+                //ObjectPath = @"Resources\\Objects\\red_dot.obj",
+                //ObjectPath = @"Resources\\Objects\\ico.obj",
                 Color = colors[(int)(r.NextDouble() * colors.Count)]
             };
 
-            meshs.Add(mesh);
+            //meshs.Add(mesh);
             meshsBuilder.Build(ref meshs);
 
             Cubemap.LoadCubemap(option.Cubemap);

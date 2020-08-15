@@ -31,7 +31,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -40,7 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -147,6 +147,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Materials\Lambertian.cs" />
+    <Compile Include="src\Materials\Material.cs" />
     <Compile Include="src\EntityIntersection\HitInfo.cs" />
     <Compile Include="src\General\BoundingBox.cs" />
     <Compile Include="src\Entities\PotatoDirectionalLight.cs" />
@@ -155,6 +157,7 @@
     <Compile Include="src\General\Extensions.cs" />
     <Compile Include="src\General\KDNode.cs" />
     <Compile Include="src\General\KDTree.cs" />
+    <Compile Include="src\Materials\DefaultMaterial.cs" />
     <Compile Include="src\Rendering\Cubemap.cs" />
     <Compile Include="src\Entities\Camera.cs" />
     <Compile Include="src\EntityIntersection\BoxIntersection.cs" />

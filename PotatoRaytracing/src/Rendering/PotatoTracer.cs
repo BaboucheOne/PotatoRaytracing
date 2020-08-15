@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.DoubleNumerics;
+using PotatoRaytracing.Materials;
 
 namespace PotatoRaytracing
 {
@@ -25,7 +26,9 @@ namespace PotatoRaytracing
 
             if (hitInfo.Hit)
             {
-                return ComputeLights(hitInfo.Color, hitInfo.HitPosition, hitInfo.HitNormal, sceneData.Lights[lightIndex]);
+                //return ComputeAmbientOcclusion(hitInfo);
+                //Diffuse.
+                return ComputeDirectLight(hitInfo, sceneData.Lights[lightIndex]);
             }
 
             if (sceneData.Option.UseSolidColor) return sceneData.Option.SolidColor;
@@ -33,33 +36,56 @@ namespace PotatoRaytracing
             return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
         }
 
-        private Color ComputeLights(Color finalColor, Vector3 hitPosition, Vector3 hitNormal, PotatoLight light)
+        private Color ComputeAmbientOcclusion(HitInfo hit)
         {
-            Vector3 directionToLight = light.DirectionToLight(hitPosition);
-            Ray shadowRay = new Ray(hitPosition + hitNormal * sceneData.Option.Bias, directionToLight);
+            int sample = 256;
+            float grey = 0;
+            float pdf = 1f / (2f * (float)Math.PI);
+            Ray r = new Ray();
 
-            if (light.Intensity > 0 && light.IsInRange(hitPosition))
+            for (int i = 0; i < sample; i++)
             {
-                HitInfo hit = intersectionHandler.Intersect(shadowRay);
+                Vector3 direction = Material.RandomUnitHemisphere(hit.HitNormal);
+                r.Set(hit.HitPosition, direction);
+                HitInfo hitAO = intersectionHandler.Intersect(r);
 
-                if (hit.Hit)
+                if (hitAO.Hit)
                 {
-                    Vector3 dir2light = light.DirectionToLight(hitPosition);
-                    double normalAngleToLight = Vector3.Dot(dir2light, hitNormal);
-
-                    if (normalAngleToLight > 0)
-                    {
-                        float lightPower = (float)(normalAngleToLight * light.IntensityOverDistance(hitPosition));
-                        float albedo = 1f; //Toujours en dessous de 1.
-                        float lightReflected = albedo / (float)Math.PI;
-
-                        int r = (int)Math.Round((light.Color.R + finalColor.R) * 0.5f * lightPower * lightReflected);
-                        int g = (int)Math.Round((light.Color.G + finalColor.G) * 0.5f * lightPower * lightReflected);
-                        int b = (int)Math.Round((light.Color.B + finalColor.B) * 0.5f * lightPower * lightReflected);
-
-                        return Color.FromArgb(r.Clamp(0, 255), g.Clamp(0, 255), b.Clamp(0, 255));
-                    }
+                    //grey += (int)Math.Max(0.0, hit.HitNormal.Angle(direction) * (1.0 / (1.0 + hitAO.Distance)));
+                    grey += ((1f / sample) * (float)hit.HitNormal.Angle(direction) / pdf);
                 }
+
+            }
+
+            grey /= sample;
+            grey = grey.Clamp(0f, 255f) * 255;
+            //Console.WriteLine(grey);
+            return Color.FromArgb((int)grey, (int)grey, (int)grey);
+        }
+
+        private Color ComputeDirectLight(HitInfo hitInfo, PotatoLight light)
+        {
+            Vector3 dir2light = light.DirectionToLight(hitInfo.HitPosition);
+
+            if (light.Intensity > 0 && light.IsInRange(hitInfo.HitPosition))
+            {
+                Ray shadowRay = new Ray(hitInfo.HitPosition + hitInfo.HitNormal * sceneData.Option.Bias, dir2light);
+                HitInfo hitShadow = intersectionHandler.Intersect(shadowRay);
+
+                if (hitShadow.Hit) return Color.Black;
+
+                double lightIntensity = light.IntensityOverDistance(hitInfo.HitPosition);
+                double diffuse = hitInfo.Material.Diffuse * Math.Max(0.0, Vector3.Dot(dir2light, hitInfo.HitNormal));
+
+                Vector3 reflect = Vector3.Reflect(-dir2light, hitInfo.HitNormal);
+                double specular = hitInfo.Material.Specular * Math.Pow(Math.Max(0.0, Vector3.Dot(-hitInfo.Ray.Direction, reflect)), hitInfo.Material.SpecularExp);
+
+                double grey = lightIntensity * (diffuse + specular);
+                grey = grey.Clamp(0.0, 255.0) / 255.0;
+
+                return Color.FromArgb((int)Math.Round((hitInfo.Material.Color.R + light.Color.R) * 0.5 * grey),
+                      (int)Math.Round((hitInfo.Material.Color.G + light.Color.G) * 0.5 * grey),
+                      (int)Math.Round((hitInfo.Material.Color.B + light.Color.B) * 0.5 * grey));
             }
 
             return Color.Black;
@@ -96,16 +122,5 @@ namespace PotatoRaytracing
 
         //    return globalColor;
         //}
-
-        private Vector3 ReflectRay(Vector3 originDirection, Vector3 hitNormal)
-        {
-            return originDirection - 2 * Vector3.Dot(originDirection, hitNormal) * hitNormal;
-        }
-
-        public static double DiffuseAngle(Vector3 hitPoint, Vector3 normal, PotatoLight light)
-        {
-            Vector3 dir = Vector3.Normalize(light.Position - hitPoint);
-            return Vector3.Dot(dir, normal);
-        }
     }
 }
