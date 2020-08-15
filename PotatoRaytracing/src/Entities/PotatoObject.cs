@@ -6,14 +6,13 @@ namespace PotatoRaytracing
 {
     public abstract class PotatoObject : PotatoEntity
     {
-        public Color Color = new Color();
+        public Material Material;
         protected Bitmap texture = null;
         public string TexturePath = string.Empty;
 
-        public PotatoObject(Vector3 pos, string texturePath = @"Textures\uvTexture.bmp") : base(pos)
+        public PotatoObject(Vector3 pos, Material material, string texturePath = @"Textures\uvTexture.bmp") : base(pos)
         {
-            Color = Color.Red;
-
+            Material = material;
             TexturePath = texturePath;
         }
 

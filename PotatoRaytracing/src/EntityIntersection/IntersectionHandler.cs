@@ -1,4 +1,5 @@
-﻿using System.DoubleNumerics;
+﻿using PotatoRaytracing.Materials;
+using System.DoubleNumerics;
 using System.Drawing;
 
 namespace PotatoRaytracing
@@ -32,7 +33,7 @@ namespace PotatoRaytracing
                 Vector3 hitPos = new Vector3();
                 Vector3 hitNormal = new Vector3();
                 bool hit = SphereIntersection.Intersect(ray, sceneData.Spheres[i], ref hitPos, ref hitNormal, ref dst);
-                if(hit && dst < dstSphere)
+                if(hit && (dst < dstSphere))
                 {
                     hitSphere = true;
                     dstSphere = dst;
@@ -44,34 +45,34 @@ namespace PotatoRaytracing
 
             if (hitTriangle && hitSphere)
             {
-                if (dstTriangle < dstSphere)
+                if (dstTriangle < dstSphere) //TODO: Trouver le triangle intersect.
                 {
-                    return new HitInfo(true, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, Color.Red);
+                    return new HitInfo(true, ray, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, new DefaultMaterial());
                 }
                 else
                 {
-                    return ProcessSphereHit(hitNormalTriangle, dstSphere, sphere, hitPosSphere, hitNormalSphere);
+                    return ProcessSphereHit(ray, hitPosSphere, hitNormalSphere, dstSphere, sphere);
                 }
             }
             else
             {
                 if (hitTriangle)
                 {
-                    return new HitInfo(true, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, Color.Red);
+                    return new HitInfo(true, ray, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, new DefaultMaterial());
                 }
                 else if (hitSphere)
                 {
-                    return ProcessSphereHit(hitNormalTriangle, dstSphere, sphere, hitPosSphere, hitNormalSphere);
+                    return ProcessSphereHit(ray, hitPosSphere, hitNormalSphere, dstSphere, sphere);
                 }
             }
 
-            return new HitInfo(false, new Vector3(), new Vector3(), dstTriangle, Color.White, Color.Red);
+            return new HitInfo(false, ray, new Vector3(), new Vector3(), 0f, Color.White, new DefaultMaterial());
         }
 
-        private HitInfo ProcessSphereHit(Vector3 hitNormalTriangle, double dstSphere, PotatoSphere sphere, Vector3 hitPosSphere, Vector3 hitNormalSphere)
+        private HitInfo ProcessSphereHit(Ray ray, Vector3 hitPosSphere, Vector3 hitNormalSphere, double dstSphere, PotatoSphere sphere)
         {
-            Color textureColor = GetSphereTextureUV(sphere, hitNormalTriangle);
-            return new HitInfo(true, hitPosSphere, hitNormalSphere, dstSphere, textureColor, Color.Red);
+            Color textureColor = GetSphereTextureUV(sphere, hitNormalSphere);
+            return new HitInfo(true, ray, hitPosSphere, hitNormalSphere, dstSphere, textureColor, sphere.Material);
         }
 
         private Color GetSphereTextureUV(PotatoSphere sphere, Vector3 normal)

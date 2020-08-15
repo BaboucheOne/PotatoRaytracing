@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.DoubleNumerics;
+using PotatoRaytracing.Materials;
 
 namespace PotatoRaytracing
 {
@@ -8,16 +9,16 @@ namespace PotatoRaytracing
     {
         public readonly double Radius = 1.0;
 
-        public PotatoSphere() : this(new Vector3(), 1.0)
+        public PotatoSphere() : this(new Vector3(), 1.0, new DefaultMaterial())
         {
         }
 
-        public PotatoSphere(Vector3 pos, double radius) : base(pos)
+        public PotatoSphere(Vector3 pos, double radius, Material material) : base(pos, material)
         {
             Radius = radius;
         }
 
-        public PotatoSphere(Vector3 pos, double radius, string texturePath = @"Resources\\Textures\\default.bmp") : base(pos, texturePath)
+        public PotatoSphere(Vector3 pos, double radius, Material material, string texturePath = @"Resources\\Textures\\default.bmp") : base(pos, material, texturePath)
         {
             Radius = radius;
         }

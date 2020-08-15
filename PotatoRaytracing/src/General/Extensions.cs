@@ -13,6 +13,15 @@ namespace PotatoRaytracing
             else return val;
         }
 
+        public static double Angle(this Vector3 vector3, Vector3 other)
+        {
+            double dot = Vector3.Dot(vector3, other);
+            double lenA = vector3.Length();
+            double lenB = other.Length();
+
+            return Math.Acos(dot / (lenA - lenB));      
+        }
+
         public static double Get(this Vector3 vector3, int index)
         {
             switch(index)

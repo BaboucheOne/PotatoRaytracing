@@ -7,50 +7,33 @@ namespace PotatoRaytracing
     {
         public static bool Intersect(Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
         {
-            bool hit = false;
-            double d = 0;
+            Vector3 l = sphere.Position - ray.Origin;
+            double tca = Vector3.Dot(l, ray.Direction);
+            if (tca < 0) return false;
+            double d2 = Vector3.Dot(l, l) - tca * tca;
+            if (d2 > (sphere.Radius * sphere.Radius)) return false;
+            double thc = Math.Sqrt(sphere.Radius * sphere.Radius - d2);
+            double t0 = tca - thc;
+            double t1 = tca + thc;
 
-            Vector3 co = Vector3.Subtract(ray.Origin, sphere.Position);
-            double a = 1;
-            double b = 2 * Vector3.Dot(ray.Direction, co);
-            double c = co.Length() * co.Length() - sphere.Radius * sphere.Radius;
-            double delta = b * b - 4 * (a * c);
-
-            if (delta >= 0)
+            if (t0 > t1)
             {
-                double d1 = (-b - Math.Sqrt(delta)) / (2 * a);
-                double d2 = (-b + Math.Sqrt(delta)) / (2 * a);
-
-                if (Math.Min(d1, d2) > 0)
-                {
-                    d = Math.Min(d1, d2);
-                }
-                else
-                {
-                    d = Math.Max(d1, d2);
-                }
-
-                hit = true;
+                double temp = t0;
+                t0 = t1;
+                t1 = temp;
             }
 
-            distance = d;
-            hitPosition = ray.Cast(ray.Origin, d);
+            if (t0 < 0)
+            {
+                t0 = t1;
+                if (t0 < 0) return false;
+            }
+
+            distance = t0;
+            hitPosition = ray.Cast(ray.Origin, distance);
             hitNormal = Vector3.Normalize(Vector3.Subtract(hitPosition, sphere.Position));
 
-            return hit;
-        }
-
-        private static void PolynomialResult(double a, double b, double delta, out double polynomialResult1, out double polynomialResult2)
-        {
-            polynomialResult1 = (-b - Math.Sqrt(delta)) / (2 * a);
-            polynomialResult2 = (-b + Math.Sqrt(delta)) / (2 * a);
-        }
-
-        private static double IntersectionDiscriminent(double polynomialResult1, double polynomialResult2)
-        {
-            if (Math.Min(polynomialResult1, polynomialResult2) > 0) return Math.Min(polynomialResult1, polynomialResult2);
-
-            return Math.Max(polynomialResult1, polynomialResult2);
+            return true;
         }
     }
 }
