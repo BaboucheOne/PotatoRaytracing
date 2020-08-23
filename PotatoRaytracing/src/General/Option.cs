@@ -12,6 +12,7 @@ namespace PotatoRaytracing
         public int HalfHeight;
         public float Fov;
         public double Bias;
+        public float Gamma;
         public bool SuperSampling;
         public int SuperSamplingDivision;
         public int ScreenTiles;
@@ -28,24 +29,25 @@ namespace PotatoRaytracing
 
         public Camera Camera;
 
-        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor)
+        public Option(int width, int heigth, float fov, double bias, float gamma, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor)
         {
-            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor, null);
+            InitializeParameters(width, heigth, fov, bias, gamma, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor, null);
         }
 
-        public Option(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor, Camera cam)
+        public Option(int width, int heigth, float fov, double bias, float gamma, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor, Camera cam)
         {
-            InitializeParameters(width, heigth, fov, bias, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor, cam);
+            InitializeParameters(width, heigth, fov, bias, gamma, superSampling, superSamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor, cam);
 
             SetScreenSettings();
         }
 
-        private void InitializeParameters(int width, int heigth, float fov, double bias, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor, Camera cam)
+        private void InitializeParameters(int width, int heigth, float fov, double bias, float gamma, bool superSampling, int superSamplingDivision, int screenTiles, int recursionDepth, int videoDuration, int videoFPS, bool useSolidColor, string cubemap, Color solidColor, Camera cam)
         {
             Width = width;
             Height = heigth;
             Fov = fov;
             Bias = bias;
+            Gamma = gamma;
             Camera = cam;
             SuperSampling = superSampling;
             SuperSamplingDivision = superSamplingDivision;
@@ -97,18 +99,19 @@ namespace PotatoRaytracing
                 "Height: {1} \n" +
                 "Fov: {2} \n" +
                 "Bias: {3} \n" +
-                "Camera Position: {4} \n" +
-                "Camera Rotation: {5} \n" +
-                "Screen Center {6} \n" +
-                "Screen Left {7} \n" +
-                "Super sampling enable {8} \n" +
-                "Super sampling division {9} \n" +
-                "Screen tiles {10} \n" +
-                "Recursion depth {11} \n" +
-                "Video Duration {12} \n" +
-                "Video FPS {13} \n" +
-                "Cubemap {14} \n" +
-                "Solid color {15}", Width, Height, Fov, Bias, Camera.Position, Camera.Rotation,
+                "Gamma: {4} \n" +
+                "Camera Position: {5} \n" +
+                "Camera Rotation: {6} \n" +
+                "Screen Center {7} \n" +
+                "Screen Left {8} \n" +
+                "Super sampling enable {0} \n" +
+                "Super sampling division {10} \n" +
+                "Screen tiles {11} \n" +
+                "Recursion depth {12} \n" +
+                "Video Duration {13} \n" +
+                "Video FPS {14} \n" +
+                "Cubemap {15} \n" +
+                "Solid color {16}", Width, Height, Fov, Bias, Gamma, Camera.Position, Camera.Rotation,
                                     ScreenCenter, ScreenLeft, SuperSampling, SuperSamplingDivision,
                                     ScreenTiles, RecursionDepth, VideoDuration, VideoFPS, Cubemap, UseSolidColor);
         }

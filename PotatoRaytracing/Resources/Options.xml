@@ -3,6 +3,7 @@
   <height>512</height>
   <fov>40</fov>
   <bias>0,001</bias>
+  <gamma>1</gamma>
   <supersampling>false</supersampling>
   <supersamplingDivision>4</supersamplingDivision>
   <screenTiles>16</screenTiles>

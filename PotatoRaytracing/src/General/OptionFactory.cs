@@ -15,6 +15,7 @@ namespace PotatoRaytracing
             <height>512</height>
             <fov>40</fov>
             <bias>0,001</bias>
+            <gamma>1</gamma>
             <supersampling>false</supersampling>
             <supersamplingDivision>4</supersamplingDivision>
             <screenTiles>4</screenTiles>
@@ -30,6 +31,7 @@ namespace PotatoRaytracing
         private static int height = 512;
         private static float fov = 60.0f;
         private static double bias = 0.001;
+        private static float gamma = 1f;
         private static bool supersampling = false;
         private static int supersamplingDivision = 4;
         private static int screenTiles = 4;
@@ -44,7 +46,7 @@ namespace PotatoRaytracing
         {
             ReadOptionFromFile();
 
-            return new Option(width, height, fov, bias, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor);
+            return new Option(width, height, fov, bias, gamma, supersampling, supersamplingDivision, screenTiles, recursionDepth, videoDuration, videoFPS, useSolidColor, cubemap, solidColor);
         }
 
         private static void ReadOptionFromFile()
@@ -79,6 +81,7 @@ namespace PotatoRaytracing
             if(!IsResoltionFit(width)) throw new ArgumentException("Width do not conform to supported resolution (32 to 4096)");
             if ((width / screenTiles) < 1) throw new ArgumentException("Width / screenTiles must be equal or greater than 1");
             if(bias > 1) throw new ArgumentException("Bias must be <= 1");
+            if(gamma < 0) throw new ArgumentException("Gamma must be >= 0");
         }
 
         private static void AssignOptionValueFromXMLFile(XmlNode node)
@@ -87,6 +90,7 @@ namespace PotatoRaytracing
             height = int.Parse(node.SelectSingleNode("height").InnerText);
             fov = float.Parse(node.SelectSingleNode("fov").InnerText);
             bias = double.Parse(node.SelectSingleNode("bias").InnerText);
+            gamma = float.Parse(node.SelectSingleNode("gamma").InnerText);
             supersampling = bool.Parse(node.SelectSingleNode("supersampling").InnerText);
             supersamplingDivision = int.Parse(node.SelectSingleNode("supersamplingDivision").InnerText);
             screenTiles = int.Parse(node.SelectSingleNode("screenTiles").InnerText);
