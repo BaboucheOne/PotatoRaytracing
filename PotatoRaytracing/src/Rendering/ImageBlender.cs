@@ -59,7 +59,7 @@ namespace PotatoRaytracing
                 resultImage = BlendImage(resultImage, imagesRendered[i]);
             }
 
-            ApplyGammaCorrection(resultImage);
+            if(option.Gamma != 1) ApplyGammaCorrection(resultImage);
             return resultImage;
         }
 
@@ -109,7 +109,6 @@ namespace PotatoRaytracing
 
             byte bitsPerPixel = (byte)Image.GetPixelFormatSize(bmp.PixelFormat);
 
-            //Get pointers.
             byte* scan0 = (byte*)bData.Scan0.ToPointer();
 
             for (int i = 0; i < bData.Width; ++i)

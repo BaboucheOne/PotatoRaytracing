@@ -166,7 +166,6 @@
     <Compile Include="src\Entities\Camera.cs" />
     <Compile Include="src\EntityIntersection\BoxIntersection.cs" />
     <Compile Include="src\General\Constants.cs" />
-    <Compile Include="src\General\HSLColor.cs" />
     <Compile Include="src\Rendering\ImageBlender.cs" />
     <Compile Include="src\EntityIntersection\IntersectionHandler.cs" />
     <Compile Include="Program.cs" />
