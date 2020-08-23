@@ -32,7 +32,7 @@ namespace PotatoRaytracing
         {
             double u = 0.5 - (Math.Atan2(z, x) * Constants.INV_DOUBLE_PI);
             double v = 0.5 - (Math.Asin(y) * Constants.INV_PI);
-            
+
             return new Vector2(u * texture.Width, v * texture.Height);
         }
     }

@@ -88,7 +88,7 @@ namespace PotatoRaytracing
                     else
                     {
                         Vector2 screenCoord = new Vector2(2.0 * i / sceneData.Option.Width - 1.0, (-2.0 * j) / sceneData.Option.Height + 1.0);
-                        col = t.Trace(t.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex);
+                        col = t.Trace(t.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex, 0);
                     }
 
                     buffer[offset] = col.B;

@@ -8,7 +8,7 @@ namespace PotatoRaytracing.Materials
         {
         }
 
-        public DefaultMaterial(float diffuse, float specular, Color color, int specularExp, float albedo) : base(diffuse, specular, color, specularExp, albedo)
+        public DefaultMaterial(float diffuse, float specular, Color color, int specularExp, float albedo) : base(diffuse, specular, color, MaterialType.Lit, specularExp, albedo)
         {
         }
     }

@@ -55,7 +55,7 @@ namespace PotatoRaytracing
         private void TraceSubPixel(int lightIndex, int pixelPositionX, int pixelPositionY, float divisionPixelX, float divisionPixelY)
         {
             Vector2 screenCoord = new Vector2((2.0 * (pixelPositionX + (divisionPixelX - halfResolution)) / sceneData.Option.Width) - 1.0, (-2.0 * (pixelPositionY + (divisionPixelY - halfResolution)) / sceneData.Option.Height) + 1.0);
-            samplingColor = tracer.Trace(sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex);
+            samplingColor = tracer.Trace(sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex, 0);
             AddSamplingColorToColorChannels();
         }
 
