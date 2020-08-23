@@ -1,9 +1,9 @@
-﻿using System; 
-using System.Drawing;
+﻿using System.Drawing;
 using System.DoubleNumerics;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
+using System;
 
 namespace PotatoRaytracing
 {
@@ -70,10 +70,15 @@ namespace PotatoRaytracing
         private void Process(byte[] buffer, int x, int y, int endx, int endy, int width, int bytesPerPixel, PotatoTracer t, int lightIndex)
         {
             Color col;
+            Ray ray = new Ray();
             SuperSampling superSampling = null;
-            bool superSamplingEnable = t.sceneData.Option.SuperSampling;
+            bool superSamplingEnable = false;
 
-            if (superSamplingEnable) superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
+            if (t.sceneData.Option.SuperSampling)
+            {
+                superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
+                superSamplingEnable = true;
+            }
 
             for (int i = x; i < endx; i++)
             {
@@ -83,12 +88,12 @@ namespace PotatoRaytracing
 
                     if (superSamplingEnable)
                     {
-                        col = superSampling.GetSampleColor(lightIndex, i, j);
+                        col = superSampling.GetSampleColor(ray, lightIndex, i, j);
                     }
                     else
                     {
-                        Vector2 screenCoord = new Vector2(2.0 * i / sceneData.Option.Width - 1.0, (-2.0 * j) / sceneData.Option.Height + 1.0);
-                        col = t.Trace(t.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex, 0);
+                        SetRayDirectionByPixelPosition(ref ray, t.sceneData, i, j);
+                        col = t.Trace(ray, lightIndex);
                     }
 
                     buffer[offset] = col.B;
@@ -96,6 +101,20 @@ namespace PotatoRaytracing
                     buffer[offset + 2] = col.R;
                 }
             }
+        }
+
+        public static void SetRayDirectionByPixelPosition(ref Ray ray, PotatoSceneData sceneData, double pixelPositionX, double pixelPositionY)
+        {
+            ray.Set(sceneData.Camera.Position, GetDirectionFromPixel(sceneData, pixelPositionX, pixelPositionY));
+        }
+
+        public static Vector3 GetDirectionFromPixel(PotatoSceneData scene, double pixelPositionX, double pixelPositionY)
+        {
+            Vector3 V1 = Vector3.Multiply(scene.Camera.Right, pixelPositionX);
+            Vector3 V2 = Vector3.Multiply(scene.Camera.Up, pixelPositionY);
+            Vector3 pixelPos = Vector3.Add(Vector3.Add(scene.Option.ScreenLeft, V1), V2);
+
+            return Vector3.Normalize(Vector3.Add(scene.Camera.Forward, pixelPos));
         }
     }
 }
