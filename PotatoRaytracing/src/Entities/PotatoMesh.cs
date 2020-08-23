@@ -57,9 +57,8 @@ namespace PotatoRaytracing
 
             for (int i = 0; i < triangles.Length; i++)
             {
-                Vector3 center = new Vector3();
-                center = Vector3.Divide(triangles[i].P0 + triangles[i].P1 + triangles[i].P2, 3);
-                double length = Vector3.Cross(triangles[i].P1 - triangles[i].P0, triangles[i].P2 - triangles[i].P0).Length();
+                Vector3 center = Vector3.Divide(triangles[i].V0 + triangles[i].V1 + triangles[i].V2, 3);
+                double length = Vector3.Cross(triangles[i].V1 - triangles[i].V0, triangles[i].V2 - triangles[i].V0).Length();
                 double area = 0.5 * length;
                 Center += area * center;
                 sumArea += area;

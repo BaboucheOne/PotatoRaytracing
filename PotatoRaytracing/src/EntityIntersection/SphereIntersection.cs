@@ -5,117 +5,78 @@ namespace PotatoRaytracing
 {
     public static class SphereIntersection
     {
-        public static bool Intersect(Ray ray, PotatoSphere sphere)
-        {
-            bool hit = false;
-            double d = 0;
-
-            Vector3 co = Vector3.Subtract(ray.Origin, sphere.Position);
-            double a = 1;
-            double b = 2 * Vector3.Dot(ray.Direction, co);
-            double c = co.Length() * co.Length() - sphere.Radius * sphere.Radius;
-            double delta = b * b - 4 * (a * c);
-
-            if (delta >= 0)
-            {
-                double d1 = (-b - Math.Sqrt(delta)) / (2 * a);
-                double d2 = (-b + Math.Sqrt(delta)) / (2 * a);
-
-                if (Math.Min(d1, d2) > 0)
-                {
-                    d = Math.Min(d1, d2);
-                }
-                else
-                {
-                    d = Math.Max(d1, d2);
-                }
-
-                hit = true;
-            }
-
-            return hit;
-        }
-
+        //TODO: Integrer le point de sortie.
+        //TODO: It's working but let's test wich is better !!!
         public static bool Intersect(Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
         {
-            //bool hit = false;
-            //double a, b, delta = 0;
+            Vector3 l = sphere.Position - ray.Origin;
+            double tca = Vector3.Dot(l, ray.Direction);
+            if (tca < 0) return false;
+            double d2 = Vector3.Dot(l, l) - tca * tca;
+            if (d2 > (sphere.Radius * sphere.Radius)) return false;
+            double thc = Math.Sqrt((sphere.Radius * sphere.Radius) - d2);
+            double t0 = tca - thc;
+            double t1 = tca + thc;
 
-            //CalculatePolynomial(sphere, ray.Origin, ray.Direction, out a, out b, out delta);
-            //CalculateIntersection(ref hit, distance, a, b, delta);
+            if (t0 > t1) Extensions.Swap(ref t0, ref t1);
 
-            //hitPosition = ray.Cast(ray.Origin, distance);
-            //hitNormal = Vector3.Normalize(Vector3.Subtract(hitPosition, sphere.Position));
-
-            ////if (hit) Console.WriteLine("{0} {1}", hit, distance);
-
-            //return hit;
-
-            bool hit = false;
-            double d = 0;
-
-            Vector3 co = Vector3.Subtract(ray.Origin, sphere.Position);
-            double a = 1;
-            double b = 2 * Vector3.Dot(ray.Direction, co);
-            double c = co.Length() * co.Length() - sphere.Radius * sphere.Radius;
-            double delta = b * b - 4 * (a * c);
-
-            if (delta >= 0)
+            if (t0 < 0)
             {
-                double d1 = (-b - Math.Sqrt(delta)) / (2 * a);
-                double d2 = (-b + Math.Sqrt(delta)) / (2 * a);
-
-                if (Math.Min(d1, d2) > 0)
-                {
-                    d = Math.Min(d1, d2);
-                }
-                else
-                {
-                    d = Math.Max(d1, d2);
-                }
-
-                hit = true;
+                t0 = t1;
+                if (t0 < 0) return false;
             }
 
-            distance = d;
-            hitPosition = ray.Cast(ray.Origin, d);
+            distance = t0;
+            hitPosition = ray.Cast(ray.Origin, distance);
             hitNormal = Vector3.Normalize(Vector3.Subtract(hitPosition, sphere.Position));
 
-            return hit;
+            return true;
         }
 
-        private static void CalculateIntersection(ref bool hit, double discriminent, double a, double b, double delta)
-        {
-            if (delta < 0) return;
+        //public static bool Intersect(Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
+        //{
+        //    double t0 = 0;
+        //    double t1 = 0;
 
-            double polynomialResult1, polynomialResult2 = 0.0;
-            PolynomialResult(a, b, delta, out polynomialResult1, out polynomialResult2);
+        //    Vector3 L = ray.Origin - sphere.Position;
+        //    double a = 1;
+        //    double b = 2.0 * Vector3.Dot(ray.Direction, L);
+        //    double c = Vector3.Dot(L, L) - sphere.Radius*sphere.Radius;
+        //    if (!SolveQuadratic(a, b, c, ref t0, ref t1)) return false;
 
-            discriminent = IntersectionDiscriminent(polynomialResult1, polynomialResult2);
+        //    if (t0 > t1) Extensions.Swap(ref t0, ref t1);
 
-            hit = true;
-        }
+        //    if (t0 < 0)
+        //    {
+        //        t0 = t1;
+        //        if (t0 < 0) return false;
+        //    }
 
-        private static void CalculatePolynomial(PotatoSphere sphere, Vector3 origin, Vector3 direction, out double a, out double b, out double delta)
-        {
-            Vector3 co = Vector3.Subtract(origin, sphere.Position);
-            a = 1;
-            b = 2 * Vector3.Dot(direction, co);
-            double c = co.Length() * co.Length() - sphere.Radius * sphere.Radius;
-            delta = b * b - 4 * (a * c);
-        }
+        //    distance = t0;
+        //    hitPosition = ray.Cast(ray.Origin, distance);
+        //    hitNormal = Vector3.Normalize(Vector3.Subtract(hitPosition, sphere.Position));
 
-        private static void PolynomialResult(double a, double b, double delta, out double polynomialResult1, out double polynomialResult2)
-        {
-            polynomialResult1 = (-b - Math.Sqrt(delta)) / (2 * a);
-            polynomialResult2 = (-b + Math.Sqrt(delta)) / (2 * a);
-        }
+        //    return true;
+        //}
 
-        private static double IntersectionDiscriminent(double polynomialResult1, double polynomialResult2)
-        {
-            if (Math.Min(polynomialResult1, polynomialResult2) > 0) return Math.Min(polynomialResult1, polynomialResult2);
+        public static bool SolveQuadratic(double a, double b, double c, ref double x0, ref double x1) 
+        { 
+            double discr = b * b - 4 * a * c;
 
-            return Math.Max(polynomialResult1, polynomialResult2);
-        }
+            if (discr < 0.0) return false;
+
+            if (discr == 0)
+            { 
+                x0 = x1 = - 0.5 * b / a; 
+            } 
+            else
+            { 
+                double q = (b > 0) ? -0.5 * (b + Math.Sqrt(discr)) : -0.5 * (b - Math.Sqrt(discr));
+                x0 = q / a; 
+                x1 = c / q; 
+            } 
+ 
+            return true; 
+        } 
     }
 }

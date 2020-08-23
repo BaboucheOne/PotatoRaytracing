@@ -31,7 +31,7 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -40,7 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>true</Prefer32Bit>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -118,8 +118,8 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
@@ -147,18 +147,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\BoundingBoxNode.cs" />
-    <Compile Include="src\BoundingBoxTree.cs" />
+    <Compile Include="src\Entities\PotatoPlane.cs" />
+    <Compile Include="src\EntityIntersection\PlaneIntersection.cs" />
+    <Compile Include="src\Materials\Lambertian.cs" />
+    <Compile Include="src\Materials\Material.cs" />
+    <Compile Include="src\EntityIntersection\HitInfo.cs" />
+    <Compile Include="src\General\BoundingBox.cs" />
+    <Compile Include="src\Entities\PotatoDirectionalLight.cs" />
+    <Compile Include="src\Entities\PotatoLight.cs" />
+    <Compile Include="src\EntityIntersection\KDIntersection.cs" />
+    <Compile Include="src\General\Extensions.cs" />
+    <Compile Include="src\General\KDNode.cs" />
+    <Compile Include="src\General\KDTree.cs" />
+    <Compile Include="src\Materials\DefaultMaterial.cs" />
+    <Compile Include="src\Materials\Reflection.cs" />
+    <Compile Include="src\Materials\Refraction.cs" />
     <Compile Include="src\Rendering\Cubemap.cs" />
     <Compile Include="src\Entities\Camera.cs" />
-    <Compile Include="src\Entities\PotatoBox.cs" />
     <Compile Include="src\EntityIntersection\BoxIntersection.cs" />
-    <Compile Include="src\EntityIntersection\ClosestEntityIntersection.cs" />
     <Compile Include="src\General\Constants.cs" />
     <Compile Include="src\General\HSLColor.cs" />
     <Compile Include="src\Rendering\ImageBlender.cs" />
     <Compile Include="src\EntityIntersection\IntersectionHandler.cs" />
-    <Compile Include="src\EntityIntersection\IntersectResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Rendering\Tile.cs" />

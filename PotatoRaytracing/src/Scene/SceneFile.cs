@@ -4,13 +4,13 @@
     {
         public PotatoSphere[] Spheres;
         public PotatoMesh[] Meshes;
-        public PotatoPointLight[] PointLights;
+        public PotatoLight[] PointLights;
 
         public SceneFile()
         {
         }
 
-        public SceneFile(PotatoSphere[] spheres, PotatoMesh[] meshes, PotatoPointLight[] pointLights)
+        public SceneFile(PotatoSphere[] spheres, PotatoMesh[] meshes, PotatoLight[] pointLights)
         {
             Spheres = spheres;
             Meshes = meshes;
