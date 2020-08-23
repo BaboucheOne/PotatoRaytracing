@@ -21,7 +21,7 @@ namespace PotatoRaytracing
             Option = option;
 
             Scene = new PotatoScene(option);
-            imageBlender = new ImageBlender();
+            imageBlender = new ImageBlender(option);
         }
 
 

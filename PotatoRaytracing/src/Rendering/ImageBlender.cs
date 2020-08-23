@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -11,6 +12,13 @@ namespace PotatoRaytracing
 
         public int GetRenderedImagesCount() => imagesRendered.Count;
         public List<Bitmap> GetRenderedImages() => imagesRendered;
+
+        private Option option;
+
+        public ImageBlender(Option option)
+        {
+            this.option = option;
+        }
 
         public void Clear()
         {
@@ -51,6 +59,7 @@ namespace PotatoRaytracing
                 resultImage = BlendImage(resultImage, imagesRendered[i]);
             }
 
+            ApplyGammaCorrection(resultImage);
             return resultImage;
         }
 
@@ -92,6 +101,31 @@ namespace PotatoRaytracing
             bmp.UnlockBits(bData);
 
             return bmp;
+        }
+
+        private unsafe void ApplyGammaCorrection(Bitmap bmp)
+        {
+            BitmapData bData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, bmp.PixelFormat);
+
+            byte bitsPerPixel = (byte)Image.GetPixelFormatSize(bmp.PixelFormat);
+
+            //Get pointers.
+            byte* scan0 = (byte*)bData.Scan0.ToPointer();
+
+            for (int i = 0; i < bData.Width; ++i)
+            {
+                for (int j = 0; j < bData.Height; ++j)
+                {
+                    byte* data = scan0 + i * bData.Stride + j * bitsPerPixel / 8;
+
+                    for (int k = 0; k < 3; k++)
+                    {
+                        data[k] = (byte)(Math.Pow(data[k] / 255f, 1f / option.Gamma) * 255f);
+                    }
+                }
+            }
+
+            bmp.UnlockBits(bData);
         }
     }
 }
