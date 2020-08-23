@@ -43,9 +43,28 @@ namespace PotatoRaytracing
                 }
             }
 
-            if (hitTriangle && hitSphere)
+            double dstPlane = double.MaxValue;
+            bool hitPlane = false;
+            Vector3 hitPosPlane = new Vector3();
+            Vector3 hitNormalPlane = new Vector3();
+            for (int i = 0; i < sceneData.Planes.Count; i++)
             {
-                if (dstTriangle < dstSphere) //TODO: Trouver le triangle intersect.
+                double dst = 0.0;
+                Vector3 hitPos = sceneData.Planes[i].Position;
+                Vector3 hitNormal = sceneData.Planes[i].Normal;
+                bool hit = PlaneIntersection.Intersect(ray, sceneData.Planes[i], ref hitPos, ref hitNormal, ref dst);
+                if (hit && (dst < dstPlane))
+                {
+                    hitPlane = true;
+                    dstPlane = dst;
+                    hitPosPlane = hitPos;
+                    hitNormalPlane = hitNormal;
+                }
+            }
+
+            if (hitTriangle && hitSphere && hitPlane) //TODO: Handle des plane
+            {
+                if (dstTriangle < dstSphere && dstTriangle < dstPlane) //TODO: Trouver le triangle intersect.
                 {
                     return new HitInfo(true, ray, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, new DefaultMaterial());
                 }
@@ -63,10 +82,13 @@ namespace PotatoRaytracing
                 else if (hitSphere)
                 {
                     return ProcessSphereHit(ray, hitPosSphere, hitNormalSphere, dstSphere, sphere);
+                } else if(hitPlane)
+                {
+                    return new HitInfo(true, ray, hitPosPlane, hitNormalPlane, dstPlane, Color.White, new Lambertian(1f, Color.White));
                 }
             }
 
-            return new HitInfo(false, ray, new Vector3(), new Vector3(), 0f, Color.White, new DefaultMaterial());
+            return new HitInfo(false, ray, new Vector3(), new Vector3(), 0f, Color.Black, new DefaultMaterial());
         }
 
         private HitInfo ProcessSphereHit(Ray ray, Vector3 hitPosSphere, Vector3 hitNormalSphere, double dstSphere, PotatoSphere sphere)

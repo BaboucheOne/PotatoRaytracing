@@ -30,7 +30,7 @@ namespace PotatoRaytracing
             double dst = 0.0;
             for (int i = 0; i < node.Triangles.Count; i++)
             {
-                if(TriangleIntersection.Intersect(ray.Origin, ray.Direction, node.Triangles[i], ref hitPos, ref hitNor, ref dst))
+                if(TriangleIntersection.Intersect(ray, node.Triangles[i], ref hitPos, ref hitNor, ref dst))
                 {
                     if(dst < minDst)
                     {

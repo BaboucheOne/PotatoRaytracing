@@ -1,18 +1,59 @@
 ﻿using System;
 using System.Drawing;
 using System.DoubleNumerics;
-using PotatoRaytracing.Materials;
 
 namespace PotatoRaytracing
 {
     public abstract class Material
     {
-        private float specular = 0.2f;
-        private float diffuse = 0.8f;
-        private int specularExp = 10;
+        public enum MaterialType { Lit, Reflective, Refractive }
 
         public readonly Color Color = Color.White;
         public readonly float Albedo = 0.18f;
+
+        protected float specular = 0.2f;
+        protected float diffuse = 0.8f;
+        protected int specularExp = 10;
+
+        protected float reflectionWeight = 1f;
+        protected float transparency = 1f;
+        protected double indexOfRefraction = 1f;
+
+        public MaterialType Type = MaterialType.Lit;
+        public double IndexOfRefraction
+        {
+            get
+            {
+                return indexOfRefraction;
+            }
+            set
+            {
+                indexOfRefraction.Clamp(1f, double.MaxValue);
+            }
+        }
+        public float ReflectionWeight
+        {
+            get
+            {
+                return reflectionWeight;
+            }
+            set
+            {
+                reflectionWeight.Clamp(0f, 1f);
+            }
+        }
+        public float Transparency
+        {
+            get
+            {
+                return transparency;
+            }
+            set
+            {
+                transparency.Clamp(0f, 1f);
+            }
+        }
+
         public int SpecularExp
         {
             get
@@ -21,7 +62,7 @@ namespace PotatoRaytracing
             }
             set
             {
-                if (value > 1200) specularExp = 1200;
+                specularExp.Clamp(0, 1200);
             }
         }
         public float Diffuse
@@ -32,7 +73,7 @@ namespace PotatoRaytracing
             }
             set
             {
-                if (value > 1f) diffuse = 1f;
+                diffuse.Clamp(0f, 1f);
             }
         }
         public float Specular
@@ -43,7 +84,7 @@ namespace PotatoRaytracing
             }
             set
             {
-                if (value > 1f) specular = 1f;
+                specular.Clamp(0f, 1f);
             }
         }
 
@@ -51,8 +92,14 @@ namespace PotatoRaytracing
         {
         }
 
-        public Material(float diffuse, float specular, Color color, int specularExp = 10, float albedo = 0.18f)
+        public Material(MaterialType type)
         {
+            Type = type;
+        }
+
+        public Material(float diffuse, float specular, Color color, MaterialType type = MaterialType.Lit, int specularExp = 10, float albedo = 0.18f)
+        {
+            Type = type;
             this.diffuse = diffuse;
             this.specular = specular;
             this.specularExp = specularExp;
@@ -60,9 +107,9 @@ namespace PotatoRaytracing
             Albedo = albedo;
         }
 
-        public virtual HitInfo Scatter(Ray ray) //TODO: Ajouter la position de base.
+        public virtual HitInfo Scatter(HitInfo info) //TODO: Ajouter la position de base.
         {
-            return new HitInfo(false, ray, new Vector3(), new Vector3(), 0.0, Color.White, new DefaultMaterial());
+            return info;
         }
 
         public static Vector3 RandomUnitSphere()

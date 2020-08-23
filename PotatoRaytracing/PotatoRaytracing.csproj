@@ -147,6 +147,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Entities\PotatoPlane.cs" />
+    <Compile Include="src\EntityIntersection\PlaneIntersection.cs" />
     <Compile Include="src\Materials\Lambertian.cs" />
     <Compile Include="src\Materials\Material.cs" />
     <Compile Include="src\EntityIntersection\HitInfo.cs" />
@@ -158,6 +160,8 @@
     <Compile Include="src\General\KDNode.cs" />
     <Compile Include="src\General\KDTree.cs" />
     <Compile Include="src\Materials\DefaultMaterial.cs" />
+    <Compile Include="src\Materials\Reflection.cs" />
+    <Compile Include="src\Materials\Refraction.cs" />
     <Compile Include="src\Rendering\Cubemap.cs" />
     <Compile Include="src\Entities\Camera.cs" />
     <Compile Include="src\EntityIntersection\BoxIntersection.cs" />
