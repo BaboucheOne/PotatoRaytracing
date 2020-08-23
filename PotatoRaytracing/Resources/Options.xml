@@ -1,15 +1,12 @@
 <option>
   <width>512</width>
   <height>512</height>
-  <fov>40</fov>
-  <bias>0,001</bias>
+  <fov>60</fov>
   <supersampling>false</supersampling>
   <supersamplingDivision>4</supersamplingDivision>
-  <screenTiles>16</screenTiles>
-  <recursionDepth>2</recursionDepth>
+  <screenTiles>4</screenTiles>
+  <recursionDepth>1</recursionDepth>
   <videoDuration>5</videoDuration>
   <videoFPS>10</videoFPS>
-  <useSolidColor>false</useSolidColor>
   <cubemap>Resources\\Textures\\cubemap5.bmp</cubemap>
-  <solidColor>0 0 0</solidColor>
 </option>

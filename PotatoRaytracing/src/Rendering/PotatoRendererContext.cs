@@ -56,12 +56,11 @@ namespace PotatoRaytracing
                 Bitmap finalImage = imageBlender.GetFinalImageRender();
                 image_sequence[i] = finalImage.Clone(new Rectangle(0, 0, finalImage.Width, finalImage.Height), finalImage.PixelFormat);
 
-                Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
+                //Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
                 for (int j = 0; j < Scene.PotatoSceneData.Spheres.Count; j++)
                 {
                     Scene.PotatoSceneData.Spheres[j].Position = Scene.PotatoSceneData.Spheres[j].Position + new System.DoubleNumerics.Vector3(1, 0, 0);
                 }
-
                 imageBlender.Clear();
             }
 
