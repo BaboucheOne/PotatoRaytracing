@@ -30,13 +30,13 @@ namespace PotatoRaytracing
             watch.Start();
             tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
             Bitmap[] imgs = tasksSceneRenderer.Run();
+            watch.Stop();
+
             BlendAllRenderedImageContainInTasksResult(imgs);
 
             SaveAndOpenImage(imageName);
 
             ClearRenderContext();
-
-            watch.Stop();
         }
 
         public void MakeVideo(string videoName)

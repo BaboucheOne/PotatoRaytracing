@@ -18,11 +18,6 @@ namespace PotatoRaytracing
             Radius = radius;
         }
 
-        public PotatoSphere(Vector3 pos, double radius, Material material, string texturePath = @"Resources\\Textures\\default.bmp") : base(pos, material, texturePath)
-        {
-            Radius = radius;
-        }
-
         public override Vector2 GetUV(Vector3 position, Bitmap texture)
         {
             return GetUV(position.X, position.Y, position.Z, texture);
