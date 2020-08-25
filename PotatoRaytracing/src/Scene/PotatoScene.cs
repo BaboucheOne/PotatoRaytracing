@@ -89,11 +89,11 @@ namespace PotatoRaytracing
                 Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(75, 100));
                 float rad = (float)r.NextDouble() * 5;
                 Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
-                spheres.Add(new PotatoSphere(pos, rad, mat, @"Resources\\Textures\\default.bmp"));
+                spheres.Add(new PotatoSphere(pos, rad, mat));
             }
 
-            //spheres.Add(new PotatoSphere(new Vector3(0, 0, 50), 15f, new Refraction(1.2f), @"Resources\\Textures\\default.bmp"));
-            //spheres.Add(new PotatoSphere(new Vector3(40, 0, 75), 15f, new Reflection(1f, 0.5f, 120), @"Resources\\Textures\\default.bmp"));
+            //spheres.Add(new PotatoSphere(new Vector3(0, 0, 50), 15f, new Refraction(1.2f)));
+            //spheres.Add(new PotatoSphere(new Vector3(40, 0, 75), 15f, new Reflection(1f, 0.5f, 120)));
 
             lights.Add(new PotatoPointLight(new Vector3(0, 10, 0), 5000, 10000000, Color.White));
             lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.5, 0.5), 150f, Color.White));
@@ -151,7 +151,7 @@ namespace PotatoRaytracing
 
             for (int i = 0; i < spheres.Count; i++)
             {
-                textures.Add(spheres[i].GetTexturePath());
+                textures.Add(spheres[i].Material.AlbedoTexturePath);
             }
 
             return textures;

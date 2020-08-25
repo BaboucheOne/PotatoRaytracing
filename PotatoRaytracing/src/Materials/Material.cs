@@ -6,10 +6,15 @@ namespace PotatoRaytracing
 {
     public abstract class Material
     {
+        private const string defaultAlbedoTexturePath = @"Resources\Textures\default.bmp";
+
+        public string AlbedoTexturePath = string.Empty;
+        public string NormalMapPath = string.Empty;
+
         public enum MaterialType { Lit, Reflective, Refractive }
 
-        public readonly Color Color = Color.White;
-        public readonly float Albedo = 0.18f;
+        public Color Color = Color.White;
+        public float Albedo = 0.18f;
 
         protected float specular = 0.2f;
         protected float diffuse = 0.8f;
@@ -90,11 +95,13 @@ namespace PotatoRaytracing
 
         public Material()
         {
+            AlbedoTexturePath = defaultAlbedoTexturePath;
         }
 
         public Material(MaterialType type)
         {
             Type = type;
+            AlbedoTexturePath = defaultAlbedoTexturePath;
         }
 
         public Material(float diffuse, float specular, Color color, MaterialType type = MaterialType.Lit, int specularExp = 10, float albedo = 0.18f)
@@ -105,14 +112,18 @@ namespace PotatoRaytracing
             this.specularExp = specularExp;
             Color = color;
             Albedo = albedo;
+
+            AlbedoTexturePath = defaultAlbedoTexturePath;
         }
+
+        public bool HasNormalMap => !string.IsNullOrEmpty(NormalMapPath);
 
         public virtual HitInfo Scatter(HitInfo info) //TODO: Ajouter la position de base.
         {
             return info;
         }
 
-        public static Vector3 RandomUnitSphere()
+        public static Vector3 RandomUnitSphere() //TODO: Deplacer dans un autre fichier.
         {
             Random r = new Random();
             Vector3 p = new Vector3();
@@ -122,11 +133,13 @@ namespace PotatoRaytracing
             return p;
         }
 
-        public static Vector3 RandomUnitHemisphere(Vector3 normal)
+        public static Vector3 RandomUnitHemisphere(Vector3 normal) //TODO: Deplacer dans un autre fichier.
         {
             Vector3 randomSphere = RandomUnitSphere();
             if (Vector3.Dot(randomSphere, normal) > 0.0) return randomSphere;
             return -randomSphere;
         }
+
+
     }
 }

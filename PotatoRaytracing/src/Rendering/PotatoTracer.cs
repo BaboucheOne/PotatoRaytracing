@@ -86,9 +86,9 @@ namespace PotatoRaytracing
                     double grey = lightIntensity * (diffuse + specular);
                     grey = grey.Clamp(0.0, 255.0) / 255.0;
 
-                    return Color.FromArgb((int)Math.Round((hitInfo.Material.Color.R + light.Color.R) * 0.5 * grey),
-                            (int)Math.Round((hitInfo.Material.Color.G + light.Color.G) * 0.5 * grey),
-                            (int)Math.Round((hitInfo.Material.Color.B + light.Color.B) * 0.5 * grey));
+                    return Color.FromArgb((int)Math.Round((hitInfo.HitColor.R + light.Color.R) * 0.5 * grey),
+                            (int)Math.Round((hitInfo.HitColor.G + light.Color.G) * 0.5 * grey),
+                            (int)Math.Round((hitInfo.HitColor.B + light.Color.B) * 0.5 * grey));
                 }
 
                 if(hitInfo.Material.Type == Material.MaterialType.Reflective)

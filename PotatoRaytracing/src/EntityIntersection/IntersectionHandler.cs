@@ -93,14 +93,17 @@ namespace PotatoRaytracing
 
         private HitInfo ProcessSphereHit(Ray ray, Vector3 hitPosSphere, Vector3 hitNormalSphere, double dstSphere, PotatoSphere sphere)
         {
-            Color textureColor = GetSphereTextureUV(sphere, hitNormalSphere);
-            return new HitInfo(true, ray, hitPosSphere, hitNormalSphere, dstSphere, textureColor, sphere.Material);
+            //Color hitColor = GetSphereTextureColor(sphere, hitNormalSphere); //TODO: A reactiver quand on pourra additionner les couleurs.
+            //hitColor = hitColor.Add(sphere.Material.Color);
+
+            Color hitColor = sphere.Material.Color;
+            return new HitInfo(true, ray, hitPosSphere, hitNormalSphere, dstSphere, hitColor, sphere.Material);
         }
 
-        private Color GetSphereTextureUV(PotatoSphere sphere, Vector3 normal)
+        private Color GetSphereTextureColor(PotatoSphere sphere, Vector3 normal)
         {
-            string path = sphere.GetTexturePath();
-            Bitmap texture = textureManager.GetTexture(sphere.GetTexturePath());
+            string path = sphere.Material.AlbedoTexturePath;
+            Bitmap texture = textureManager.GetTexture(path);
             return textureManager.GetTextureColor(sphere.GetUV(normal, texture), path);
         }
     }
