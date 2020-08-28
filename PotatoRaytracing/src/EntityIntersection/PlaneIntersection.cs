@@ -7,6 +7,8 @@ namespace PotatoRaytracing
     {
         public static bool Intersect(Ray ray, PotatoPlane plane, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
         {
+            //double rdn = Vector3.Dot(ray.Direction, plane.Normal);
+
             double denom = Vector3.Dot(plane.Normal, ray.Direction);
             if (Math.Abs(denom) > Constants.EPSILON)
             {

@@ -123,23 +123,67 @@ namespace PotatoRaytracing
             return info;
         }
 
-        public static Vector3 RandomUnitSphere() //TODO: Deplacer dans un autre fichier.
+        public static void CreateCoordinateSystem(Vector3 N, ref Vector3 Nt, ref Vector3 Nb)
         {
-            Random r = new Random();
-            Vector3 p = new Vector3();
+            if (Math.Abs(N.X) > Math.Abs(N.Y))
+            {
+                Nt = new Vector3(N.Z, 0, -N.X) / Math.Sqrt(N.X * N.X + N.Z * N.Z);
+            }
+            else
+            {
+                Nt = new Vector3(0, -N.Z, N.Y) / Math.Sqrt(N.Y * N.Y + N.Z * N.Z);
+            }
 
-            while (p.LengthSquared() < 1.0) p = 2.0 * new Vector3(r.NextDouble(), r.NextDouble(), r.NextDouble()) - Vector3.One;
-
-            return p;
+            Nb = Vector3.Cross(N, Nt);
         }
 
-        public static Vector3 RandomUnitHemisphere(Vector3 normal) //TODO: Deplacer dans un autre fichier.
+        public static Vector3 UniformSampleHemisphere(double r1, double r2)
         {
-            Vector3 randomSphere = RandomUnitSphere();
-            if (Vector3.Dot(randomSphere, normal) > 0.0) return randomSphere;
-            return -randomSphere;
+            double sinTheta = Math.Sqrt(1 - r1 * r1);
+            double phi = 2 * Math.PI * r2;
+            double x = sinTheta * Math.Cos(phi);
+            double z = sinTheta * Math.Sin(phi);
+
+            return new Vector3(x, r1, z);
         }
 
+        //public static Vector3 RandomUnitSphere() //TODO: Deplacer dans un autre fichier.
+        //{
+        //    Random r = new Random();
+        //    Vector3 p = new Vector3();
 
+        //    while (p.LengthSquared() < 1.0) p = 2.0 * new Vector3(r.NextDouble(), r.NextDouble(), r.NextDouble()) - Vector3.One;
+
+        //    return p;
+        //}
+
+        //public static Vector3 RandomUnitHemisphere(Vector3 normal) //TODO: Deplacer dans un autre fichier.
+        //{
+        //    //Vector3 randomSphere = RandomUnitSphere();
+        //    //if (Vector3.Dot(randomSphere, normal) > 0.0) return randomSphere;
+        //    //return -randomSphere;
+
+        //    Random rand = new Random();
+
+        //    double u = rand.NextDouble();
+        //    double v = rand.NextDouble();
+
+        //    double phi = v * 2.0 * Math.PI;
+        //    double cosTheta = Math.Sqrt(1.0 - u);
+        //    double sinTheta = Math.Sqrt(1.0 - cosTheta * cosTheta);
+        //    return new Vector3(Math.Cos(phi) * sinTheta, Math.Sin(phi) * sinTheta, cosTheta);
+
+        //    //double randY = rand.NextDouble();
+        //    //double xt = rand.NextDouble() * 2 * Math.PI; //expand to 0 to 2PI
+        //    //double yt = Math.Sqrt(1.0 - randY);
+
+        //    //double x = Math.Cos(xt) * yt;
+        //    //double y = Math.Sqrt(randY);
+        //    //double z = Math.Sin(xt) * yt;
+
+        //    //Vector3 randomSphere = new Vector3(x, y, z);
+        //    //if (Vector3.Dot(randomSphere, normal) > 0.0) return randomSphere;
+        //    //return -randomSphere;
+        //}
     }
 }

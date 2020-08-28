@@ -6,6 +6,11 @@ namespace PotatoRaytracing
 {
     public static class Extensions
     {
+        public static Color ToColor(this Vector3 vector)
+        {
+            return Color.FromArgb((int)Math.Round(vector.X.Clamp(0, 255)), (int)Math.Round(vector.Y.Clamp(0, 255)), (int)Math.Round(vector.Z.Clamp(0, 255)));
+        }
+
         public static Color Add(this Color color, Color colorToAdd)
         {
             return Color.FromArgb((color.R + colorToAdd.R) / 2,

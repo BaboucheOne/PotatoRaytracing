@@ -84,7 +84,7 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 0; i++)
             {
                 Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(75, 100));
                 float rad = (float)r.NextDouble() * 5;
@@ -94,9 +94,15 @@ namespace PotatoRaytracing
 
             //spheres.Add(new PotatoSphere(new Vector3(0, 0, 50), 15f, new Refraction(1.2f)));
             //spheres.Add(new PotatoSphere(new Vector3(40, 0, 75), 15f, new Reflection(1f, 0.5f, 120)));
+            
+            
+            spheres.Add(new PotatoSphere(new Vector3(0, 0, 60), 15f, new Lambertian(1f, Color.Red)));
+            //spheres.Add(new PotatoSphere(new Vector3(-35, 0, 60), 15f, new Lambertian(1f, Color.White)));
+            planes.Add(new PotatoPlane(new Vector3(0, -15, 0), new Lambertian(1f, Color.White)));
 
-            lights.Add(new PotatoPointLight(new Vector3(0, 10, 0), 5000, 10000000, Color.White));
-            lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.5, 0.5), 150f, Color.White));
+
+            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 10000000, Color.White));
+            lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.5, 0.5), 350f, Color.White));
 
             //const int randomMeshCount = 1;
             //for (int i = 0; i < randomMeshCount; i++)
