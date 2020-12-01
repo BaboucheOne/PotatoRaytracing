@@ -10,7 +10,7 @@ namespace PotatoRaytracing
     public class PotatoScene
     {
         private readonly Option option;
-        private readonly MeshsBuilder meshsBuilder = new MeshsBuilder();
+        private readonly ObjBaker meskBaker = new ObjBaker();
 
         public Cubemap Cubemap = new Cubemap();
         public Camera Camera = new Camera();
@@ -42,7 +42,7 @@ namespace PotatoRaytracing
             List<PotatoSphere> spheres = sceneFile.Spheres.ToList();
             List<PotatoPlane> planes = new List<PotatoPlane>();
             List<PotatoMesh> meshs = new List<PotatoMesh>(); //TODO: Support mesh in scenes data file.
-            meshsBuilder.Build(ref meshs);
+            meskBaker.Build(ref meshs);
 
             SceneName = filename;
 
@@ -113,20 +113,20 @@ namespace PotatoRaytracing
 
             PotatoMesh mesh = new PotatoMesh //TODO: Implement ressource path.
             {
-                Position = new Vector3(0, -5, 6),
-                //Position = new Vector3(5, 0, 0),
+                //Position = new Vector3(0, -5, 6),
+                Position = new Vector3(0, 0, 1),
                 //Position = new Vector3(3, 0, 0),
                 //ObjectPath = @"Resources\\Objects\\kukuri.obj",
-                ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj",
+                //ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj",
                 //ObjectPath = @"Resources\\Objects\\bunny.obj",
-                //ObjectPath = @"Resources\\Objects\\teapot.obj",
+                ObjectPath = @"Resources\\Objects\\teapot.obj",
                 //ObjectPath = @"Resources\\Objects\\red_dot.obj",
                 //ObjectPath = @"Resources\\Objects\\ico.obj",
                 Color = colors[(int)(r.NextDouble() * colors.Count)]
             };
 
-            //meshs.Add(mesh);
-            meshsBuilder.Build(ref meshs);
+            meshs.Add(mesh);
+            meskBaker.Build(ref meshs);
 
             Cubemap.LoadCubemap(option.Cubemap);
 
