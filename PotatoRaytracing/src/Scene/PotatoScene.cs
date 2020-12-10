@@ -18,6 +18,11 @@ namespace PotatoRaytracing
 
         public string SceneName { get; private set; } = "Untiled.xml";
 
+        private List<PotatoLight> lights = new List<PotatoLight>();
+        private List<PotatoSphere> spheres = new List<PotatoSphere>();
+        private List<PotatoPlane> planes = new List<PotatoPlane>();
+        private List<PotatoMesh> meshes = new List<PotatoMesh>();
+
         public PotatoScene()
         {
         }
@@ -27,46 +32,40 @@ namespace PotatoRaytracing
             this.option = option;
         }
 
-        public void LoadRandomScene()
+        public void Save(string scenePath)
         {
-            ClearScene();
-            CreateRandomScene();
-            //SceneLoaderAndSaver.SaveScene("SceneSphere.xml", spheres.ToArray(), meshs.ToArray(), lights.ToArray());
+            SceneLoaderAndSaver.Save(scenePath, spheres.ToArray(), planes.ToArray(), meshes.ToArray(), lights);
         }
 
-        public void LoadScene(string filename)
+        public void Load(string scenePath)
         {
             ClearScene();
 
-            SceneFile sceneFile = SceneLoaderAndSaver.LoadScene(filename);
-            List<PotatoSphere> spheres = sceneFile.Spheres.ToList();
-            List<PotatoPlane> planes = new List<PotatoPlane>();
-            List<PotatoMesh> meshs = new List<PotatoMesh>(); //TODO: Support mesh in scenes data file.
-            meskBaker.Build(ref meshs);
+            SceneFile sceneFile = SceneLoaderAndSaver.Load(scenePath);
 
-            SceneName = filename;
+            spheres = sceneFile.Spheres.ToList();
+            meshes = sceneFile.Meshes.ToList();
+            lights = sceneFile.GetLigths().ToList();
+            planes = new List<PotatoPlane>();
 
-            Cubemap.LoadCubemap(option.Cubemap);
-
-            KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
-            PotatoSceneData = new PotatoSceneData(spheres, planes, meshs, sceneFile.PointLights.ToList(), RetreiveAllTextureInScene(spheres), tree, option, Cubemap);
+            PrepareScene();
         }
 
         private void ClearScene()
         {
-            //throw new NotImplementedException();
+            spheres.Clear();
+            planes.Clear();
+            meshes.Clear();
+            lights.Clear();
+            PotatoSceneData.Clear();
         }
-
 
         public Option GetOptions() => option;
         public Camera GetCamera() => PotatoSceneData.Camera;
 
-        private void CreateRandomScene() //TODO: Refactor this (colors should go, separate into several methods)
+        public void CreateRandomScene()
         {
-            List<PotatoSphere> spheres = new List<PotatoSphere>();
-            List<PotatoPlane> planes = new List<PotatoPlane>();
-            List<PotatoMesh> meshs = new List<PotatoMesh>();
-            List<PotatoLight> lights = new List<PotatoLight>();
+            ClearScene();
 
             List<Color> colors = new List<Color>()
             {
@@ -84,10 +83,11 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
-                Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(75, 100));
-                float rad = (float)r.NextDouble() * 5;
+                //Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(10, 10));
+                Vector3 pos = new Vector3(r.Next(-25, 25), r.Next(-25, 25), 25);
+                float rad = 1f;//(float)r.NextDouble() * 5f;
                 Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
                 spheres.Add(new PotatoSphere(pos, rad, mat));
             }
@@ -124,14 +124,17 @@ namespace PotatoRaytracing
                 //ObjectPath = @"Resources\\Objects\\ico.obj",
                 Color = colors[(int)(r.NextDouble() * colors.Count)]
             };
+            //meshes.Add(mesh);
 
-            meshs.Add(mesh);
-            meskBaker.Build(ref meshs);
+            PrepareScene();
+        }
 
+        private void PrepareScene()
+        {
+            meskBaker.Build(ref meshes);
             Cubemap.LoadCubemap(option.Cubemap);
-
-            KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
-            PotatoSceneData = new PotatoSceneData(spheres, planes, meshs, lights, RetreiveAllTextureInScene(spheres), tree, option, Cubemap, Camera);
+            KDTree tree = new KDTree(GetAllTrianglesInScene(meshes));
+            PotatoSceneData = new PotatoSceneData(spheres, planes, meshes, lights, RetreiveAllTextureInScene(spheres), tree, option, Cubemap, Camera);
         }
 
         private List<Triangle> GetAllTrianglesInScene(List<PotatoMesh> meshs)

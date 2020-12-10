@@ -11,6 +11,10 @@ namespace PotatoRaytracing
         public Color Color = Color.White;
         public Vector3 Center { get; private set; }
 
+        public Triangle GetTriangle(int index) => triangles[index];
+        public Triangle[] GetTriangles() => triangles;
+        public int GetTrianglesCount() => triangles.Length;
+
         public PotatoMesh() { }
 
         public PotatoMesh(string texturePath)
@@ -66,9 +70,5 @@ namespace PotatoRaytracing
 
             Center = Vector3.Divide(Center, sumArea);
         }
-
-        public Triangle GetTriangle(int index) => triangles[index];
-        public Triangle[] GetTriangles() => triangles;
-        public int GetTrianglesCount => triangles.Length;
     }
 }
