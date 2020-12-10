@@ -15,7 +15,8 @@ namespace PotatoRaytracing
             Option option = OptionFactory.CreateOption();
 
             RenderContext = new PotatoRenderContext(option);
-            RenderContext.Scene.LoadRandomScene();
+            //RenderContext.Scene.Load("testSceneFile.json");
+            RenderContext.Scene.CreateRandomScene();
 
             Console.WriteLine("--- Potato Raytracing ---");
             Console.WriteLine("Scene parameters:");

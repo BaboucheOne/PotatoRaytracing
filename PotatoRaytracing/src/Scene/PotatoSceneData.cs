@@ -1,5 +1,4 @@
-﻿using PotatoRaytracing.WorldCoordinate;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.DoubleNumerics;
 using System.Drawing;
 using System.Linq;
@@ -57,6 +56,17 @@ namespace PotatoRaytracing
                     Option.SetCamera(Camera);
                 }
             }
+        }
+
+        public void Clear()
+        {
+            if (Spheres == null) return; //TODO: Peut etre faire quelque chose ici de mieux :)
+
+            Spheres.Clear();
+            Planes.Clear();
+            Meshs.Clear();
+            Lights.Clear();
+            Textures.Clear();
         }
 
         public PotatoSceneData DeepCopy()

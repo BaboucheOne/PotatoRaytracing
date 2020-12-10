@@ -16,19 +16,19 @@ Modify 'option.xml' in the 'Resources' folder to play with settings.
 
 # New Features!
 
-  - Cubemap
-  - Reflection
-  - Multi-threading (improved!)
+  - .obj supported in scene file
   - Video
 # Features
 
+ -  Cubemap
+ -  Reflection
  -  Sphere rendering
  -  Texture on sphere
  -  Mesh rendering (only obj)
  -  Mutiple lights
  -  Double precision
  -  Custom scene file
- -  Multi-threading
+ -  Multi-threading (improved!)
 # Screenshots
 ![multiple lights](https://raw.githubusercontent.com/BaboucheOne/PotatoRaytracing/master/renderedImages/27_10_19_image1.bmp)
 

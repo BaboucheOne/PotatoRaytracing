@@ -1,58 +1,70 @@
-﻿using System;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
+﻿using System.IO;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace PotatoRaytracing
 {
-    public static class SceneLoaderAndSaver
+    public static class SceneLoaderAndSaver //TODO: Maybe merge this into PotatoScene.cs
     {
-        public static SceneFile LoadScene(string scenePath)
+        public static SceneFile Load(string scenePath)
         {
-            if (!File.Exists(scenePath)) throw new Exception("Cannot find the scene file");
-            SceneFile sceneFile = null;
+            if (!File.Exists(scenePath)) throw new FileNotFoundException("Cannot find the scene file");
 
-            sceneFile = ReadSceneXmlFile(scenePath);
+            SceneFile file;
 
-            return sceneFile;
-        }
-
-        private static SceneFile ReadSceneXmlFile(string scenePath)
-        {
-            SceneFile sceneFile;
-            using (FileStream fs = File.OpenRead(scenePath))
+            using (TextReader reader = new StreamReader(scenePath))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(SceneFile));
-                sceneFile = serializer.Deserialize(fs) as SceneFile;
-
-                fs.Flush();
-                fs.Dispose();
+                file = JsonConvert.DeserializeObject<SceneFile>(reader.ReadToEnd());
             }
 
-            return sceneFile;
+            return file;
         }
 
-        public static void SaveScene(string sceneName, PotatoSphere[] spheres, PotatoMesh[] meshes, PotatoPointLight[] pointLights)
+        public static void Save(string sceneName, PotatoSphere[] spheres, PotatoPlane[] planes, PotatoMesh[] meshes, List<PotatoLight> ligths)
         {
-            XmlSerializer xmlSerializer = new XmlSerializer(typeof(SceneFile));
-            SceneFile sceneFile = new SceneFile(spheres, meshes, pointLights);
-            string xml = string.Empty;
+            FillLightsListWithCorrespondingLightClass(ligths, out List<PotatoDirectionalLight> directionalLights, out List<PotatoPointLight> pointsLights);
 
-            using (var sw = new StringWriter())
+            SceneFile file = new SceneFile()
             {
-                //TODO: Mettre l'encoding en ASCII pour lire le fichier. Trouver un moyen d'enlever le utf-16 du fichier mit automatiquement.
-                using (XmlWriter writer = XmlWriter.Create(sw, settings: new XmlWriterSettings { Encoding = System.Text.Encoding.ASCII, Indent = true }))
-                {
-                    xmlSerializer.Serialize(writer, sceneFile);
-                    xml = sw.ToString();
-                    xml = xml.Replace("utf-16", "ascii"); //Encoding do not work, replace it.
+                Spheres = spheres,
+                Meshes = meshes,
+                Planes = planes,
+                PointLights = pointsLights.ToArray(),
+                DirectionalLights = directionalLights.ToArray()
+            };
 
-                    writer.Flush();
-                    writer.Dispose();
+            WriteSceneToFile(sceneName, file);
+        }
+
+        private static void WriteSceneToFile(string sceneName, SceneFile file)
+        {
+            JsonSerializer serializer = new JsonSerializer
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            };
+
+            using (StreamWriter sw = new StreamWriter(sceneName))
+            using (JsonWriter writer = new JsonTextWriter(sw) { Formatting = Newtonsoft.Json.Formatting.Indented })
+            {
+                serializer.Serialize(writer, file);
+            }
+        }
+
+        private static void FillLightsListWithCorrespondingLightClass(List<PotatoLight> ligths, out List<PotatoDirectionalLight> directionalLights, out List<PotatoPointLight> pointsLights)
+        {
+            directionalLights = new List<PotatoDirectionalLight>();
+            pointsLights = new List<PotatoPointLight>();
+            for (int i = 0; i < ligths.Count; i++)
+            {
+                if (ligths[i].Type == PotatoLight.LightType.Directional)
+                {
+                    directionalLights.Add((PotatoDirectionalLight)ligths[i]);
+                }
+                else
+                {
+                    pointsLights.Add((PotatoPointLight)ligths[i]);
                 }
             }
-
-            File.WriteAllText(sceneName, xml);
         }
     }
 }
