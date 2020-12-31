@@ -9,7 +9,6 @@ namespace PotatoRaytracing
     {
         public Option Option { get; private set; }
         public PotatoScene Scene { get; private set; }
-        private readonly ImageBlender imageBlender;
         private PotatoTasksSceneRenderer tasksSceneRenderer;
 
         private readonly Stopwatch watch = new Stopwatch();
@@ -21,54 +20,50 @@ namespace PotatoRaytracing
             Option = option;
 
             Scene = new PotatoScene(option);
-            imageBlender = new ImageBlender(option);
         }
-
 
         public void MakeImage(string imageName)
         {
-            watch.Start();
             tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
-            Bitmap[] imgs = tasksSceneRenderer.Run();
+            watch.Start();
+            Bitmap image = tasksSceneRenderer.Run();
             watch.Stop();
 
-            BlendAllRenderedImageContainInTasksResult(imgs);
-
-            SaveAndOpenImage(imageName);
+            SaveAndOpenImage(image, imageName);
 
             ClearRenderContext();
         }
 
         public void MakeVideo(string videoName)
         {
-            watch.Start();
-            int imgCount = Option.VideoFPS * Option.VideoDuration;
-            Bitmap[] image_sequence = new Bitmap[imgCount];
+            //watch.Start();
+            //int imgCount = Option.VideoFPS * Option.VideoDuration;
+            //Bitmap[] image_sequence = new Bitmap[imgCount];
 
-            tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
+            //tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
 
-            for (int i = 0; i < imgCount; i++)
-            {
-                Bitmap[] imgs = tasksSceneRenderer.Run();
+            //for (int i = 0; i < imgCount; i++)
+            //{
+            //    Bitmap[] imgs = tasksSceneRenderer.Run();
 
-                BlendAllRenderedImageContainInTasksResult(imgs);
+            //    BlendAllRenderedImageContainInTasksResult(imgs);
 
-                Bitmap finalImage = imageBlender.GetFinalImageRender();
-                image_sequence[i] = finalImage.Clone(new Rectangle(0, 0, finalImage.Width, finalImage.Height), finalImage.PixelFormat);
+            //    Bitmap finalImage = imageBlender.GetFinalImageRender();
+            //    image_sequence[i] = finalImage.Clone(new Rectangle(0, 0, finalImage.Width, finalImage.Height), finalImage.PixelFormat);
 
-                Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
-                for (int j = 0; j < Scene.PotatoSceneData.Spheres.Count; j++)
-                {
-                    Scene.PotatoSceneData.Spheres[j].Position = Scene.PotatoSceneData.Spheres[j].Position + new System.DoubleNumerics.Vector3(1, 0, 0);
-                }
+            //    Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
+            //    for (int j = 0; j < Scene.PotatoSceneData.Spheres.Count; j++)
+            //    {
+            //        Scene.PotatoSceneData.Spheres[j].Position = Scene.PotatoSceneData.Spheres[j].Position + new System.DoubleNumerics.Vector3(1, 0, 0);
+            //    }
 
-                imageBlender.Clear();
-            }
+            //    imageBlender.Clear();
+            //}
 
-            ClearRenderContext();
-            CreateVideo(videoName, image_sequence);
+            //ClearRenderContext();
+            //CreateVideo(videoName, image_sequence);
 
-            watch.Stop();
+            //watch.Stop();
         }
 
         private void CreateVideo(string videoName, Bitmap[] inputImageSequence)
@@ -92,24 +87,15 @@ namespace PotatoRaytracing
             System.GC.Collect();
         }
 
-        private void SaveAndOpenImage(string imageName)
+        private void SaveAndOpenImage(Bitmap bitmap, string imageName)
         {
-            SaveImage(imageName);
+            SaveImage(bitmap, imageName);
             OpenImage(imageName);
         }
 
-        private void BlendAllRenderedImageContainInTasksResult(Bitmap[] images)
+        private void SaveImage(Bitmap bitmap, string imgageName)
         {
-            for (int i = 0; i < images.Length; i++)
-            {
-                imageBlender.AddImage(images[i]);
-            }
-        }
-
-        private void SaveImage(string imgageName)
-        {
-            Bitmap finalImage = imageBlender.GetFinalImageRender();
-            finalImage.Save(imgageName, ImageFormat.Bmp);
+            bitmap.Save(imgageName, ImageFormat.Bmp);
         }
 
         private static void OpenImage(string imageName)

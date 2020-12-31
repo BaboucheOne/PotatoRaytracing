@@ -15,7 +15,7 @@ namespace PotatoRaytracing
             intersectionHandler = new IntersectionHandler(sceneData, textureManager);
         }
 
-        public Color Trace(Ray renderRay, int lightIndex, int depth)
+        public Color Trace(Ray renderRay, int depth = 0)
         {
             if (depth > sceneData.Option.RecursionDepth) return GetBackgroundColor(renderRay);
 
@@ -25,7 +25,7 @@ namespace PotatoRaytracing
             {
                 //return ComputeAmbientOcclusion(hitInfo);
                 //Diffuse.
-                return ComputeDirectLight(hitInfo, lightIndex, depth);
+                return ComputeDirectLight(hitInfo, depth);
             }
 
             return GetBackgroundColor(renderRay);
@@ -64,80 +64,106 @@ namespace PotatoRaytracing
             return Color.FromArgb((int)grey, (int)grey, (int)grey);
         }
 
-        private Color ComputeDirectLight(HitInfo hitInfo, int lightIndex, int depth)
+        private Color ComputeDirectLight(HitInfo hitInfo, int depth)
         {
-            PotatoLight light = sceneData.Lights[lightIndex];
-            Vector3 dir2light = light.DirectionToLight(hitInfo.HitPosition);
+            PotatoLight light;
+            Vector3 dir2light;
+            Vector3 cumulativeLightColor = new Vector3();
 
-            if (light.Intensity > 0 && light.IsInRange(hitInfo.HitPosition))
+            if (hitInfo.Material.Type == Material.MaterialType.Lit)
             {
-                if (hitInfo.Material.Type == Material.MaterialType.Lit)
+                for (int i = 0; i < sceneData.Lights.Count; i++)
                 {
-                    Ray shadowRay = new Ray(hitInfo.HitPosition + hitInfo.HitNormal * sceneData.Option.Bias, dir2light);
-                    HitInfo hitShadow = intersectionHandler.Intersect(shadowRay);
-                    if (hitShadow.Hit) return Color.Black;
+                    light = sceneData.Lights[i];
+                    dir2light = light.DirectionToLight(hitInfo.HitPosition);
 
-                    double lightIntensity = light.IntensityOverDistance(hitInfo.HitPosition);
-                    double diffuse = hitInfo.Material.Diffuse * Math.Max(0.0, Vector3.Dot(dir2light, hitInfo.HitNormal));
+                    if (light.Intensity > 0 && light.IsInRange(hitInfo.HitPosition))
+                    {
+                        Ray shadowRay = new Ray(hitInfo.HitPosition + hitInfo.HitNormal * sceneData.Option.Bias, dir2light);
+                        HitInfo hitShadow = intersectionHandler.Intersect(shadowRay);
+                        if (hitShadow.Hit) return Color.Black;
 
-                    Vector3 reflect = Vector3.Reflect(-dir2light, hitInfo.HitNormal);
-                    double specular = hitInfo.Material.Specular * Math.Pow(Math.Max(0.0, Vector3.Dot(-hitInfo.Ray.Direction, reflect)), hitInfo.Material.SpecularExp);
+                        double lightIntensity = light.IntensityOverDistance(hitInfo.HitPosition);
+                        double diffuse = hitInfo.Material.Diffuse * Math.Max(0.0, Vector3.Dot(dir2light, hitInfo.HitNormal));
 
-                    double grey = lightIntensity * (diffuse + specular);
-                    grey = grey.Clamp(0.0, 255.0) / 255.0;
+                        Vector3 reflect = Vector3.Reflect(-dir2light, hitInfo.HitNormal);
+                        double specular = hitInfo.Material.Specular * Math.Pow(Math.Max(0.0, Vector3.Dot(-hitInfo.Ray.Direction, reflect)), hitInfo.Material.SpecularExp);
 
-                    return Color.FromArgb((int)Math.Round((hitInfo.HitColor.R + light.Color.R) * 0.5 * grey),
-                            (int)Math.Round((hitInfo.HitColor.G + light.Color.G) * 0.5 * grey),
-                            (int)Math.Round((hitInfo.HitColor.B + light.Color.B) * 0.5 * grey));
+                        double grey = lightIntensity * (diffuse + specular);
+                        grey = grey.Clamp(0.0, 255.0) / 255.0;
+
+                        cumulativeLightColor.X += (hitInfo.HitColor.R + light.Color.R) * 0.5 * grey;
+                        cumulativeLightColor.Y += (hitInfo.HitColor.G + light.Color.G) * 0.5 * grey;
+                        cumulativeLightColor.Z += (hitInfo.HitColor.B + light.Color.B) * 0.5 * grey;
+                    }
                 }
 
-                if(hitInfo.Material.Type == Material.MaterialType.Reflective)
+                return Color.FromArgb((int)Math.Round(cumulativeLightColor.X / sceneData.Lights.Count),
+                    (int)Math.Round(cumulativeLightColor.Y / sceneData.Lights.Count),
+                    (int)Math.Round(cumulativeLightColor.Z / sceneData.Lights.Count));
+            }
+
+            if(hitInfo.Material.Type == Material.MaterialType.Reflective)
+            {
+                for (int i = 0; i < sceneData.Lights.Count; i++)
                 {
-                    double lightIntensity = light.IntensityOverDistance(hitInfo.HitPosition);
-                    Vector3 reflectSpec = Vector3.Reflect(-dir2light, hitInfo.HitNormal);
-                    double specular = hitInfo.Material.Specular * Math.Pow(Math.Max(0.0, Vector3.Dot(-hitInfo.Ray.Direction, reflectSpec)), hitInfo.Material.SpecularExp);
+                    light = sceneData.Lights[i];
+                    dir2light = light.DirectionToLight(hitInfo.HitPosition);
 
-                    Vector3 reflectMiror = Vector3.Reflect(hitInfo.Ray.Direction, hitInfo.HitNormal);
-                    Color reflectionColor = Trace(new Ray(hitInfo.HitPosition + hitInfo.HitNormal * sceneData.Option.Bias, reflectMiror), lightIndex, depth + 1).Multiply(hitInfo.Material.ReflectionWeight);
+                    if (light.Intensity > 0 && light.IsInRange(hitInfo.HitPosition))
+                    {
+                        double lightIntensity = light.IntensityOverDistance(hitInfo.HitPosition);
+                        Vector3 reflectSpec = Vector3.Reflect(-dir2light, hitInfo.HitNormal);
+                        double specular = hitInfo.Material.Specular * Math.Pow(Math.Max(0.0, Vector3.Dot(-hitInfo.Ray.Direction, reflectSpec)), hitInfo.Material.SpecularExp);
 
-                    Vector3 customColor = new Vector3(lightIntensity * specular) + new Vector3(reflectionColor.R, reflectionColor.G, reflectionColor.B);
-                    return Color.FromArgb((int)customColor.X.Clamp(0, 255), (int)customColor.Y.Clamp(0, 255), (int)customColor.Z.Clamp(0, 255));
+                        Vector3 reflectMiror = Vector3.Reflect(hitInfo.Ray.Direction, hitInfo.HitNormal);
+                        Color reflectionColor = Trace(new Ray(hitInfo.HitPosition + hitInfo.HitNormal * sceneData.Option.Bias, reflectMiror), depth + 1).Multiply(hitInfo.Material.ReflectionWeight);
+
+                        cumulativeLightColor.X = lightIntensity * specular + reflectionColor.R;
+                        cumulativeLightColor.Y = lightIntensity * specular + reflectionColor.G;
+                        cumulativeLightColor.Z = lightIntensity * specular + reflectionColor.B;
+                    }
                 }
 
-                if (hitInfo.Material.Type == Material.MaterialType.Refractive)
+                cumulativeLightColor.X /= sceneData.Lights.Count;
+                cumulativeLightColor.Y /= sceneData.Lights.Count;
+                cumulativeLightColor.Z /= sceneData.Lights.Count;
+                return Color.FromArgb((int)cumulativeLightColor.X.Clamp(0, 255), (int)cumulativeLightColor.Y.Clamp(0, 255), (int)cumulativeLightColor.Z.Clamp(0, 255));
+            }
+
+            if (hitInfo.Material.Type == Material.MaterialType.Refractive)
+            {
+                bool inside = false;
+                Vector3 nHit = hitInfo.HitNormal;
+                if (Vector3.Dot(hitInfo.Ray.Direction, nHit) > 0.0)
                 {
-                    bool inside = false;
-                    Vector3 nHit = hitInfo.HitNormal;
-                    if (Vector3.Dot(hitInfo.Ray.Direction, nHit) > 0.0)
+                    nHit = -nHit;
+                    inside = true;
+                }
+
+                if (depth < sceneData.Option.RecursionDepth)
+                {
+                    float facingratio = (float)Vector3.Dot(-hitInfo.Ray.Direction, nHit);
+                    float fresneleffect = (float)Mix(Math.Pow(1 - facingratio, 3), 1, 0.1);
+
+                    Vector3 refldir = Vector3.Reflect(hitInfo.Ray.Direction, hitInfo.HitNormal);
+                    Color reflection = Trace(new Ray(hitInfo.HitPosition + nHit * sceneData.Option.Bias, refldir), depth + 1);
+                    Color refraction = Color.Black;
+
+                    if (hitInfo.Material.Transparency > 0f)
                     {
-                        nHit = -nHit;
-                        inside = true;
+                        double eta = inside ? hitInfo.Material.IndexOfRefraction : 1.0 / hitInfo.Material.IndexOfRefraction;
+
+                        double cosi = Vector3.Dot(-nHit, hitInfo.Ray.Direction);
+                        double k = 1.0 - eta * eta * (1.0 - cosi * cosi);
+                        Vector3 refrdir = Vector3.Normalize(hitInfo.Ray.Direction * eta + nHit * (eta * cosi - Math.Sqrt(k)));
+                        refraction = Trace(new Ray(hitInfo.HitPosition - nHit * sceneData.Option.Bias, refrdir), depth + 1);
                     }
 
-                    if (depth < sceneData.Option.RecursionDepth)
-                    {
-                        float facingratio = (float)Vector3.Dot(-hitInfo.Ray.Direction, nHit);
-                        float fresneleffect = (float)Mix(Math.Pow(1 - facingratio, 3), 1, 0.1);
+                    Vector3 testColor = new Vector3(reflection.R, reflection.G, reflection.B) * fresneleffect;
+                    testColor += new Vector3(refraction.R, refraction.G, refraction.B) * ((1.0 - fresneleffect) * hitInfo.Material.Transparency);
 
-                        Vector3 refldir = Vector3.Reflect(hitInfo.Ray.Direction, hitInfo.HitNormal);
-                        Color reflection = Trace(new Ray(hitInfo.HitPosition + nHit * sceneData.Option.Bias, refldir), lightIndex, depth + 1);
-                        Color refraction = Color.Black;
-
-                        if (hitInfo.Material.Transparency > 0f)
-                        {
-                            double eta = inside ? hitInfo.Material.IndexOfRefraction : 1.0 / hitInfo.Material.IndexOfRefraction;
-
-                            double cosi = Vector3.Dot(-nHit, hitInfo.Ray.Direction);
-                            double k = 1.0 - eta * eta * (1.0 - cosi * cosi);
-                            Vector3 refrdir = Vector3.Normalize(hitInfo.Ray.Direction * eta + nHit * (eta * cosi - Math.Sqrt(k)));
-                            refraction = Trace(new Ray(hitInfo.HitPosition - nHit * sceneData.Option.Bias, refrdir), lightIndex, depth + 1);
-                        }
-
-                        Vector3 testColor = new Vector3(reflection.R, reflection.G, reflection.B) * fresneleffect;
-                        testColor += new Vector3(refraction.R, refraction.G, refraction.B) * ((1.0 - fresneleffect) * hitInfo.Material.Transparency);
-
-                        return Color.FromArgb((int)testColor.X.Clamp(0, 255), (int)testColor.Y.Clamp(0, 255), (int)testColor.Z.Clamp(0, 255));
-                    }
+                    return Color.FromArgb((int)testColor.X.Clamp(0, 255), (int)testColor.Y.Clamp(0, 255), (int)testColor.Z.Clamp(0, 255));
                 }
             }
 

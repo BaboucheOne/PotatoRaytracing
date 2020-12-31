@@ -4,6 +4,7 @@ using System.DoubleNumerics;
 using System.Threading.Tasks;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace PotatoRaytracing
 {
@@ -20,82 +21,54 @@ namespace PotatoRaytracing
             textureManager.AddTextures(sceneData.TexturePath);
         }
 
-        public Bitmap ParallelWork(Tile[] tiles, int lightIndex)
+        public unsafe bool ParallelWork(ref Stack<Tile> stack, Bitmap bitmap)
         {
-            CreateImageBuffer(out Bitmap bmp, out BitmapData data, out int bytesPerPixel, out byte[] buffer);
-            GenerateTiles(tiles, lightIndex, bmp, data, bytesPerPixel, buffer);
-            return bmp;
-        }
-
-        private void GenerateTiles(Tile[] tiles, int lightIndex, Bitmap bmp, BitmapData data, int bytesPerPixel, byte[] buffer)
-        {
-            Marshal.Copy(data.Scan0, buffer, 0, buffer.Length);
-            Action[] actions = CreateTileAction(tiles, lightIndex, data, bytesPerPixel, buffer);
-            Parallel.Invoke(actions);
-            Marshal.Copy(buffer, 0, data.Scan0, buffer.Length);
-            bmp.UnlockBits(data);
-        }
-
-        private void CreateImageBuffer(out Bitmap bmp, out BitmapData data, out int bytesPerPixel, out byte[] buffer)
-        {
-            bmp = new Bitmap(sceneData.Option.Width, sceneData.Option.Height);
-            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-            data = bmp.LockBits(rect, ImageLockMode.ReadWrite, bmp.PixelFormat);
-            bytesPerPixel = Image.GetPixelFormatSize(data.PixelFormat) / 8;
-            buffer = new byte[data.Width * data.Height * bytesPerPixel];
-        }
-
-        private Action[] CreateTileAction(Tile[] tiles, int lightIndex, BitmapData data, int bytesPerPixel, byte[] buffer)
-        {
-            Action[] actions = new Action[tiles.Length];
-            for (int i = 0; i < tiles.Length; i++)
+            PotatoSceneData sd = sceneData.DeepCopy();
+            TextureManager tex = new TextureManager
             {
-                int x = tiles[i].X;
-                int y = tiles[i].Y;
-                int size = tiles[i].Size;
+                textures = textureManager.DeepCloneTextures()
+            };
+            PotatoTracer t = new PotatoTracer(sd, tex);
 
-                PotatoSceneData sd = sceneData.DeepCopy();
-                TextureManager tex = new TextureManager
-                {
-                    textures = textureManager.DeepCloneTextures()
-                };
-                PotatoTracer t = new PotatoTracer(sd, tex);
-
-                actions[i] = () => Process(buffer, x, y, x + size, y + size, data.Width, bytesPerPixel, t, lightIndex);
-            }
-
-            return actions;
-        }
-
-        private void Process(byte[] buffer, int x, int y, int endx, int endy, int width, int bytesPerPixel, PotatoTracer t, int lightIndex)
-        {
-            Color col;
             SuperSampling superSampling = null;
             bool superSamplingEnable = t.sceneData.Option.SuperSampling;
-
             if (superSamplingEnable) superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
+            Tile tileToProcess;
+            Color col;
 
-            for (int i = x; i < endx; i++)
+            while (stack.Count > 0)
             {
-                for (int j = y; j < endy; j++)
+                lock (stack)
                 {
-                    int offset = ((j * width) + i) * bytesPerPixel;
+                    tileToProcess = stack.Pop();
+                }
 
-                    if (superSamplingEnable)
-                    {
-                        col = superSampling.GetSampleColor(lightIndex, i, j);
-                    }
-                    else
-                    {
-                        Vector2 screenCoord = new Vector2(2.0 * i / sceneData.Option.Width - 1.0, (-2.0 * j) / sceneData.Option.Height + 1.0);
-                        col = t.Trace(t.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y), lightIndex, 0);
-                    }
+                if (superSamplingEnable)
+                {
+                    col = superSampling.GetSampleColor(tileToProcess.X, tileToProcess.Y);
+                }
+                else
+                {
+                    Vector2 screenCoord = new Vector2(2.0 * tileToProcess.X / sceneData.Option.Width - 1.0, (-2.0 * tileToProcess.Y) / sceneData.Option.Height + 1.0);
+                    col = t.Trace(t.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y));
+                }
 
-                    buffer[offset] = col.B;
-                    buffer[offset + 1] = col.G;
-                    buffer[offset + 2] = col.R;
+                lock (bitmap)
+                {
+                    BitmapData bData = bitmap.LockBits(new Rectangle(tileToProcess.X, tileToProcess.Y, 1, 1), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                    byte bitsPerPixel = (byte)Image.GetPixelFormatSize(bitmap.PixelFormat);
+
+                    byte* data = (byte*)bData.Scan0.ToPointer();
+
+                    data[0] = col.B;
+                    data[1] = col.G;
+                    data[2] = col.R;
+
+                    bitmap.UnlockBits(bData);
                 }
             }
+
+            return true;
         }
     }
 }

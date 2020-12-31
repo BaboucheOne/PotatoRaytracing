@@ -104,7 +104,7 @@ namespace PotatoRaytracing
                 "Camera Rotation: {6} \n" +
                 "Screen Center {7} \n" +
                 "Screen Left {8} \n" +
-                "Super sampling enable {0} \n" +
+                "Super sampling enable {9} \n" +
                 "Super sampling division {10} \n" +
                 "Screen tiles {11} \n" +
                 "Recursion depth {12} \n" +

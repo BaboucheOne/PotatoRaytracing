@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Threading.Tasks;
 
 namespace PotatoRaytracing
@@ -6,11 +7,10 @@ namespace PotatoRaytracing
     public class PotatoTasksSceneRenderer
     {
         private readonly PotatoSceneData sceneData;
-        private Task<Bitmap>[] tasks;
-        private Bitmap[] imagesRendered;
-        private Tile[] tiles;
-        private int tileSize;
-        private int tasksToDo;
+        private Task<bool>[] tasks;
+        private Bitmap imageToRender;
+        private Stack<Tile> tiles = new Stack<Tile>();
+        private int tasksToDo => sceneData.Option.ScreenTiles;
 
         public PotatoTasksSceneRenderer(PotatoSceneData sceneData)
         {
@@ -25,45 +25,32 @@ namespace PotatoRaytracing
 
         private void InitTasks()
         {
-            tasksToDo = sceneData.Lights.Count;
-            tasks = new Task<Bitmap>[tasksToDo];
-            imagesRendered = new Bitmap[tasksToDo];
+            tasks = new Task<bool>[tasksToDo];
+            imageToRender = new Bitmap(sceneData.Option.Width, sceneData.Option.Height);
         }
 
         private void InitTiles()
         {
-            int tileArrayLen = (int)System.Math.Sqrt(sceneData.Option.ScreenTiles);
-
-            tiles = new Tile[sceneData.Option.ScreenTiles];
-            tileSize = sceneData.Option.Width / tileArrayLen;
-
-            int tileIndex = 0;
-            for (int x = 0; x < tileArrayLen; x++)
+            tiles.Clear();
+            for (int x = 0; x < imageToRender.Width; x++)
             {
-                for (int y = 0; y < tileArrayLen; y++)
+                for (int y = 0; y < imageToRender.Height; y++)
                 {
-                    tiles[tileIndex] = new Tile(x * tileSize, y * tileSize, tileSize);
-                    tileIndex++;
+                    tiles.Push(new Tile(x, y));
                 }
             }
         }
 
         public void Clear()
         {
-            for(int i = 0; i < imagesRendered.Length; i++)
-            {
-                imagesRendered[i].Dispose();
-            }
+            imageToRender.Dispose();
         }
 
-        public Bitmap[] Run()
+        public Bitmap Run()
         {
             Init();
-
             RunRendererTasks();
-            TransferTasksResultToImagesRendered();
-
-            return imagesRendered;
+            return imageToRender;
         }
 
         private void RunRendererTasks()
@@ -72,19 +59,10 @@ namespace PotatoRaytracing
             {
                 PotatoSceneData sd = sceneData.DeepCopy();
                 PotatoRenderer pr = new PotatoRenderer(sd);
-                int light = i;
-                tasks[i] = Task.Run(() => pr.ParallelWork(tiles, light));
+                tasks[i] = Task.Run(() => pr.ParallelWork(ref tiles, imageToRender));
             }
 
             Task.WaitAll(tasks);
-        }
-
-        private void TransferTasksResultToImagesRendered()
-        {
-            for (int i = 0; i < tasksToDo; i++)
-            {
-                imagesRendered[i] = tasks[i].Result;
-            }
         }
     }
 }

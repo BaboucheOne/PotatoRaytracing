@@ -4,13 +4,11 @@
     {
         public readonly int X;
         public readonly int Y;
-        public readonly int Size;
 
-        public Tile(int x, int y, int size)
+        public Tile(int x, int y)
         {
             X = x;
             Y = y;
-            Size = size;
         }
     }
 }
