@@ -83,13 +83,24 @@ namespace PotatoRaytracing
             };
 
             Random r = new Random();
-            for (int i = 0; i < 10; i++)
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    //Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(10, 10));
+            //    Vector3 pos = new Vector3(r.Next(-25, 25), r.Next(-25, 25), 25);
+            //    float rad = 1f;//(float)r.NextDouble() * 5f;
+            //    Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
+            //    spheres.Add(new PotatoSphere(pos, rad, mat));
+            //}
+
+            for (int x = 0; x < 50; x++)
             {
-                //Vector3 pos = new Vector3(r.Next(-50, 50), r.Next(-50, 50), r.Next(10, 10));
-                Vector3 pos = new Vector3(r.Next(-25, 25), r.Next(-25, 25), 25);
-                float rad = 1f;//(float)r.NextDouble() * 5f;
-                Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
-                spheres.Add(new PotatoSphere(pos, rad, mat));
+                for (int y = 0; y < 25; y++)
+                {
+                    Vector3 pos = new Vector3(x * 2 - 50 , y * 2 - 50, 25);
+                    float rad = 1f;
+                    Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
+                    spheres.Add(new PotatoSphere(pos, rad, mat));
+                }
             }
 
             //spheres.Add(new PotatoSphere(new Vector3(0, 0, 50), 15f, new Refraction(1.2f)));

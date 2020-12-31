@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 
 namespace PotatoRaytracing
 {
+    [Obsolete("Not used any more. Keeping it for further features", true)]
     public class ImageBlender
     {
         private readonly List<Bitmap> imagesRendered = new List<Bitmap>();
