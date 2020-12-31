@@ -23,46 +23,45 @@ namespace PotatoRaytracing
 
         public unsafe bool ParallelWork(ref Stack<Tile> stack, Bitmap bitmap)
         {
-            PotatoSceneData sd = sceneData.DeepCopy();
             TextureManager tex = new TextureManager
             {
                 textures = textureManager.DeepCloneTextures()
             };
-            PotatoTracer t = new PotatoTracer(sd, tex);
+            PotatoTracer tracer = new PotatoTracer(sceneData.DeepCopy(), tex);
 
             SuperSampling superSampling = null;
-            bool superSamplingEnable = t.sceneData.Option.SuperSampling;
-            if (superSamplingEnable) superSampling = new SuperSampling(t.sceneData.Option.Height, t.sceneData.Option.SuperSamplingDivision, t.sceneData, t);
+            bool superSamplingEnable = tracer.sceneData.Option.SuperSampling;
+            if (superSamplingEnable) superSampling = new SuperSampling(tracer.sceneData.Option.Height, tracer.sceneData.Option.SuperSamplingDivision,
+                                                                        tracer.sceneData, tracer); 
+            
             Tile tileToProcess;
-            Color col;
+            BitmapData bData;
+            Color color;
 
             while (stack.Count > 0)
             {
-                lock (stack)
-                {
-                    tileToProcess = stack.Pop();
-                }
+                lock (stack) tileToProcess = stack.Pop();
 
                 if (superSamplingEnable)
                 {
-                    col = superSampling.GetSampleColor(tileToProcess.X, tileToProcess.Y);
+                    color = ((SuperSampling)null).GetSampleColor(tileToProcess.X, tileToProcess.Y);
                 }
                 else
                 {
                     Vector2 screenCoord = new Vector2(2.0 * tileToProcess.X / sceneData.Option.Width - 1.0, (-2.0 * tileToProcess.Y) / sceneData.Option.Height + 1.0);
-                    col = t.Trace(t.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y));
+                    color = tracer.Trace(tracer.sceneData.Camera.CreateRay(screenCoord.X, screenCoord.Y));
                 }
 
                 lock (bitmap)
                 {
-                    BitmapData bData = bitmap.LockBits(new Rectangle(tileToProcess.X, tileToProcess.Y, 1, 1), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+                    bData = bitmap.LockBits(new Rectangle(tileToProcess.X, tileToProcess.Y, 1, 1), ImageLockMode.ReadWrite, bitmap.PixelFormat);
                     byte bitsPerPixel = (byte)Image.GetPixelFormatSize(bitmap.PixelFormat);
 
                     byte* data = (byte*)bData.Scan0.ToPointer();
 
-                    data[0] = col.B;
-                    data[1] = col.G;
-                    data[2] = col.R;
+                    data[0] = color.B;
+                    data[1] = color.G;
+                    data[2] = color.R;
 
                     bitmap.UnlockBits(bData);
                 }

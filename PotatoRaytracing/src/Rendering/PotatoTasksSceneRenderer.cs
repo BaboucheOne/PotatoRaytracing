@@ -10,7 +10,6 @@ namespace PotatoRaytracing
         private Task<bool>[] tasks;
         private Bitmap imageToRender;
         private Stack<Tile> tiles = new Stack<Tile>();
-        private int tasksToDo => sceneData.Option.ScreenTiles;
 
         public PotatoTasksSceneRenderer(PotatoSceneData sceneData)
         {
@@ -25,7 +24,7 @@ namespace PotatoRaytracing
 
         private void InitTasks()
         {
-            tasks = new Task<bool>[tasksToDo];
+            tasks = new Task<bool>[sceneData.Option.ScreenTiles];
             imageToRender = new Bitmap(sceneData.Option.Width, sceneData.Option.Height);
         }
 
@@ -55,7 +54,7 @@ namespace PotatoRaytracing
 
         private void RunRendererTasks()
         {
-            for (int i = 0; i < tasksToDo; i++)
+            for (int i = 0; i < tasks.Length; i++)
             {
                 PotatoSceneData sd = sceneData.DeepCopy();
                 PotatoRenderer pr = new PotatoRenderer(sd);

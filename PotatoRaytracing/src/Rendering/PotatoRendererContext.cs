@@ -36,34 +36,30 @@ namespace PotatoRaytracing
 
         public void MakeVideo(string videoName)
         {
-            //watch.Start();
-            //int imgCount = Option.VideoFPS * Option.VideoDuration;
-            //Bitmap[] image_sequence = new Bitmap[imgCount];
+            watch.Start();
+            int imgCount = Option.VideoFPS * Option.VideoDuration;
+            Bitmap[] image_sequence = new Bitmap[imgCount];
 
-            //tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
+            tasksSceneRenderer = new PotatoTasksSceneRenderer(Scene.PotatoSceneData);
 
-            //for (int i = 0; i < imgCount; i++)
-            //{
-            //    Bitmap[] imgs = tasksSceneRenderer.Run();
+            for (int i = 0; i < imgCount; i++)
+            {
+                Bitmap image = tasksSceneRenderer.Run();
+                image_sequence[i] = image.Clone(new Rectangle(0, 0, image.Width, image.Height), image.PixelFormat);
 
-            //    BlendAllRenderedImageContainInTasksResult(imgs);
+                Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
+                for (int j = 0; j < Scene.PotatoSceneData.Spheres.Count; j++)
+                {
+                    Scene.PotatoSceneData.Spheres[j].Position = Scene.PotatoSceneData.Spheres[j].Position + new System.DoubleNumerics.Vector3(1, 0, 0);
+                }
 
-            //    Bitmap finalImage = imageBlender.GetFinalImageRender();
-            //    image_sequence[i] = finalImage.Clone(new Rectangle(0, 0, finalImage.Width, finalImage.Height), finalImage.PixelFormat);
+                image.Dispose();
+            }
 
-            //    Scene.PotatoSceneData.Camera.Position = Scene.PotatoSceneData.Camera.Position + new System.DoubleNumerics.Vector3(1, 0, 0);
-            //    for (int j = 0; j < Scene.PotatoSceneData.Spheres.Count; j++)
-            //    {
-            //        Scene.PotatoSceneData.Spheres[j].Position = Scene.PotatoSceneData.Spheres[j].Position + new System.DoubleNumerics.Vector3(1, 0, 0);
-            //    }
+            ClearRenderContext();
+            CreateVideo(videoName, image_sequence);
 
-            //    imageBlender.Clear();
-            //}
-
-            //ClearRenderContext();
-            //CreateVideo(videoName, image_sequence);
-
-            //watch.Stop();
+            watch.Stop();
         }
 
         private void CreateVideo(string videoName, Bitmap[] inputImageSequence)
