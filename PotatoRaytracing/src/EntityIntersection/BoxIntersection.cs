@@ -6,7 +6,7 @@ namespace PotatoRaytracing
     {
         public static bool Intersect(Ray ray, BoundingBox box)
         {
-            double t1, t2, tnear = -1000.0f, tfar = 1000.0f, temp, tCube;
+            double t1, t2, tnear = -1000.0f, tfar = 1000.0f, temp;
             Vector3 b1 = box.Min;
             Vector3 b2 = box.Max;
             bool hit = true;
@@ -37,10 +37,6 @@ namespace PotatoRaytracing
                         hit = false;
                 }
             }
-            if (hit == false)
-                tCube = -1;
-            else
-                tCube = tnear;
 
             return hit;
         }

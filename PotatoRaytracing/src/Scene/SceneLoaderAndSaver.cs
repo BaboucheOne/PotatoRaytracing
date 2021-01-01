@@ -8,7 +8,7 @@ namespace PotatoRaytracing
     {
         public static SceneFile Load(string scenePath)
         {
-            if (!File.Exists(scenePath)) throw new FileNotFoundException("Cannot find the scene file");
+            if (!File.Exists(scenePath)) throw new FileNotFoundException(string.Format("Scene file {0} not found", scenePath), "scenePath");
 
             SceneFile file;
 

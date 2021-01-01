@@ -18,6 +18,9 @@ Modify 'option.xml' in the 'Resources' folder to play with settings.
 
   - .obj supported in scene file
   - Video
+  - KD-Tree
+  - 2 type of rendering (Solid color or cubemap)
+  - Material on object
 # Features
 
  -  Cubemap
@@ -40,11 +43,8 @@ See also [rendered images folder](https://github.com/BaboucheOne/PotatoRaytracin
 
 # Futher features
 
- - K-Tree
- - 2 type of rendering (Solid color or cubemap)
  - Textures on meshs
  - Mimap for cubemap
- - Material on object
 
 # Documentation
 

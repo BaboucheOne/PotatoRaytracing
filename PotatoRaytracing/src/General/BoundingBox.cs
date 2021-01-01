@@ -7,8 +7,8 @@ namespace PotatoRaytracing
     {
         public Vector3 Position { get; private set; } = new Vector3();
         public Vector3 Size => size;
-        public Vector3 Min {get; private set; }= new Vector3(double.MaxValue, double.MaxValue, double.MaxValue);
-        public Vector3 Max {get; private set; }= new Vector3();
+        public Vector3 Min {get; private set; } = new Vector3(double.MaxValue, double.MaxValue, double.MaxValue);
+        public Vector3 Max {get; private set; } = new Vector3();
 
         private Vector3 size = new Vector3();
 
