@@ -17,8 +17,7 @@ namespace PotatoRaytracing
 
         public PotatoRenderContext(Option option)
         {
-            Option = option;
-
+            Option = option ?? throw new System.NullReferenceException("Option is null");
             Scene = new PotatoScene(option);
         }
 

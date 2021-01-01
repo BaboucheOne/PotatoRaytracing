@@ -23,10 +23,6 @@ namespace PotatoRaytracing
         private List<PotatoPlane> planes = new List<PotatoPlane>();
         private List<PotatoMesh> meshes = new List<PotatoMesh>();
 
-        public PotatoScene()
-        {
-        }
-
         public PotatoScene(Option option)
         {
             this.option = option;

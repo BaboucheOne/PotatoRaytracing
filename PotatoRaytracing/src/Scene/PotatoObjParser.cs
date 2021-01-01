@@ -16,7 +16,7 @@ namespace PotatoRaytracing
 
         public void Parse(ref PotatoMesh mesh)
         {
-            if (!File.Exists(mesh.ObjectPath)) throw new FileNotFoundException();
+            if (!File.Exists(mesh.ObjectPath)) throw new FileNotFoundException(string.Format("Cannot found object at path {0}", mesh.ObjectPath));
 
             FileStream fileStream = new FileStream(mesh.ObjectPath, FileMode.Open, FileAccess.Read);
             using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))

@@ -75,13 +75,14 @@ namespace PotatoRaytracing
 
             AssignOptionValueFromXMLFile(node);
 
-            //TODO: Generer les exception autrement.
-            if(!IsPowerOf4(screenTiles)) throw new ArgumentException("ScreenTiles must be power of 4. (1, 4, 16, ...)");
-            if(width != height) throw new ArgumentException("Width and Height must be equal");
-            if(!IsResoltionFit(width)) throw new ArgumentException("Width do not conform to supported resolution (32 to 4096)");
-            if ((width / screenTiles) < 1) throw new ArgumentException("Width / screenTiles must be equal or greater than 1");
-            if(bias > 1) throw new ArgumentException("Bias must be <= 1");
-            if(gamma < 0) throw new ArgumentException("Gamma must be >= 0");
+            if (width <= 0) throw new ArgumentException("Wight must be positive", "width");
+            if (height <= 0) throw new ArgumentException("Height must be positive", "height");
+            if (fov < 0) throw new ArgumentException("Fov must be positive", "fov");
+            if (bias > 1) throw new ArgumentException("Bias must be <= 1", "bias");
+            if (gamma < 0) throw new ArgumentException("Gamma must be >= 0", "gamma");
+            if (supersamplingDivision < 1) throw new ArgumentException("supersamplingDivision must be >= 1", "supersamplingDivision");
+            if (screenTiles < 1) throw new ArgumentException("ScreenTiles must be upper or equal to 1", "screenTiles");
+            if (recursionDepth < 0) throw new ArgumentException("recursionDepth mus be positive", "recursionDepth");
         }
 
         private static void AssignOptionValueFromXMLFile(XmlNode node)
@@ -100,23 +101,6 @@ namespace PotatoRaytracing
             useSolidColor = bool.Parse(node.SelectSingleNode("useSolidColor").InnerText);
             cubemap = node.SelectSingleNode("cubemap").InnerText;
             solidColor = Extensions.ParseColor(node.SelectSingleNode("solidColor").InnerText);
-        }
-
-        private static bool IsPowerOf4(int x)
-        {
-            double i = Math.Log(x) / Math.Log(4);
-            return i == Math.Floor(i);
-        }
-
-        //TODO: Chercher comment on peux reduire le tout (sans generer resolution).
-        private static bool IsResoltionFit(int width)
-        {
-            for (int i = 5; i < 12; i++)
-            {
-                if(width == (int)Math.Pow(2, i)) return true;
-            }
-
-            return false;
         }
     }
 }
