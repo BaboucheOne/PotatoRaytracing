@@ -44,7 +44,7 @@ namespace PotatoRaytracing
 
                 if (superSamplingEnable)
                 {
-                    color = ((SuperSampling)null).GetSampleColor(tileToProcess.X, tileToProcess.Y);
+                    color = superSampling.GetSampleColor(tileToProcess.X, tileToProcess.Y);
                 }
                 else
                 {
