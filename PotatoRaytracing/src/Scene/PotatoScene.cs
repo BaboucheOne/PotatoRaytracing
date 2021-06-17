@@ -88,22 +88,30 @@ namespace PotatoRaytracing
             //    spheres.Add(new PotatoSphere(pos, rad, mat));
             //}
 
-            for (int x = 0; x < 50; x++)
-            {
-                for (int y = 0; y < 25; y++)
-                {
-                    Vector3 pos = new Vector3(x * 2 - 50 , y * 2 - 50, 25);
-                    float rad = 1f;
-                    Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
-                    spheres.Add(new PotatoSphere(pos, rad, mat));
-                }
-            }
+            //for (int x = 0; x < 50; x++)
+            //{
+            //    for (int y = 0; y < 25; y++)
+            //    {
+            //        Vector3 pos = new Vector3(x * 2 - 50 , y * 2 - 50, 25);
+            //        float rad = 1f;
+            //        Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
+            //        spheres.Add(new PotatoSphere(pos, rad, mat));
+            //    }
+            //}
 
             //spheres.Add(new PotatoSphere(new Vector3(0, 0, 50), 15f, new Refraction(1.2f)));
             //spheres.Add(new PotatoSphere(new Vector3(40, 0, 75), 15f, new Reflection(1f, 0.5f, 120)));
+            Material mat = new DefaultMaterial(1f, 0.6f, colors[(int)(r.NextDouble() * colors.Count)], 75, 1f);
+            spheres.Add(new PotatoSphere(new Vector3(35, 15, 75), 15f, mat));
 
-            lights.Add(new PotatoPointLight(new Vector3(0, 10, 0), 5000, 10000000, Color.White));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 10, 0), 50000, 10000000, Color.White));
             lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.5, 0.5), 150f, Color.White));
+
+            PotatoPlane potatoPlane = new PotatoPlane(Vector3.Zero)
+            {
+                Normal = WorldCoordinate.PotatoCoordinate.VECTOR_UP
+            };
+            planes.Add(potatoPlane);
 
             //const int randomMeshCount = 1;
             //for (int i = 0; i < randomMeshCount; i++)

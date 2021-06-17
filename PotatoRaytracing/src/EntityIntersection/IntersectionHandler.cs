@@ -17,7 +17,7 @@ namespace PotatoRaytracing
 
         public HitInfo Intersect(Ray ray)
         {
-            double dstTriangle = 0.0;
+            double dstTriangle = double.MaxValue; //Normalement a 0.0;
             Vector3 hitPosTriangle = new Vector3();
             Vector3 hitNormalTriangle = new Vector3();
             bool hitTriangle = KDIntersection.Intersect(ray, sceneData.Tree.Root, ref hitPosTriangle, ref hitNormalTriangle, ref dstTriangle);
@@ -70,7 +70,14 @@ namespace PotatoRaytracing
                 }
                 else
                 {
-                    return ProcessSphereHit(ray, hitPosSphere, hitNormalSphere, dstSphere, sphere);
+                    if (dstSphere < dstPlane)
+                    {
+                        return new HitInfo(true, ray, hitPosPlane, hitNormalPlane, dstPlane, Color.White, new Lambertian(1f, Color.White));
+                    }
+                    else
+                    {
+                        return ProcessSphereHit(ray, hitPosSphere, hitNormalSphere, dstSphere, sphere);
+                    }
                 }
             }
             else
@@ -79,16 +86,19 @@ namespace PotatoRaytracing
                 {
                     return new HitInfo(true, ray, hitPosTriangle, hitNormalTriangle, dstTriangle, Color.White, new DefaultMaterial());
                 }
-                else if (hitSphere)
+
+                if (hitSphere && (dstSphere < dstPlane))
                 {
                     return ProcessSphereHit(ray, hitPosSphere, hitNormalSphere, dstSphere, sphere);
-                } else if(hitPlane)
+                }
+                
+                if (hitPlane && (dstPlane < dstSphere))
                 {
                     return new HitInfo(true, ray, hitPosPlane, hitNormalPlane, dstPlane, Color.White, new Lambertian(1f, Color.White));
                 }
             }
 
-            return new HitInfo(false, ray, new Vector3(), new Vector3(), 0f, Color.Black, new DefaultMaterial());
+            return new HitInfo(false, ray, new Vector3(), new Vector3(), 0f, Color.Red, new DefaultMaterial()); //TODO: METTRE EN BLACK!!!!!
         }
 
         private HitInfo ProcessSphereHit(Ray ray, Vector3 hitPosSphere, Vector3 hitNormalSphere, double dstSphere, PotatoSphere sphere)

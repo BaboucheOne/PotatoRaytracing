@@ -17,6 +17,7 @@ namespace PotatoRaytracing
             RenderContext = new PotatoRenderContext(option);
             //RenderContext.Scene.Load("testSceneFile.json");
             RenderContext.Scene.CreateRandomScene();
+            RenderContext.Scene.Camera.Position = new System.DoubleNumerics.Vector3(0, 25, 0);
 
             Console.WriteLine("--- Potato Raytracing ---");
             Console.WriteLine("Scene parameters:");

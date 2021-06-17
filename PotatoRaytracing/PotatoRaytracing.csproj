@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\Entities\PotatoPlane.cs" />
+    <Compile Include="src\Entities\QuadAreaLight.cs" />
     <Compile Include="src\EntityIntersection\PlaneIntersection.cs" />
     <Compile Include="src\Materials\Lambertian.cs" />
     <Compile Include="src\Materials\Material.cs" />
