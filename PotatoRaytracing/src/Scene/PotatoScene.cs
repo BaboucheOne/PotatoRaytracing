@@ -137,8 +137,6 @@ namespace PotatoRaytracing
             meshs.Add(mesh);
             meshsBuilder.Build(ref meshs);
 
-            Console.WriteLine(meshs.Count);
-
             Cubemap.LoadCubemap(option.Cubemap);
 
             KDTree tree = new KDTree(GetAllTrianglesInScene(meshs));
