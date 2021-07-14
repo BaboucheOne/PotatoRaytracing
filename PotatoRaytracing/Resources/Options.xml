@@ -10,7 +10,7 @@
   <recursionDepth>2</recursionDepth>
   <videoDuration>5</videoDuration>
   <videoFPS>10</videoFPS>
-  <useSolidColor>false</useSolidColor>
+  <useSolidColor>true</useSolidColor>
   <cubemap>Resources\\Textures\\cubemap5.bmp</cubemap>
-  <solidColor>0 0 0</solidColor>
+  <solidColor>0 0 255</solidColor>
 </option>

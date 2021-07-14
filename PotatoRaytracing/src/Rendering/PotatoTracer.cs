@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Drawing;
+using System.Linq;
 using System.DoubleNumerics;
+using System.Drawing;
+using PotatoRaytracing.Materials;
 
 namespace PotatoRaytracing
 {
@@ -17,7 +19,7 @@ namespace PotatoRaytracing
 
         public Color Trace(Ray renderRay, int lightIndex, int depth)
         {
-            if (depth > sceneData.Option.RecursionDepth) return Color.Black; //return GetBackgroundColor(renderRay);
+            if (depth > sceneData.Option.RecursionDepth) return GetBackgroundColor(renderRay);
 
             HitInfo hitInfo = intersectionHandler.Intersect(renderRay);
 
@@ -26,8 +28,8 @@ namespace PotatoRaytracing
                 return ComputeDirectLight(hitInfo, lightIndex, depth);
             }
 
-            return Color.FromArgb(255, 255, 255);
-            //return GetBackgroundColor(renderRay);
+            //return Color.FromArgb(238, 240, 213); //Ambiant
+            return GetBackgroundColor(renderRay);
         }
 
         private Color GetBackgroundColor(Ray renderRay)
@@ -36,11 +38,150 @@ namespace PotatoRaytracing
             return sceneData.Cubemap.GetCubemapColor(renderRay.Direction);
         }
 
-        private Vector3 ComputeGlobalIllumination(HitInfo hitInfo, int lightIndex, int depth)
+        private Vector3 ComputeGI(HitInfo hitInfo, int lightindex, int depth)
+        {
+            if (depth >= 1) return new Vector3(hitInfo.HitColor.R, hitInfo.HitColor.G, hitInfo.HitColor.B);
+
+            int sample = 16;
+            float factor = 1.0f;
+            Random rand = new Random();
+
+            Vector3 sumOfColor = Vector3.Zero;
+
+            Vector3 Nt = new Vector3();
+            Vector3 Nb = new Vector3();
+            for (int i = 0; i < sample; i++)
+            {
+                Material.CreateCoordinateSystem(hitInfo.HitNormal, ref Nt, ref Nb);
+                Vector3 randomSample = Material.UniformSampleHemisphere(rand.NextDouble(), rand.NextDouble());
+                Vector3 worldSampleNormal = new Vector3(randomSample.X * Nb.X + randomSample.Y * hitInfo.HitNormal.X + randomSample.Z * Nt.X,
+                                                randomSample.X * Nb.Y + randomSample.Y * hitInfo.HitNormal.Y + randomSample.Z * Nt.Y,
+                                                randomSample.X * Nb.Z + randomSample.Y * hitInfo.HitNormal.Z + randomSample.Z * Nt.Z);
+
+
+                Ray r = new Ray(hitInfo.HitPosition + worldSampleNormal * sceneData.Option.Bias, randomSample);
+                //HitInfo info = intersectionHandler.Intersect(r);
+                //Color giHitColor = info.HitColor;
+                //if (!info.Hit) giHitColor = Color.FromArgb(238, 240, 213); // Ambiant light
+
+                HitInfo info = intersectionHandler.Intersect(r); //Trace(r, lightindex, depth + 1);
+                //if(giHitColor != Color.Black) Console.WriteLine(giHitColor);
+                if (info.Hit)
+                {
+                    sumOfColor += new Vector3(info.HitColor.R, info.HitColor.G, info.HitColor.B); // * Math.Max(0.0, Vector3.Dot(r.Direction, info.HitNormal));
+                }
+                    //sumOfColor.Add(giHitColor);
+            }
+
+            return sumOfColor / sample; // * (1 / (2 * Math.PI));
+        }
+
+        private Vector3 ComputeGIPP(HitInfo hitInfo, Vector3 giColor, int depth)
+        {
+            if (depth >= 2) return Vector3.Zero; //return giColor;
+
+            int sample = 512;
+            Random rand = new Random();
+
+            Vector3 Nt = new Vector3();
+            Vector3 Nb = new Vector3();
+
+            for (int i = 0; i < sample; i++)
+            {
+                Material.CreateCoordinateSystem(hitInfo.HitNormal, ref Nt, ref Nb);
+                Vector3 randomSample = Material.UniformSampleHemisphere(rand.NextDouble(), rand.NextDouble());
+                Vector3 worldSampleNormal = new Vector3(randomSample.X * Nb.X + randomSample.Y * hitInfo.HitNormal.X + randomSample.Z * Nt.X,
+                                                randomSample.X * Nb.Y + randomSample.Y * hitInfo.HitNormal.Y + randomSample.Z * Nt.Y,
+                                                randomSample.X * Nb.Z + randomSample.Y * hitInfo.HitNormal.Z + randomSample.Z * Nt.Z);
+
+
+                Ray r = new Ray(hitInfo.HitPosition + worldSampleNormal * sceneData.Option.Bias, randomSample);
+                HitInfo info = intersectionHandler.Intersect(r);
+                if(info.Hit)
+                {
+                    giColor += new Vector3(info.HitColor.R, info.HitColor.G, info.HitColor.B);
+                } else
+                {
+                    depth++;
+                    giColor += ComputeGIPP(hitInfo, giColor * 1 / depth, depth);
+                }
+
+
+                //foreach(SphereAreaLight area in l)
+                //{
+                //    PotatoSphere spArea = new PotatoSphere(area.Position, area.Radius);
+                //    Vector3 hitP = new Vector3();
+                //    Vector3 hitN = new Vector3();
+                //    double hitD = double.MaxValue;
+                //    var f = SphereIntersection.Intersect(r, spArea, ref hitP, ref hitN, ref hitD);
+                //    if(f)
+                //    {
+                //        giColor += new Vector3(area.Color.R, area.Color.G, area.Color.B);
+                //    } else
+                //    {
+                //        depth++;
+                //        giColor = ComputeGIPP(new HitInfo(false, r, hitP, hitN, hitD, Color.Black, new DefaultMaterial()), giColor, depth);
+                //    }
+                //    //public static bool Intersect(Ray ray, PotatoSphere sphere, ref Vector3 hitPosition, ref Vector3 hitNormal, ref double distance)
+                //}
+
+                //HitInfo info = intersectionHandler.Intersect(r);
+                //Color giHitColor = info.HitColor;
+                //if (!info.Hit) giHitColor = Color.FromArgb(238, 240, 213); // Ambiant light
+
+                //HitInfo info = intersectionHandler.Intersect(r); //Trace(r, lightindex, depth + 1);
+                //if(giHitColor != Color.Black) Console.WriteLine(giHitColor);
+                //if (info.Hit)
+                //{
+                //    sumOfColor += new Vector3(info.HitColor.R, info.HitColor.G, info.HitColor.B); // * Math.Max(0.0, Vector3.Dot(r.Direction, info.HitNormal));
+                //}
+                //sumOfColor.Add(giHitColor);
+            }
+
+            return giColor / sample; // * (1 / (2 * Math.PI));
+        }
+
+        private Vector3 ComputeAO(HitInfo hitInfo, int lightindex, int depth)
+        {
+            if (depth >= 1) return new Vector3(255, 0, 0);
+
+            int sample = 250;
+            float factor = 1.0f;
+            Random rand = new Random();
+
+            Color sumOfColor = hitInfo.HitColor;
+
+            Vector3 Nt = new Vector3();
+            Vector3 Nb = new Vector3();
+            for (int i = 0; i < sample; i++)
+            {
+                Material.CreateCoordinateSystem(hitInfo.HitNormal, ref Nt, ref Nb);
+                Vector3 randomSample = Material.UniformSampleHemisphere(rand.NextDouble(), rand.NextDouble());
+                Vector3 worldSampleNormal = new Vector3(randomSample.X * Nb.X + randomSample.Y * hitInfo.HitNormal.X + randomSample.Z * Nt.X,
+                                                randomSample.X * Nb.Y + randomSample.Y * hitInfo.HitNormal.Y + randomSample.Z * Nt.Y,
+                                                randomSample.X * Nb.Z + randomSample.Y * hitInfo.HitNormal.Z + randomSample.Z * Nt.Z);
+
+
+                Ray r = new Ray(hitInfo.HitPosition + worldSampleNormal * sceneData.Option.Bias, randomSample);
+                //HitInfo info = intersectionHandler.Intersect(r);
+                //Color giHitColor = info.HitColor;
+                //if (!info.Hit) giHitColor = Color.FromArgb(238, 240, 213); // Ambiant light
+
+                depth++;
+                Color giHitColor = Trace(r, lightindex, depth);
+                //if(giHitColor != Color.Black) Console.WriteLine(giHitColor);
+                sumOfColor.Add(giHitColor);
+                //sumOfColor.Add(giHitColor);
+            }
+
+            return new Vector3(sumOfColor.R, sumOfColor.G, sumOfColor.B);
+        }
+
+        private Vector3 ComputeAmbiantOcclusion(HitInfo hitInfo, int lightIndex, int depth)
         {
             if (depth == sceneData.Option.RecursionDepth) return Vector3.Zero; //TODO: Ajouter global illumination au option.
 
-            int aoSample = 50;
+            int aoSample = 1000;
             double pdf = 1 / (2 * Math.PI);
             Random rand = new Random();
             Vector3 indirectLight = new Vector3();
@@ -63,7 +204,7 @@ namespace PotatoRaytracing
             }
 
             indirectLight = Vector3.Divide(indirectLight, aoSample);
-            return indirectLight;
+            return Vector3.Normalize(indirectLight);
         }
 
         private Color ComputeDirectLight(HitInfo hitInfo, int lightIndex, int depth)
@@ -92,26 +233,37 @@ namespace PotatoRaytracing
                             (hitInfo.HitColor.G + light.Color.G) * 0.5f * grey,
                             (hitInfo.HitColor.B + light.Color.B) * 0.5f * grey);
 
+                    //return directLight.ToColor();
+
                     //Color colorDIRECT = Color.FromArgb((int)directLight.X, (int)directLight.Y, (int)directLight.Z);
 
                     //Color directColor = Color.FromArgb((int)Math.Round((hitInfo.HitColor.R + light.Color.R) * 0.5 * grey),
                     //        (int)Math.Round((hitInfo.HitColor.G + light.Color.G) * 0.5 * grey),
                     //        (int)Math.Round((hitInfo.HitColor.B + light.Color.B) * 0.5 * grey));
 
-                    Vector3 indirectLight = ComputeGlobalIllumination(hitInfo, lightIndex, depth);
+                    Vector3 v = Vector3.Zero;
+                    Vector3 gipp = ComputeGIPP(hitInfo, v, depth);
+                    //return directLight.ToColor().Add(gi.ToColor());
+                    //Vector3 ao = ComputeAmbiantOcclusion(hitInfo, lightIndex, depth);
+                    //if (ao.X < 0) Console.WriteLine(ao);
+                    return directLight.ToColor().Add(gipp.ToColor());
+                    //return gipp.ToColor();
+                    //return directLight.ToColor().Add(gi.ToColor()).Add(ao.ToColor());
+                    Vector3 gi = ComputeGI(hitInfo, lightIndex, depth);
+
                     //return indirectLight.ToColor();
 
-                    Vector3 globalLight = indirectLight;//(directLight / Math.PI + 2 * indirectLight) * 0.25;
+                    Vector3 globalLight = gi;//(directLight / Math.PI + 2 * indirectLight) * 0.25;
                     globalLight.X = globalLight.X.Clamp(0, 255);
                     globalLight.Y = globalLight.Y.Clamp(0, 255);
                     globalLight.Z = globalLight.Z.Clamp(0, 255);
                     return Color.FromArgb((int)globalLight.X, (int)globalLight.Y, (int)globalLight.Z);
 
-                    indirectLight.X = indirectLight.X.Clamp(0, 255);
-                    indirectLight.Y = indirectLight.Y.Clamp(0, 255);
-                    indirectLight.Z = indirectLight.Z.Clamp(0, 255);
+                    gi.X = gi.X.Clamp(0, 255);
+                    gi.Y = gi.Y.Clamp(0, 255);
+                    gi.Z = gi.Z.Clamp(0, 255);
                     //Console.WriteLine(indirectColor);
-                    Color aoNowColor = Color.FromArgb((int)indirectLight.X, (int)indirectLight.Y, (int)indirectLight.Z);
+                    Color aoNowColor = Color.FromArgb((int)gi.X, (int)gi.Y, (int)gi.Z);
                     return aoNowColor;
                     //return colorDIRECT.Add(aoNowColor);
                     //return aoNowColor;

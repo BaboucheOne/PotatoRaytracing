@@ -140,7 +140,7 @@ namespace PotatoRaytracing
         public static Vector3 UniformSampleHemisphere(double r1, double r2)
         {
             double sinTheta = Math.Sqrt(1 - r1 * r1);
-            double phi = 2 * Math.PI * r2;
+            double phi = 2.0 * Math.PI * r2;
             double x = sinTheta * Math.Cos(phi);
             double z = sinTheta * Math.Sin(phi);
 

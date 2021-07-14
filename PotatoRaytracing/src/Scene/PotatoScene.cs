@@ -96,13 +96,16 @@ namespace PotatoRaytracing
             //spheres.Add(new PotatoSphere(new Vector3(40, 0, 75), 15f, new Reflection(1f, 0.5f, 120)));
             
             
-            spheres.Add(new PotatoSphere(new Vector3(0, 0, 60), 15f, new Lambertian(1f, Color.Red)));
+            //spheres.Add(new PotatoSphere(new Vector3(0, 0, 60), 15f, new Lambertian(1f, Color.White)));
+            //spheres.Add(new PotatoSphere(new Vector3(-20, 0, 55), 15f, new Lambertian(1f, Color.White)));
+            //spheres.Add(new PotatoSphere(new Vector3(0, 0, 0), 250f, new Lambertian(1f, Color.White)));
             //spheres.Add(new PotatoSphere(new Vector3(-35, 0, 60), 15f, new Lambertian(1f, Color.White)));
             planes.Add(new PotatoPlane(new Vector3(0, -15, 0), new Lambertian(1f, Color.White)));
 
 
-            //lights.Add(new PotatoPointLight(new Vector3(0, 0, 0), 5000, 10000000, Color.White));
-            lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.5, 0.5), 350f, Color.White));
+            //lights.Add(new PotatoPointLight(new Vector3(0, 16, 20), 5000, 10000000, Color.White));
+            lights.Add(new PotatoDirectionalLight(new Vector3(0, -0.3, 0.5), 350f, Color.White));
+            //lights.Add(new SphereAreaLight(new Vector3(0, 30, 55), 20f, 10f, Color.White));
 
             //const int randomMeshCount = 1;
             //for (int i = 0; i < randomMeshCount; i++)
@@ -123,7 +126,7 @@ namespace PotatoRaytracing
                 //Position = new Vector3(5, 0, 0),
                 //Position = new Vector3(3, 0, 0),
                 //ObjectPath = @"Resources\\Objects\\kukuri.obj",
-                ObjectPath = @"Resources\\Objects\\Stock_Lr_22.obj",
+                ObjectPath = @"Resources\\Objects\\teapot.obj",
                 //ObjectPath = @"Resources\\Objects\\bunny.obj",
                 //ObjectPath = @"Resources\\Objects\\teapot.obj",
                 //ObjectPath = @"Resources\\Objects\\red_dot.obj",
@@ -131,8 +134,10 @@ namespace PotatoRaytracing
                 Color = colors[(int)(r.NextDouble() * colors.Count)]
             };
 
-            //meshs.Add(mesh);
+            meshs.Add(mesh);
             meshsBuilder.Build(ref meshs);
+
+            Console.WriteLine(meshs.Count);
 
             Cubemap.LoadCubemap(option.Cubemap);
 

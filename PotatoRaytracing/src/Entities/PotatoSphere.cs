@@ -13,6 +13,10 @@ namespace PotatoRaytracing
         {
         }
 
+        public PotatoSphere(Vector3 pos, double radius) : this(pos, radius, new DefaultMaterial())
+        {
+        }
+
         public PotatoSphere(Vector3 pos, double radius, Material material) : base(pos, material)
         {
             Radius = radius;
